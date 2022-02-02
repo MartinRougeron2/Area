@@ -54,6 +54,14 @@ export class Service {
     @Property()
     name!: String;
 
+    @Field()
+    @Property()
+    out_url!: String;
+
+    @Field()
+    @Property()
+    in_url!: String;
+
     @Field((_type) => BaseAction)
     @Property({ref: BaseAction})
     actions: Ref<BaseAction>;

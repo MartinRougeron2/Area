@@ -1,5 +1,5 @@
 import {Arg, Field, InputType, Mutation, Resolver} from 'type-graphql';
-import {LinksModel} from "../types";
+import {BayActionModel, LinksModel, UniqueAction} from "../types";
 import {ChatPostMessageResponse} from "@slack/web-api/dist/response/ChatPostMessageResponse";
 
 const {WebClient, LogLevel} = require("@slack/web-api");
@@ -26,7 +26,7 @@ export class SlackInput {
     user_id!: string;
 
     @Field()
-    channel_id!: string;
+    bayaction_id!: string;
 
     @Field()
     message!: string;
@@ -36,14 +36,35 @@ export class SlackInput {
 @Resolver()
 export class SlackOutResolver {
     @Mutation(() => Boolean)
-    async SendSlackMessage(@Arg('data') {user_id, channel_id, message}: SlackInput) {
-        if (!channel_id || !message) {
+    async SendSlackMessage(@Arg('data') {user_id, bayaction_id, message}: SlackInput) {
+        if (!message) {
             return false
         }
-        LinksModel.find({user: {id: user_id}, service: {name: "slack"}}).then(async (res) => {
-            let response_api = await publishMessage(channel_id, message, res[0].token)
-            return response_api.ok
+
+        return await BayActionModel.findOne({id: bayaction_id}).populate({
+            path: 'action_effect',
+            populate: {path: 'parameters', model: 'string'}
+        }).then(async (bayaction_res) => {
+            let effect = bayaction_res?.action_effect as UniqueAction
+
+            if (!effect.parameters) {
+                return false
+            }
+
+            return await LinksModel.findOne({user: {id: user_id}, service: {name: "slack"}})
+                .then(async (res) => {
+                    if (!res) {
+                        return false
+                    }
+
+                    let parameters = JSON.parse(effect.parameters)
+                    if (!parameters.channel_id) {
+                        return false
+                    }
+
+                    let response_api = await publishMessage(parameters.channel_id, message, res.token)
+                    return response_api.ok
+                })
         })
-        return false
     }
 }

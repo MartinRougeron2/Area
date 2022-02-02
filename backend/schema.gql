@@ -42,11 +42,13 @@ type Query {
 type Service {
   actions: BaseAction!
   id: ID!
+  in_url: String!
   name: String!
+  out_url: String!
 }
 
 input SlackInput {
-  channel_id: String!
+  bayaction_id: String!
   message: String!
   user_id: String!
 }
