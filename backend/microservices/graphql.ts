@@ -4,6 +4,7 @@ import {ApolloServerPluginLandingPageGraphQLPlayground} from 'apollo-server-core
 import 'reflect-metadata';
 import {buildSchema} from 'type-graphql';
 import {BaseActionResolver, UniqueActionResolver, BayActionResolver, ServiceResolver, UserResolver, LinksResolver} from "./resolvers";
+import {SlackOutResolver} from "./services/slack_out";
 
 
 module.exports = async function (app: Application) {
@@ -15,13 +16,14 @@ module.exports = async function (app: Application) {
             BayActionResolver,
             ServiceResolver,
             UserResolver,
-            LinksResolver
+            LinksResolver,
+            SlackOutResolver
         ],
         emitSchemaFile: true,
         validate: false,
     });
 
-    // create mongoose connection
+    //TODO create mongoose connection
 
     const server = new ApolloServer({
         schema,

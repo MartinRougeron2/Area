@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@slack/web-api": "^6.6.0",
     "@typegoose/typegoose": "^9.5.0",
     "apollo-server-core": "^3.6.2",
     "apollo-server-express": "^3.6.2",

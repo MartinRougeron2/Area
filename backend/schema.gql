@@ -12,16 +12,21 @@ type BaseAction {
 
 """Link between trigger and effect"""
 type BayAction {
-  action_effect: String!
-  action_trigger: String!
+  action_effect: UniqueAction!
+  action_trigger: UniqueAction!
   id: ID!
 }
 
 """Link Service & User"""
 type Links {
   id: ID!
-  service: String!
-  user: String!
+  service: Service!
+  token: String!
+  user: User!
+}
+
+type Mutation {
+  SendSlackMessage(data: SlackInput!): Boolean!
 }
 
 type Query {
@@ -35,14 +40,20 @@ type Query {
 
 """Services"""
 type Service {
-  actions: String!
+  actions: BaseAction!
   id: ID!
   name: String!
 }
 
+input SlackInput {
+  channel_id: String!
+  message: String!
+  user_id: String!
+}
+
 """Derivate from base with params"""
 type UniqueAction {
-  action: String!
+  action: BaseAction!
   id: ID!
   parameters: String!
 }
@@ -53,5 +64,5 @@ type User {
   id: ID!
   name: String!
   password: String!
-  user_actions: String!
+  user_actions: BayAction!
 }

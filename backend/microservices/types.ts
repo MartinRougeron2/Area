@@ -26,7 +26,7 @@ export class UniqueAction {
     @Property()
     parameters!: string
 
-    @Field((_type) => String)
+    @Field((_type) => BaseAction)
     @Property({ref: BaseAction})
     action: Ref<BaseAction>;
 }
@@ -36,11 +36,11 @@ export class BayAction {
     @Field(() => ID)
     id!: string;
 
-    @Field((_type) => String)
+    @Field((_type) => UniqueAction)
     @Property({ref: UniqueAction})
     action_trigger: Ref<UniqueAction>;
 
-    @Field((_type) => String)
+    @Field((_type) => UniqueAction)
     @Property({ref: UniqueAction})
     action_effect: Ref<UniqueAction>;
 }
@@ -54,7 +54,7 @@ export class Service {
     @Property()
     name!: String;
 
-    @Field((_type) => String)
+    @Field((_type) => BaseAction)
     @Property({ref: BaseAction})
     actions: Ref<BaseAction>;
 }
@@ -76,7 +76,7 @@ export class User {
     @Property()
     password!: string
 
-    @Field((_type) => String)
+    @Field((_type) => BayAction)
     @Property({ref: BayAction})
     user_actions: Ref<BayAction>;
 }
@@ -86,11 +86,15 @@ export class Links {
     @Field(() => ID)
     id!: string;
 
-    @Field((_type) => String)
+    @Field((_type) => User)
     @Property({ref: User})
     user: Ref<User>;
 
-    @Field((_type) => String)
+    @Field()
+    @Property()
+    token!: string
+
+    @Field((_type) => Service)
     @Property({ref: Service})
     service: Ref<Service>;
 
