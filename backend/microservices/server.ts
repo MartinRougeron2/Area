@@ -5,7 +5,7 @@ const port = 5000;
 
 
 app.listen(port, () => {
-  console.log(`micro-services is running on port ${port}.`);
+  console.log(`micro-services communication is running on port ${port}.`);
 });
 
-
+require('./graphql')(app);

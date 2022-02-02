@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "es6",
+    "module": "commonjs",
+    "rootDir": "./",
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "declaration": false,
+    "noFallthroughCasesInSwitch": true,
+    "composite": false,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es2016",
+      "esnext.asynciterable"
+    ],
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+  }
+}
