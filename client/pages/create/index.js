@@ -121,13 +121,14 @@ const DATA =   {
 //   }
 // }
 
-const DrawField = ({options, index, onChange, value}) => {
+const DrawField = ({options, setTested, index, onChange, value}) => {
   const updateValue = (val, index) => {
     let old = {...value}
     old[index] = val;
     if (val == "")
       delete old[index]
     onChange(old)
+    setTested(false)
   }
   return (
     <div className="pt-5">
@@ -137,7 +138,7 @@ const DrawField = ({options, index, onChange, value}) => {
   )
 }
 
-const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel}) => {
+const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setValueSel}) => {
   const evt = first ? DATA.from.service.happens : DATA.to.service.actions
   const [value, setValue] = useState(index != -1 ? evt[index].name : "")
 
@@ -145,7 +146,7 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel}) =
     setValue(value)
     setIndex(key)
     setValueSel({[0]: ""})
-
+    setTested(false)
   }
 
   return (
@@ -154,14 +155,14 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel}) =
       <DropDown actionlist={options} value={value} onChange={handleChange}></DropDown>
       {value && evt[index].options.map((elem, key) => {
         return (
-          <DrawField key={key} index={key} options={elem} onChange={setValueSel} value={valueSel}/>
+          <DrawField key={key} index={key} options={elem} setTested={setTested} onChange={setValueSel} value={valueSel}/>
         )
       })}
     </div>
   )
 }
 
-const Connect = ({data, connected, setConnected, first, index, setIndex, value, setValue, slideTo, slide}) => {
+const Connect = ({data, connected, setConnected, setTested, first, index, setIndex, value, setValue, slideTo, slide}) => {
   return (
     <div className="flex flex-col items-center p-5 h-full w-full">
       <h2 className="text-lg font-bold mt-6 mb-8">Connect your {data.service.name} account</h2>
@@ -175,7 +176,7 @@ const Connect = ({data, connected, setConnected, first, index, setIndex, value, 
             <MainButton text={connected ? "Connected" : "Connection"} color='dark' action={() => {setConnected(true)}}></MainButton>
           </div>
         </div>
-        {connected && (<DrawOptions options={first ? data.service.happens : data.service.actions} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue}/>)}
+        {connected && (<DrawOptions options={first ? data.service.happens : data.service.actions} setTested={setTested} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue}/>)}
       </div>
       <div className="flex w-full pt-7">
         {
@@ -200,11 +201,10 @@ export default function CreateBay() {
   const [indexTo, setIndexTo] = useState(-1)
   const [valueFrom, setValueFrom] = useState({})
   const [valueTo, setValueTo] = useState({})
-  const [slide, setSlide] = useState(0)
+  const [tested, setTested] = useState(false)
 
   const slideTo = (index) => {
     swiperRef.slideTo(index, 50);
-    setSlide(swiperRef.activeIndex)
   };
 
   const createBayData = () => {
@@ -243,9 +243,9 @@ export default function CreateBay() {
         cssMode={true}
         className="mySwiper"
       >
-        <SwiperSlide><Connect slide={0} slideTo={slideTo} data={DATA.from} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
-        <SwiperSlide><Connect slide={1} slideTo={slideTo} data={DATA.to} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
-        <SwiperSlide><TestBay slide={2} slideTo={slideTo} BayData={createBayData()}/></SwiperSlide>
+        <SwiperSlide><Connect slide={0} slideTo={slideTo} setTested={setTested} data={DATA.from} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
+        <SwiperSlide><Connect slide={1} slideTo={slideTo} setTested={setTested} data={DATA.to} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
+        <SwiperSlide><TestBay slide={2} slideTo={slideTo} BayData={createBayData()} tested={tested} setTested={setTested}/></SwiperSlide>
         <SwiperSlide>Slide 4</SwiperSlide>
       </Swiper>
     </div>
