@@ -12,6 +12,8 @@ import "swiper/css/navigation";
 // import required modules
 import DropDown from "../../components/dashboard/DropDown";
 import InputSimple from "../../components/utils/Input";
+import TestBay from "../../components/create/TestBay";
+
 import { Pagination, Navigation } from "swiper";
 
 const DATA =   {
@@ -67,13 +69,55 @@ const DATA =   {
   }
 }
 
+// service: {
+//   id: 0,
+//   name: "Youtube",
+//   icon: "/assets/Images/youtube.svg",
+//   happens: [{
+//     name: "New video",
+//     options: [{
+//       name: "Username",
+//       type: "textfield",
+//       description: "Watch for new videos by this username",
+//       required: true
+//     }, {
+//       name: "Username",
+//       type: "textfield",
+//       description: "Watch for new videos by this username",
+//       required: true
+//     }]
+//   }, {
+//     name: "New video",
+//     options: [{
+//       name: "Username",
+//       type: "textfield",
+//       description: "Watch for new videos by this username",
+//       required: true
+//     }]
+//   }],
+//   actions: [{}]
+// }
+
 // {
 //   from: {
+//     service: {},
 //     connected: false,
 //     happens: {
 //       index: 0,
-//       value: []
+//       value: {}
 //     }
+//   },
+//   to: {
+//     service: {},
+//     connected: false,
+//     happens: {
+//       index: 0,
+//       value: {}
+//     }
+//   }
+//   data: {
+//     active: true,
+//     description: "Upload vidéo on comment"
 //   }
 // }
 
@@ -81,6 +125,8 @@ const DrawField = ({options, index, onChange, value}) => {
   const updateValue = (val, index) => {
     let old = {...value}
     old[index] = val;
+    if (val == "")
+      delete old[index]
     onChange(old)
   }
   return (
@@ -99,6 +145,7 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel}) =
     setValue(value)
     setIndex(key)
     setValueSel({[0]: ""})
+
   }
 
   return (
@@ -151,14 +198,40 @@ export default function CreateBay() {
   const [indexFrom, setIndexFrom] = useState(-1)
   const [connectedTo, setConnectedTo] = useState(false)
   const [indexTo, setIndexTo] = useState(-1)
-  const [valueFrom, setValueFrom] = useState({[0]: ""})
-  const [valueTo, setValueTo] = useState({[0]: ""})
+  const [valueFrom, setValueFrom] = useState({})
+  const [valueTo, setValueTo] = useState({})
   const [slide, setSlide] = useState(0)
 
   const slideTo = (index) => {
     swiperRef.slideTo(index, 50);
     setSlide(swiperRef.activeIndex)
   };
+
+  const createBayData = () => {
+    let obj = {
+      from: {
+        service: DATA.from.service,
+        connected: connectedFrom,
+        happens: {
+          index: indexFrom,
+          value: valueFrom
+        }
+      },
+      to: {
+        service: DATA.to.service,
+        connected: connectedTo,
+        actions: {
+          index: indexTo,
+          value: valueTo
+        }
+      },
+      data: {
+        active: false,
+        description: "Default title"
+      }
+    }
+    return obj;
+  }
 
   return (
     <div className="flex flex-col h-screen w-[100%] p-10">
@@ -172,7 +245,7 @@ export default function CreateBay() {
       >
         <SwiperSlide><Connect slide={0} slideTo={slideTo} data={DATA.from} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
         <SwiperSlide><Connect slide={1} slideTo={slideTo} data={DATA.to} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
-        <SwiperSlide>Slide 3</SwiperSlide>
+        <SwiperSlide><TestBay slide={2} slideTo={slideTo} BayData={createBayData()}/></SwiperSlide>
         <SwiperSlide>Slide 4</SwiperSlide>
       </Swiper>
     </div>
