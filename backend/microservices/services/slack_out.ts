@@ -46,19 +46,19 @@ export class SlackOutResolver {
                 return false
             }
 
-            return await LinksModel.findOne({user: {id: user_id}, service: {name: "slack"}})
+            return await LinksModel.findOne({action: {id: effect.id}})
                 .then(async (res) => {
                     if (!res) {
                         return false
                     }
 
                     let parameters = JSON.parse(effect.parameters)
-                    const token = parameters.token.split("|")[0]
+                    const tokens = parameters.token.split("|") // cf slack_oauth:35
                     if (!parameters.channel_id) {
                         return false
                     }
 
-                    const result_post = await publishMessage(parameters.channel_id, message, token)
+                    const result_post = await publishMessage(parameters.channel_id, message, tokens[0])
                     console.log(result_post)
                     return result_post.ok
                 })
