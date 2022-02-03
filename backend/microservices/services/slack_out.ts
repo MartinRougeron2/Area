@@ -1,5 +1,5 @@
-import {Arg, Field, InputType, Mutation, Resolver} from 'type-graphql';
-import {BayActionModel, LinksModel, UniqueAction} from "../types";
+import {Arg, Mutation, Resolver} from 'type-graphql';
+import {BayActionModel, CommunicationInput, LinksModel, UniqueAction} from "../types";
 import {ChatPostMessageResponse} from "@slack/web-api/dist/response/ChatPostMessageResponse";
 
 const {WebClient, LogLevel} = require("@slack/web-api");
@@ -10,36 +10,31 @@ async function publishMessage(id: string, text: string, token: string): Promise<
     const client = new WebClient(token, {
         // LogLevel can be imported and used to make debugging simpler
         logLevel: LogLevel.DEBUG
-    });
+    }) as typeof WebClient;
 
-    return client.chat.postMessage({
-        token: token,
+    return await client.chat.postMessage({
         channel: id,
-        text: text
+        text: text,
+        token: token,
     })
-
-}
-
-@InputType()
-export class SlackInput {
-    @Field()
-    user_id!: string;
-
-    @Field()
-    bayaction_id!: string;
-
-    @Field()
-    message!: string;
 }
 
 
 @Resolver()
 export class SlackOutResolver {
     @Mutation(() => Boolean)
-    async SendSlackMessage(@Arg('data') {user_id, bayaction_id, message}: SlackInput) {
+    async SendSlackMessage(@Arg('data') {user_id, bayaction_id, message}: CommunicationInput) {
         if (!message) {
             return false
         }
+
+        if (user_id || bayaction_id) {
+            return false
+        }
+
+        const result_post = await publishMessage("C031J8D5C84", message, "xoxe.xoxb-1-MS0yLTMwNzM3Mjg2MTA0OTYtMzAzNjMwMDE1MTM5OS0zMDQ4MDEwNTAyMTk3LTMwMzY2NDM4NDgyMzEtYzllMmZhZWQ3YmE0MjNiNWY3MzBmMGY1OThlZjhiZWZjZGQ2OGYzMjBlZWExNTNhNDA3MDNlZWUyY2JhZDAxYQ")
+        console.log(result_post)
+        return result_post.ok
 
         return await BayActionModel.findOne({id: bayaction_id}).populate({
             path: 'action_effect',
@@ -58,12 +53,14 @@ export class SlackOutResolver {
                     }
 
                     let parameters = JSON.parse(effect.parameters)
+                    const token = parameters.token.split("|")[0]
                     if (!parameters.channel_id) {
                         return false
                     }
 
-                    let response_api = await publishMessage(parameters.channel_id, message, res.token)
-                    return response_api.ok
+                    const result_post = await publishMessage(parameters.channel_id, message, token)
+                    console.log(result_post)
+                    return result_post.ok
                 })
         })
     }

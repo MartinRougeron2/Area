@@ -1,4 +1,4 @@
-import {ObjectType, Field, ID} from 'type-graphql';
+import {ObjectType, Field, ID, InputType} from 'type-graphql';
 import {prop as Property, getModelForClass, Ref} from '@typegoose/typegoose';
 import {__Type} from 'graphql';
 
@@ -94,18 +94,26 @@ export class Links {
     @Field(() => ID)
     id!: string;
 
-    @Field((_type) => User)
-    @Property({ref: User})
-    user: Ref<User>;
-
     @Field()
     @Property()
     token!: string
 
-    @Field((_type) => Service)
-    @Property({ref: Service})
-    service: Ref<Service>;
+    @Field((_type) => UniqueAction)
+    @Property({ref: UniqueAction})
+    action: Ref<UniqueAction>;
 
+}
+
+@InputType()
+export class CommunicationInput {
+    @Field()
+    user_id!: string;
+
+    @Field()
+    bayaction_id!: string;
+
+    @Field()
+    message!: string;
 }
 
 const BaseActionModel = getModelForClass(BaseAction);

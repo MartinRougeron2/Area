@@ -17,16 +17,21 @@ type BayAction {
   id: ID!
 }
 
+input CommunicationInput {
+  bayaction_id: String!
+  message: String!
+  user_id: String!
+}
+
 """Link Service & User"""
 type Links {
+  action: UniqueAction!
   id: ID!
-  service: Service!
   token: String!
-  user: User!
 }
 
 type Mutation {
-  SendSlackMessage(data: SlackInput!): Boolean!
+  SendSlackMessage(data: CommunicationInput!): Boolean!
 }
 
 type Query {
@@ -45,12 +50,6 @@ type Service {
   in_url: String!
   name: String!
   out_url: String!
-}
-
-input SlackInput {
-  bayaction_id: String!
-  message: String!
-  user_id: String!
 }
 
 """Derivate from base with params"""
