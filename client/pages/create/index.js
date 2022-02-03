@@ -10,6 +10,8 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 
 // import required modules
+import DropDown from "../../components/dashboard/DropDown";
+import InputSimple from "../../components/utils/Input";
 import { Pagination, Navigation } from "swiper";
 
 const DATA =   {
@@ -18,6 +20,29 @@ const DATA =   {
       id: 0,
       name: "Youtube",
       icon: "/assets/Images/youtube.svg",
+      happens: [{
+        name: "New video",
+        options: [{
+          name: "Username",
+          type: "textfield",
+          description: "Watch for new videos by this username",
+          required: true
+        }, {
+          name: "Username",
+          type: "textfield",
+          description: "Watch for new videos by this username",
+          required: true
+        }]
+      }, {
+        name: "New video",
+        options: [{
+          name: "Username",
+          type: "textfield",
+          description: "Watch for new videos by this username",
+          required: true
+        }]
+      }],
+      actions: [{}]
     }
   },
   to: {
@@ -25,6 +50,15 @@ const DATA =   {
       id: 2,
       name: "Twitter",
       icon: "/assets/Images/youtube.svg",
+      actions: [{
+        name: "New video",
+        options: [{
+          name: "Username",
+          type: "textfield",
+          description: "Watch for new videos by this username",
+          required: true
+        }]
+      }]
     }
   },
   data: {
@@ -33,29 +67,98 @@ const DATA =   {
   }
 }
 
-export default function CreateBay() {
-  const [swiperRef, setSwiperRef] = useState(null);
+// {
+//   from: {
+//     connected: false,
+//     happens: {
+//       index: 0,
+//       value: []
+//     }
+//   }
+// }
 
-  const slideTo = (index) => {
-    swiperRef.slideTo(index - 1, 50);
-  };
+const DrawField = ({options, index, onChange, value}) => {
+  const updateValue = (val, index) => {
+    let old = {...value}
+    old[index] = val;
+    onChange(old)
+  }
+  return (
+    <div className="pt-5">
+      <InputSimple name={options.name} value={value[index]} onChange={(val) => updateValue(val, index)}></InputSimple>
+      <span className="text-sm">{options.description}</span>
+    </div>
+  )
+}
 
-  const ConnectFirst = ({data}) => {
-    return (
-      <div className="flex flex-col items-center p-5 h-full w-full">
-        <h2 className="text-lg font-bold mt-6 mb-8">Connect your {data.service.name} account</h2>
-        <div className="flex flex-row w-full drop-shadow-lg bg-white rounded p-5 mb-5 items-center justify-between">
+const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel}) => {
+  const evt = first ? DATA.from.service.happens : DATA.to.service.actions
+  const [value, setValue] = useState(index != -1 ? evt[index].name : "")
+
+  const handleChange = (value, key) => {
+    setValue(value)
+    setIndex(key)
+    setValueSel({[0]: ""})
+  }
+
+  return (
+    <div className="flex flex-col items-start">
+      <span className="text-sm italic font-bold">When this happen...</span>
+      <DropDown actionlist={options} value={value} onChange={handleChange}></DropDown>
+      {value && evt[index].options.map((elem, key) => {
+        return (
+          <DrawField key={key} index={key} options={elem} onChange={setValueSel} value={valueSel}/>
+        )
+      })}
+    </div>
+  )
+}
+
+const Connect = ({data, connected, setConnected, first, index, setIndex, value, setValue, slideTo, slide}) => {
+  return (
+    <div className="flex flex-col items-center p-5 h-full w-full">
+      <h2 className="text-lg font-bold mt-6 mb-8">Connect your {data.service.name} account</h2>
+      <div className="w-full drop-shadow-lg bg-white rounded p-5 mb-5">
+        <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center justify-center flex-nowrap">
             <img src={data.service.icon} className="w-20"/>
             <span className="text-md p-5">Connexion a {data.service.name}</span>
           </div>
           <div className="flex">
-            <MainButton text="Connexion" color='light'></MainButton>
+            <MainButton text={connected ? "Connected" : "Connection"} color='dark' action={() => {setConnected(true)}}></MainButton>
           </div>
         </div>
+        {connected && (<DrawOptions options={first ? data.service.happens : data.service.actions} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue}/>)}
       </div>
-    )
-  }
+      <div className="flex w-full pt-7">
+        {
+        slide != 0 &&
+        <div className="flex w-full justify-start">
+          <MainButton text={"Back"} color='light' action={() => {slideTo(slide - 1)}}></MainButton>
+        </div>
+        }
+        <div className="flex w-full justify-end">
+          <MainButton text={"Next"} color='light' action={() => {slideTo(slide + 1)}}></MainButton>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function CreateBay() {
+  const [swiperRef, setSwiperRef] = useState(null);
+  const [connectedFrom, setConnectedFrom] = useState(false)
+  const [indexFrom, setIndexFrom] = useState(-1)
+  const [connectedTo, setConnectedTo] = useState(false)
+  const [indexTo, setIndexTo] = useState(-1)
+  const [valueFrom, setValueFrom] = useState({[0]: ""})
+  const [valueTo, setValueTo] = useState({[0]: ""})
+  const [slide, setSlide] = useState(0)
+
+  const slideTo = (index) => {
+    swiperRef.slideTo(index, 50);
+    setSlide(swiperRef.activeIndex)
+  };
 
   return (
     <div className="flex flex-col h-screen w-[100%] p-10">
@@ -67,8 +170,8 @@ export default function CreateBay() {
         cssMode={true}
         className="mySwiper"
       >
-        <SwiperSlide><ConnectFirst data={DATA.from}/></SwiperSlide>
-        <SwiperSlide><ConnectFirst data={DATA.to}/></SwiperSlide>
+        <SwiperSlide><Connect slide={0} slideTo={slideTo} data={DATA.from} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
+        <SwiperSlide><Connect slide={1} slideTo={slideTo} data={DATA.to} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
         <SwiperSlide>Slide 3</SwiperSlide>
         <SwiperSlide>Slide 4</SwiperSlide>
       </Swiper>

@@ -33,7 +33,7 @@ const DashboardPage = () => {
         <div className="bg-white w-full drop-shadow-md mt-8 p-5">
           <h2 className="text-md font-medium">Selectionnez une action</h2>
           <div className="flex flex-row w-full justify-around items-center">
-            <DropDown actionlist={ACTIONLIST}/>
+            <DropDown actionlist={ACTIONLIST}/> 
             <RoundButton icon={"/assets/Images/arrow-right.svg"}/>
             <DropDown actionlist={ACTIONLIST}/>
           </div>
