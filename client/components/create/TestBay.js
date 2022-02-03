@@ -77,7 +77,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
         </div>
       ) :
       <div className="w-full drop-shadow-lg bg-white rounded p-5 mb-5 w-[80%]">
-        <div className="flex flex-row items-center text-center justify-between mb-10">
+        <div className="flex flex-row items-center text-center justify-between">
           <div className='flex flex-row justify-around w-[40%]'>
             <img className="w-[20%]" src={BayData.from.service.icon} />
             <div className='flex flex-col items-start'>
@@ -105,19 +105,19 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
           </div>
         </div>
         {duringtest.running &&
-          <div className='flex items-center justify-center bg-light border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10'>
+          <div className='flex items-center justify-center bg-light border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10 mt-10'>
             <Spinner/>
           </div>
         }
         {(duringtest.success == 0 && !tested) &&
-          <div className='flex items-center justify-center bg-red border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10'>
+          <div className='flex items-center justify-center bg-red border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10 mt-10'>
             <span className='flex font-bold text-sm'>
               {duringtest.message}
             </span>
           </div>
         }
         {(duringtest.success == 1 && tested) &&
-          <div className='flex items-center justify-center bg-light border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10'>
+          <div className='flex items-center justify-center bg-light border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mt-10 mb-10'>
             <span className='flex font-bold text-sm'>
               {duringtest.message}
             </span>
@@ -134,7 +134,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
           <MainButton text={"Next"} color='light' action={() => {slideTo(slide + 1)}}></MainButton>
         </div> :
         <div className="flex w-full justify-end">
-          <MainButton text={"Test"} disable={duringtest.running} color='dark' action={() => {playTest()}}></MainButton>
+          <MainButton text={"Test"} disable={duringtest.running || checkError.error} color='dark' action={() => {playTest()}}></MainButton>
         </div>
         }
       </div>
