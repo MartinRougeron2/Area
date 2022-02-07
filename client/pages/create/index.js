@@ -140,10 +140,8 @@ const DrawField = ({options, setTested, index, onChange, value}) => {
 
 const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setValueSel}) => {
   const evt = first ? DATA.from.service.happens : DATA.to.service.actions
-  const [value, setValue] = useState(index != -1 ? evt[index].name : "")
 
-  const handleChange = (value, key) => {
-    setValue(value)
+  const handleChange = (key) => {
     setIndex(key)
     setValueSel({[0]: ""})
     setTested(false)
@@ -152,8 +150,8 @@ const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setV
   return (
     <div className="flex flex-col items-start">
       <span className="text-sm italic font-bold">When this happen...</span>
-      <DropDown actionlist={options} value={value} onChange={handleChange}></DropDown>
-      {value && evt[index].options.map((elem, key) => {
+      <DropDown actionlist={options} value={index} onChange={handleChange}/>
+      {(index !== -1) && evt[index].options.map((elem, key) => {
         return (
           <DrawField key={key} index={key} options={elem} setTested={setTested} onChange={setValueSel} value={valueSel}/>
         )

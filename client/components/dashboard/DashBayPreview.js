@@ -7,7 +7,7 @@ import { EditText } from "react-edit-text";
 
 const DashBayPreview = ({ bay }) => {
   const { data, from, to } = bay;
-  const [activated, setActive] = useState(data.activated);
+  const [activated, setActive] = useState(data.active);
 
   const switchClick = (check) => {
     setActive(check);
@@ -22,10 +22,10 @@ const DashBayPreview = ({ bay }) => {
   };
 
   return (
-    <div className="flex flex-row w-full drop-shadow-lg bg-white rounded p-5 mb-5 justify-between">
-      <div className="flex flex-row items-center">
+    <div className="flex flex-row w-full h-[15%] drop-shadow-lg bg-white rounded p-5 mb-5 justify-between">
+      <div className="flex flex-row items-center w-[15%]">
         <img className="w-full" src={from.service.icon} />
-        <div className="flex bg-dark rounded-full h-6 w-12 items-center justify-center">
+        <div className="flex bg-dark rounded-full w-[50%] items-center justify-center">
           <img src={"/assets/Images/arrow-right.svg"} />
         </div>
         <img className="w-full" src={to.service.icon} />
