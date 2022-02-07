@@ -1,6 +1,6 @@
 import {ObjectType, Field, ID, InputType} from 'type-graphql';
 import {prop as Property, getModelForClass, Ref} from '@typegoose/typegoose';
-import {__Type} from 'graphql';
+import {OneToMany} from "typeorm";
 
 
 @ObjectType({description: 'BaseAction'})
@@ -25,6 +25,10 @@ export class UniqueAction {
     @Field()
     @Property()
     parameters!: string
+
+    @Field()
+    @Property()
+    old_values?: string
 
     @Field((_type) => BaseAction)
     @Property({ref: BaseAction})
@@ -62,9 +66,10 @@ export class Service {
     @Property()
     in_url!: String;
 
-    @Field((_type) => BaseAction)
-    @Property({ref: BaseAction})
-    actions: Ref<BaseAction>;
+    @Field((_type) => [BaseAction])
+    // @ts-ignore type unused
+    @OneToMany(type => BaseAction, action => action.id)
+    actions?: BaseAction[];
 }
 
 @ObjectType({description: 'User'})
@@ -84,9 +89,9 @@ export class User {
     @Property()
     password!: string
 
-    @Field((_type) => BayAction)
+    @Field((_type) => [BayAction])
     @Property({ref: BayAction})
-    user_actions: Ref<BayAction>;
+    user_actions: Ref<[BayAction]>;
 }
 
 @ObjectType({description: 'Link Service & User'})

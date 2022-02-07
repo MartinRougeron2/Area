@@ -23,6 +23,23 @@ input CommunicationInput {
   user_id: String!
 }
 
+input InputBaseAction {
+  name: String!
+  options: String!
+}
+
+input InputService {
+  in_url: String!
+  name: String!
+  out_url: String!
+}
+
+input InputUser {
+  email: String!
+  name: String!
+  password: String!
+}
+
 """Link Service & User"""
 type Links {
   action: UniqueAction!
@@ -31,6 +48,12 @@ type Links {
 }
 
 type Mutation {
+  CreateBaseAction(data: InputBaseAction!): BaseAction
+  CreateBayActionById(id: String!): BayAction
+  CreateLinksById(id: String!): Links
+  CreateService(data: InputService!): Service
+  CreateUniqueActionByBaseActionId(id: String!): UniqueAction
+  CreateUser(data: InputUser!): ResultUser
   SendSlackMessage(data: CommunicationInput!): Boolean!
 }
 
@@ -43,9 +66,14 @@ type Query {
   GetUserById(id: String!): User
 }
 
+type ResultUser {
+  is_new: Boolean!
+  user: User!
+}
+
 """Services"""
 type Service {
-  actions: BaseAction!
+  actions: [BaseAction!]!
   id: ID!
   in_url: String!
   name: String!
@@ -56,6 +84,7 @@ type Service {
 type UniqueAction {
   action: BaseAction!
   id: ID!
+  old_values: String!
   parameters: String!
 }
 
@@ -65,5 +94,5 @@ type User {
   id: ID!
   name: String!
   password: String!
-  user_actions: BayAction!
+  user_actions: [BayAction!]!
 }

@@ -52,7 +52,10 @@ module.exports = (app: any) => {
         try {
             // feel free to modify the scopes
             const url = await installer.generateInstallUrl({
-                scopes: ['calls:read', 'incoming-webhook', 'chat:write'],
+                scopes: [
+                    'incoming-webhook', 'chat:write',
+                    'calls:read', 'channels:read', 'groups:read', 'mpim:read', 'im:read',
+                    'channels:history', 'groups:history', 'im:history', 'mpim:history'],
                 metadata: 'reno',
                 redirectUri: 'https://localhost:3000/auth/slack-redirect'
             })

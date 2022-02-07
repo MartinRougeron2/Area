@@ -24,17 +24,10 @@ async function publishMessage(id: string, text: string, token: string): Promise<
 export class SlackOutResolver {
     @Mutation(() => Boolean)
     async SendSlackMessage(@Arg('data') {user_id, bayaction_id, message}: CommunicationInput) {
-        if (!message) {
-            return false
-        }
 
-        if (user_id || bayaction_id) {
-            return false
-        }
-
-        const result_post = await publishMessage("C031J8D5C84", message, "xoxe.xoxb-1-MS0yLTMwNzM3Mjg2MTA0OTYtMzAzNjMwMDE1MTM5OS0zMDQ4MDEwNTAyMTk3LTMwMzY2NDM4NDgyMzEtYzllMmZhZWQ3YmE0MjNiNWY3MzBmMGY1OThlZjhiZWZjZGQ2OGYzMjBlZWExNTNhNDA3MDNlZWUyY2JhZDAxYQ")
-        console.log(result_post)
-        return result_post.ok
+        // const result_post = await publishMessage("C031J8D5C84", message, "xoxe.xoxb-1-MS0yLTMwNzM3Mjg2MTA0OTYtMzAzNjMwMDE1MTM5OS0zMDQ4MDEwNTAyMTk3LTMwMzY2NDM4NDgyMzEtYzllMmZhZWQ3YmE0MjNiNWY3MzBmMGY1OThlZjhiZWZjZGQ2OGYzMjBlZWExNTNhNDA3MDNlZWUyY2JhZDAxYQ")
+        // console.log(result_post)
+        // return result_post.ok
 
         return await BayActionModel.findOne({id: bayaction_id}).populate({
             path: 'action_effect',
@@ -57,6 +50,8 @@ export class SlackOutResolver {
                     if (!parameters.channel_id) {
                         return false
                     }
+
+                    if (user_id) console.log(user_id)
 
                     const result_post = await publishMessage(parameters.channel_id, message, tokens[0])
                     console.log(result_post)
