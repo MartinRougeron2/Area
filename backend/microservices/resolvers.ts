@@ -58,6 +58,25 @@ class InputBaseActionAttach {
     baseaction_id!: string
 }
 
+@InputType()
+class InputLink {
+    @Field()
+    action_id!: string
+
+    @Field()
+    token!: string
+}
+
+@InputType()
+class InputBayAction {
+    @Field()
+    action_trigger_id!: string
+
+    @Field()
+    action_effect_id!: string
+}
+
+
 @Resolver()
 export class BaseActionResolver {
     @Mutation((_returns) => BaseAction, {nullable: true})
@@ -76,23 +95,16 @@ export class BaseActionResolver {
 
         if (!service) return null // null verif
 
-
-        console.log(service.actions)
         await service.populate({
             path: 'actions',
         })
 
         const baseAction = await BaseActionModel.findOne({id: baseaction_id}).then((res) => res)
-
         if (!service) return null// null verif
-
         if (!baseAction) return null // null verif
 
-        // @ts-ignore
         service.actions?.push(baseAction)
-        console.log(service)
         await service.save()
-        console.log(service)
         return service
     }
 
@@ -143,30 +155,19 @@ export class UniqueActionResolver {
 @Resolver()
 export class BayActionResolver {
     @Mutation((_returns) => BayAction, {nullable: true})
-    async CreateBayActionById(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        const obj = await BayActionModel.findOne({id: id}).then((res) => {
-            if (!res) return null
-            return res
+    async CreateBayAction(@Arg('data') {action_trigger_id, action_effect_id}: InputBayAction) {
+        const newBay = await BayActionModel.create({
+            action_trigger: UniqueActionModel.findOne({id: action_trigger_id}).then((res) => res),
+            action_effect: UniqueActionModel.findOne({id: action_effect_id}).then((res) => res),
         })
-        if (obj) return obj
-        return await BayActionModel.create({
-            id: id,
-        })
+        await newBay.save()
+        return newBay
     }
 
 
     @Query((_returns) => BayAction, {nullable: true})
-    async GetBayActionById(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        return await BayActionModel.findOne({id: id}).then((res) => {
-            if (!res) return null
-            return res
-        })
+    async GetBayActionById(@Arg('id') id: string) {
+        return await BayActionModel.findOne({id: id}).then((res) => res)
     }
 }
 
@@ -186,21 +187,13 @@ export class ServiceResolver {
 
 
     @Query((_returns) => Service, {nullable: true})
-    async GetServiceById(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        return await ServiceModel.findOne({id: id}).then((res) => {
-            if (!res) return null
-            return res
-        })
+    async GetServiceById(@Arg('id') id: string) {
+        return await ServiceModel.findOne({id: id}).then((res) => res)
     }
 
     @Query((_returns) => [Service], {nullable: true})
     async GetAllServices() {
-        const services = await ServiceModel.find({}).populate('actions').then((res) => res);
-        console.log("services", services)
-        return services
+        return await ServiceModel.find({}).populate('actions').then((res) => res);
     }
 }
 
@@ -246,32 +239,25 @@ export class UserResolver {
 @Resolver()
 export class LinksResolver {
     @Mutation((_returns) => Links, {nullable: true})
-    async CreateLinksById(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        const obj = await LinksModel.findOne({id: id}).then((res) => {
+    async CreateLinksWithActionId(@Arg('data') {action_id, token}: InputLink) {
+        const obj = await LinksModel.create({action: {id: action_id}}).then((res) => {
             if (!res) return null
+            res.token = token
+            res.save()
             return res
         })
         if (obj) return obj
         const newLink = await LinksModel.create({
-            id: id,
+            action: UniqueActionModel.findOne({id: action_id}),
+            token: token
         })
-
         await newLink.save()
         return newLink
     }
 
 
     @Query((_returns) => Links, {nullable: true})
-    async GetLinksById(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        return await LinksModel.findOne({id: id}).then((res) => {
-            if (!res) return null
-            return res
-        })
+    async GetLinksById(@Arg('id') id: string) {
+        return await LinksModel.findOne({id: id}).then((res) => res)
     }
 }

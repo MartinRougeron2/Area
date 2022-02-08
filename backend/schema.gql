@@ -33,6 +33,16 @@ input InputBaseActionAttach {
   service_id: String!
 }
 
+input InputBayAction {
+  action_effect_id: String!
+  action_trigger_id: String!
+}
+
+input InputLink {
+  action_id: String!
+  token: String!
+}
+
 input InputService {
   in_url: String!
   name: String!
@@ -55,8 +65,8 @@ type Links {
 type Mutation {
   AttachBaseAction(data: InputBaseActionAttach!): Service
   CreateBaseAction(data: InputBaseAction!): BaseAction
-  CreateBayActionById(id: String!): BayAction
-  CreateLinksById(id: String!): Links
+  CreateBayAction(data: InputBayAction!): BayAction
+  CreateLinksWithActionId(data: InputLink!): Links
   CreateService(data: InputService!): Service
   CreateUniqueActionByBaseActionId(id: String!): UniqueAction
   CreateUser(data: InputUser!): ResultUser
