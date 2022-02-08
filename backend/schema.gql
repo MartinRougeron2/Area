@@ -28,6 +28,11 @@ input InputBaseAction {
   options: String!
 }
 
+input InputBaseActionAttach {
+  baseaction_id: String!
+  service_id: String!
+}
+
 input InputService {
   in_url: String!
   name: String!
@@ -48,6 +53,7 @@ type Links {
 }
 
 type Mutation {
+  AttachBaseAction(data: InputBaseActionAttach!): Service
   CreateBaseAction(data: InputBaseAction!): BaseAction
   CreateBayActionById(id: String!): BayAction
   CreateLinksById(id: String!): Links
@@ -58,6 +64,7 @@ type Mutation {
 }
 
 type Query {
+  GetAllServices: [Service!]
   GetBaseActionById(id: String!): BaseAction
   GetBayActionById(id: String!): BayAction
   GetLinksById(id: String!): Links
@@ -94,5 +101,5 @@ type User {
   id: ID!
   name: String!
   password: String!
-  user_actions: [BayAction!]!
+  user_actions: [BaseAction!]!
 }

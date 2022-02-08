@@ -1,6 +1,5 @@
 import {ObjectType, Field, ID, InputType} from 'type-graphql';
 import {prop as Property, getModelForClass, Ref} from '@typegoose/typegoose';
-import {OneToMany} from "typeorm";
 
 
 @ObjectType({description: 'BaseAction'})
@@ -30,9 +29,9 @@ export class UniqueAction {
     @Property()
     old_values?: string
 
-    @Field((_type) => BaseAction)
-    @Property({ref: BaseAction})
-    action: Ref<BaseAction>;
+    @Field(() => BaseAction)
+    @Property({ref: () => BaseAction})
+    public action!: Ref<BaseAction>;
 }
 
 @ObjectType({description: 'Link between trigger and effect'})
@@ -40,13 +39,13 @@ export class BayAction {
     @Field(() => ID)
     id!: string;
 
-    @Field((_type) => UniqueAction)
-    @Property({ref: UniqueAction})
-    action_trigger: Ref<UniqueAction>;
+    @Field(() => UniqueAction)
+    @Property({ref: () => UniqueAction})
+    public action_trigger!: Ref<UniqueAction>;
 
-    @Field((_type) => UniqueAction)
-    @Property({ref: UniqueAction})
-    action_effect: Ref<UniqueAction>;
+    @Field(() => UniqueAction)
+    @Property({ref: () => UniqueAction})
+    public action_effect!: Ref<UniqueAction>;
 }
 
 @ObjectType({description: 'Services'})
@@ -66,10 +65,9 @@ export class Service {
     @Property()
     in_url!: String;
 
-    @Field((_type) => [BaseAction])
-    // @ts-ignore type unused
-    @OneToMany(type => BaseAction, action => action.id)
-    actions?: BaseAction[];
+    @Field(() => [BaseAction])
+    @Property({ref: () => BaseAction})
+    public actions?: Ref<BaseAction>[];
 }
 
 @ObjectType({description: 'User'})
@@ -89,9 +87,9 @@ export class User {
     @Property()
     password!: string
 
-    @Field((_type) => [BayAction])
-    @Property({ref: BayAction})
-    user_actions: Ref<[BayAction]>;
+    @Field(() => [BaseAction])
+    @Property({ref: () => BayAction})
+    public user_actions!: Ref<BayAction>[];
 }
 
 @ObjectType({description: 'Link Service & User'})
@@ -103,10 +101,9 @@ export class Links {
     @Property()
     token!: string
 
-    @Field((_type) => UniqueAction)
-    @Property({ref: UniqueAction})
-    action: Ref<UniqueAction>;
-
+    @Field(() => UniqueAction)
+    @Property({ref: () => UniqueAction})
+    public action!: Ref<UniqueAction>;
 }
 
 @InputType()
@@ -121,7 +118,7 @@ export class CommunicationInput {
     message!: string;
 }
 
-const BaseActionModel = getModelForClass(BaseAction);
+const BaseActionModel = getModelForClass(BaseAction, {schemaOptions: {}});
 const UniqueActionModel = getModelForClass(UniqueAction);
 const BayActionModel = getModelForClass(BayAction);
 const ServiceModel = getModelForClass(Service);

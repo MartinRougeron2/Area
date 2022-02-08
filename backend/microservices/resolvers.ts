@@ -49,16 +49,51 @@ class InputBaseAction {
     options?: string
 }
 
+@InputType()
+class InputBaseActionAttach {
+    @Field()
+    service_id!: string
+
+    @Field()
+    baseaction_id!: string
+}
+
 @Resolver()
 export class BaseActionResolver {
     @Mutation((_returns) => BaseAction, {nullable: true})
-    async CreateBaseAction(@Arg('data') {name, options} : InputBaseAction) {
+    async CreateBaseAction(@Arg('data') {name, options}: InputBaseAction) {
         const newAction = await BaseActionModel.create({
             name: name,
             options: options ?? ""
         })
         await newAction.save()
         return newAction
+    }
+
+    @Mutation((_returns) => Service, {nullable: true})
+    async AttachBaseAction(@Arg('data') {service_id, baseaction_id}: InputBaseActionAttach): Promise<Service | null> {
+        const service = await ServiceModel.findOne({id: service_id}).then((service) => service)
+
+        if (!service) return null // null verif
+
+
+        console.log(service.actions)
+        await service.populate({
+            path: 'actions',
+        })
+
+        const baseAction = await BaseActionModel.findOne({id: baseaction_id}).then((res) => res)
+
+        if (!service) return null// null verif
+
+        if (!baseAction) return null // null verif
+
+        // @ts-ignore
+        service.actions?.push(baseAction)
+        console.log(service)
+        await service.save()
+        console.log(service)
+        return service
     }
 
 
@@ -142,7 +177,8 @@ export class ServiceResolver {
         const newService = await ServiceModel.create({
             name: name,
             in_url: in_url,
-            out_url: out_url
+            out_url: out_url,
+            actions: []
         })
         await newService.save()
         return newService
@@ -159,6 +195,13 @@ export class ServiceResolver {
             return res
         })
     }
+
+    @Query((_returns) => [Service], {nullable: true})
+    async GetAllServices() {
+        const services = await ServiceModel.find({}).populate('actions').then((res) => res);
+        console.log("services", services)
+        return services
+    }
 }
 
 @Resolver()
@@ -170,7 +213,7 @@ export class UserResolver {
             if (!res) return null
             return res
         })
-        if (typeof obj == typeof User) {
+        if (obj) {
             resUser.user = obj as User
             resUser.is_new = false
             return resUser

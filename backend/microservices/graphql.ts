@@ -29,7 +29,7 @@ module.exports = async function (app: Application) {
             SlackOutResolver
         ],
         emitSchemaFile: true,
-        validate: false,
+        validate: true,
     });
 
     //TODO create mongoose connection

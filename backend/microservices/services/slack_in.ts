@@ -42,7 +42,8 @@ var task = cron.schedule('* * * * *', () => {
     }).then((res) => {
         if (!res?.actions) return // null verif
 
-        res.actions?.forEach((action: BaseAction) => {
+        // @ts-ignore
+        res.actions.forEach((action: BaseAction) => {
             if (!action.id) return // null verif
 
             UniqueActionModel.find({action: {id: action.id}}).then((res_unique_actions) => {
