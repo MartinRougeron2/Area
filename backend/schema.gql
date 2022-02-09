@@ -68,7 +68,7 @@ type Mutation {
   CreateBayAction(data: InputBayAction!): BayAction
   CreateLinksWithActionId(data: InputLink!): Links
   CreateService(data: InputService!): Service
-  CreateUniqueActionByBaseActionId(id: String!): UniqueAction
+  CreateUniqueActionByBaseActionId(data: UniqueActionInput!): UniqueAction
   CreateUser(data: InputUser!): ResultUser
   SendSlackMessage(data: CommunicationInput!): Boolean!
 }
@@ -101,6 +101,12 @@ type Service {
 type UniqueAction {
   action: BaseAction!
   id: ID!
+  old_values: String!
+  parameters: String!
+}
+
+input UniqueActionInput {
+  action_id: String!
   old_values: String!
   parameters: String!
 }

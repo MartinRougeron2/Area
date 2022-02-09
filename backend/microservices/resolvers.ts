@@ -76,6 +76,17 @@ class InputBayAction {
     action_effect_id!: string
 }
 
+@InputType()
+class UniqueActionInput {
+    @Field()
+    action_id!: string
+
+    @Field()
+    parameters!: string
+
+    @Field()
+    old_values!: string
+}
 
 @Resolver()
 export class BaseActionResolver {
@@ -124,16 +135,14 @@ export class BaseActionResolver {
 @Resolver()
 export class UniqueActionResolver {
     @Mutation((_returns) => UniqueAction, {nullable: true})
-    async CreateUniqueActionByBaseActionId(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        const baseAction = await BaseActionModel.findOne({id: id}).then((res) => res)
+    async CreateUniqueActionByBaseActionId(@Arg('data') {action_id, parameters, old_values}: UniqueActionInput) {
+        const baseAction = await BaseActionModel.findOne({id: action_id}).then((res) => res)
         if (!baseAction) return null
 
         const newAction = await UniqueActionModel.create({
-            parameters: "",
-            action: baseAction
+            parameters: parameters,
+            action: baseAction,
+            old_values: old_values
         })
         await newAction.save()
         return newAction
@@ -240,7 +249,7 @@ export class UserResolver {
 export class LinksResolver {
     @Mutation((_returns) => Links, {nullable: true})
     async CreateLinksWithActionId(@Arg('data') {action_id, token}: InputLink) {
-        const obj = await LinksModel.create({action: {id: action_id}}).then((res) => {
+        const obj = await LinksModel.findOne({action: {id: action_id, }}).then((res) => {
             if (!res) return null
             res.token = token
             res.save()
