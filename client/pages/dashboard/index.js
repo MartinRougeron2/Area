@@ -9,8 +9,6 @@ import MainButton from "../../components/utils/MainButton";
 import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
 
-var APIURL = "http://localhost:8080"
-
 const ACTIONLIST = [
   {
     name: "Action 1",
@@ -52,7 +50,7 @@ const DashboardPage = () => {
           }`
         })
       };
-      const response = await fetch(`${APIURL}/graphql`, requestOptions)
+      const response = await fetch(`${process.env.REACT_APP_APIURL}/graphql`, requestOptions)
         .then(data => data.json())
         .then(data => {setServices(data); setLoadingServices(false)})
         .catch(error => setErrorLoading(true))
