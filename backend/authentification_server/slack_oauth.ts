@@ -88,7 +88,7 @@ module.exports = (app: any) => {
                     'incoming-webhook', 'chat:write',
                     'calls:read', 'channels:read', 'groups:read', 'mpim:read', 'im:read',
                     'channels:history', 'groups:history', 'im:history', 'mpim:history'],
-                metadata: '6201258de033cc96c3ff41cd',
+                metadata: '6203c5d07f59a9bbf019a73f',
                 redirectUri: 'https://localhost:3000/auth/slack-redirect'
             })
 

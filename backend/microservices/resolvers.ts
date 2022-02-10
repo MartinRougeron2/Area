@@ -4,6 +4,8 @@ import {Ref} from "@typegoose/typegoose";
 import {BaseAction, UniqueAction, BayAction, Service, User, Links} from './types';
 import {BaseActionModel, UniqueActionModel, BayActionModel, ServiceModel, UserModel, LinksModel} from './types';
 
+const mongoose = require('mongoose');
+
 const bcrypt = require('bcrypt')
 
 @InputType()
@@ -136,7 +138,9 @@ export class BaseActionResolver {
 export class UniqueActionResolver {
     @Mutation((_returns) => UniqueAction, {nullable: true})
     async CreateUniqueActionByBaseActionId(@Arg('data') {action_id, parameters, old_values}: UniqueActionInput) {
-        const baseAction = await BaseActionModel.findOne({id: action_id}).then((res) => res)
+        const id = mongoose.Types.ObjectId(action_id);
+        const baseAction = await BaseActionModel.findById(id).then((res) => res)
+        console.log("baseAction - " + baseAction)
         if (!baseAction) return null
 
         const newAction = await UniqueActionModel.create({
@@ -249,17 +253,28 @@ export class UserResolver {
 export class LinksResolver {
     @Mutation((_returns) => Links, {nullable: true})
     async CreateLinksWithActionId(@Arg('data') {action_id, token}: InputLink) {
-        const obj = await LinksModel.findOne({action: {id: action_id, }}).then((res) => {
+
+        console.log(action_id)
+        const id = mongoose.Types.ObjectId(action_id);
+        console.log(id)
+
+        const action = await UniqueActionModel.findById(id).then((res) => res)
+
+        const obj = await LinksModel.findOne({action: action})
+            .catch(err => {console.log("CreateLinksWithActionId - " + err)})
+            .then((res) => {
             if (!res) return null
             res.token = token
             res.save()
             return res
         })
+        console.log(obj)
         if (obj) return obj
         const newLink = await LinksModel.create({
-            action: UniqueActionModel.findOne({id: action_id}),
+            action: action,
             token: token
         })
+        console.log(newLink)
         await newLink.save()
         return newLink
     }
