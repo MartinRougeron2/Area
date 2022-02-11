@@ -169,9 +169,13 @@ export class UniqueActionResolver {
 export class BayActionResolver {
     @Mutation((_returns) => BayAction, {nullable: true})
     async CreateBayAction(@Arg('data') {action_trigger_id, action_effect_id}: InputBayAction) {
+
+        action_trigger_id = mongoose.Types.ObjectId(action_trigger_id)
+        action_effect_id = mongoose.Types.ObjectId(action_effect_id)
+
         const newBay = await BayActionModel.create({
-            action_trigger: UniqueActionModel.findOne({id: action_trigger_id}).then((res) => res),
-            action_effect: UniqueActionModel.findOne({id: action_effect_id}).then((res) => res),
+            action_trigger: await UniqueActionModel.findById(action_trigger_id).then((res) => res),
+            action_effect: await UniqueActionModel.findById(action_effect_id).then((res) => res),
         })
         await newBay.save()
         return newBay
@@ -254,9 +258,7 @@ export class LinksResolver {
     @Mutation((_returns) => Links, {nullable: true})
     async CreateLinksWithActionId(@Arg('data') {action_id, token}: InputLink) {
 
-        console.log(action_id)
         const id = mongoose.Types.ObjectId(action_id);
-        console.log(id)
 
         const action = await UniqueActionModel.findById(id).then((res) => res)
 
@@ -268,13 +270,11 @@ export class LinksResolver {
             res.save()
             return res
         })
-        console.log(obj)
         if (obj) return obj
         const newLink = await LinksModel.create({
             action: action,
             token: token
         })
-        console.log(newLink)
         await newLink.save()
         return newLink
     }

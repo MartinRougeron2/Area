@@ -45,7 +45,6 @@ module.exports = (app: any) => {
         stateSecret: 'putain-je-suis-un-lover-reno-2022',
         installationStore: {
             storeInstallation: async (installation: Installation) => {
-                console.log(installation)
                 const action_id = installation.metadata
                 const parameters = {channel_id: installation?.incomingWebhook?.channelId}
                 const parameters_json = JSON.stringify(parameters)
@@ -88,7 +87,7 @@ module.exports = (app: any) => {
                     'incoming-webhook', 'chat:write',
                     'calls:read', 'channels:read', 'groups:read', 'mpim:read', 'im:read',
                     'channels:history', 'groups:history', 'im:history', 'mpim:history'],
-                metadata: '6203c5d07f59a9bbf019a73f',
+                metadata: '620543461cc428870323395f', // TODO: in fx of __req
                 redirectUri: 'https://localhost:3000/auth/slack-redirect'
             })
 

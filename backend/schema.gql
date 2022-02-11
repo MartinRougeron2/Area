@@ -18,9 +18,8 @@ type BayAction {
 }
 
 input CommunicationInput {
-  bayaction_id: String!
+  action_effect_id: String!
   message: String!
-  user_id: String!
 }
 
 input InputBaseAction {
