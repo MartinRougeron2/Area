@@ -35,7 +35,6 @@ const SERVICES = [
 ];
 
 const DashServiceWidget = ({text, services, selected, setSelected}) => {
-  console.log(selected)
   const click = (id) => {
     if (selected === id) setSelected(-1);
     else setSelected(id);
@@ -45,7 +44,7 @@ const DashServiceWidget = ({text, services, selected, setSelected}) => {
     <div className="flex flex-col h-full w-[40%] drop-shadow-lg bg-white rounded p-5">
       <h2 className="text-lg font-bold md:text-md">{text}</h2>
       <div className="flex flex-row flex-wrap w-full">
-        {SERVICES.map((service) => (
+        {services.map((service) => (
           <DashServiceBox
             {...service}
             action={click}
@@ -54,7 +53,7 @@ const DashServiceWidget = ({text, services, selected, setSelected}) => {
           />
         ))}
       </div>
-      <h3 className="flex items-center justify-center mt-3 text-center text-lg font-bold text-light h-16 md:text-md">{selected !== -1 ? SERVICES[selected].name : ""}</h3>
+      <h3 className="flex items-center justify-center mt-3 text-center text-lg font-bold text-light h-16 md:text-md">{selected !== -1 ? services.find(elem => elem.id === selected).name : ""}</h3>
     </div>
   );
 };

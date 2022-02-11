@@ -3,49 +3,23 @@ import DashHeader from "../../components/dashboard/DashHeader";
 import DashBayPreview from "../../components/dashboard/DashBayPreview";
 import DashSideBar from "../../components/dashboard/DashSideBar";
 import MainButton from "../../components/utils/MainButton";
+import {
+  useQuery,
+  gql
+} from "@apollo/client";
 
-const MYBAYS = [
-  // {
-  //   from: {
-  //     service: {
-  //       id: 0,
-  //       name: "Youtube",
-  //       icon: "/assets/Images/youtube.svg",
-  //     }
-  //   },
-  //   to: {
-  //     service: {
-  //       id: 2,
-  //       name: "Twitter",
-  //       icon: "/assets/Images/youtube.svg",
-  //     }
-  //   },
-  //   data: {
-  //     active: true,
-  //     description: "Upload vidéo on comment"
-  //   }
-  // },
-  // {
-  //   from: {
-  //     service: {
-  //       id: 0,
-  //       name: "Youtube",
-  //       icon: "/assets/Images/youtube.svg",
-  //     }
-  //   },
-  //   to: {
-  //     service: {
-  //       id: 2,
-  //       name: "Twitter",
-  //       icon: "/assets/Images/youtube.svg",
-  //     }
-  //   },
-  //   data: {
-  //     active: true,
-  //     description: "Upload vidéo on comment"
-  //   }
-  // }
-];
+const GET_MY_BAYS = gql`
+  query {
+    GetUserById(id: "${window.sessionStorage.USERID}") {
+      name
+      user_actions {
+        action_effect
+        action_trigger
+        id
+      }
+    }
+  }
+`
 
 const BaysPage = () => {
   return (

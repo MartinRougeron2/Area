@@ -3,15 +3,13 @@ import React from 'react'
 import {
   ApolloClient,
   InMemoryCache,
-  ApolloProvider,
-  useQuery,
-  gql
+  ApolloProvider
 } from "@apollo/client";
 
 import "./styles.css";
 
 const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQLAPI,
+  uri: "http://localhost:5000/graphql",
   cache: new InMemoryCache()
 });
 

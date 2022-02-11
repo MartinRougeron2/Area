@@ -5,59 +5,52 @@ import DashSideBar from "../../components/dashboard/DashSideBar";
 import DropDown from "../../components/dashboard/DropDown";
 import RoundButton from "../../components/dashboard/RoundButton";
 import MainButton from "../../components/utils/MainButton";
+import {
+  useQuery,
+  gql
+} from "@apollo/client";
 
 import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
 
-const ACTIONLIST = [
-  {
-    name: "Action 1",
-  },
-  {
-    name: "Action 2",
-  },
-  {
-    name: "Action 3",
-  },
-];
+const GET_SERVICES = gql`
+  query {
+    GetAllServices {
+      id
+      name
+      actions {
+        name
+        options
+      }
+    }
+  }`;
 
 const DashboardPage = () => {
-  const [services, setServices] = React.useState(null)
-  const [loadingServices, setLoadingServices] = React.useState(true)
-  const [errorLoading, setErrorLoading] = React.useState(false)
-
   const [triggerIndex, setTriggerIndex] = useState(-1)
   const [effectIndex, setEffectIndex] = useState(-1)
 
+  const [actionsTriggerList, setActionsTriggerList] = useState([])
+  const [actionsEffectList, setActionsEffectList] = useState([])
   const [actionsTriggerIndex, setActionsTriggerIndex] = useState(-1)
   const [actionsEffectIndex, setActionsEffectIndex] = useState(-1)
 
+  const {loading, error, data} = useQuery(GET_SERVICES)
+
   useEffect(() => {
-    async function fetchServices() {
-      const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: `
-          query {
-              GetServices {
-                actions
-                id
-                name
-                icon
-            }
-          }`
-        })
-      };
-      const response = await fetch(`${process.env.REACT_APP_APIURL}/graphql`, requestOptions)
-        .then(data => data.json())
-        .then(data => {setServices(data); setLoadingServices(false)})
-        .catch(error => setErrorLoading(true))
-      setLoadingServices(false)
+    if (data) {
+      setActionsTriggerIndex(-1)
+      const service = data.GetAllServices.find(elem => elem.id === triggerIndex)
+      setActionsTriggerList(service.actions)
     }
-    fetchServices();
-  }, [])
+  }, [triggerIndex])
+
+  useEffect(() => {
+    if (data) {
+      setActionsEffectIndex(-1)
+      const service = data.GetAllServices.find(elem => elem.id === effectIndex)
+      setActionsEffectList(service.actions)
+    }
+  }, [effectIndex])
 
   return (
     <div className="w-screen h-screen flex flex-row">
@@ -66,9 +59,11 @@ const DashboardPage = () => {
         <DashHeader />
         <h2 className="text-center text-lg font-bold">Make a Bay</h2>
         <div className="flex flex-row justify-between items-center w-full mt-3">
-          {loadingServices ? <Spinner/> : <DashServiceWidget text={"Séléctionez une application"} services={services} selected={triggerIndex} setSelected={setTriggerIndex}/>}
+          {error ? <p>Error while loading services</p> : <>
+          {loading ? <Spinner/> : <DashServiceWidget text={"Séléctionez une application"} services={data.GetAllServices} selected={triggerIndex} setSelected={setTriggerIndex}/>}
           <RoundButton icon={"/assets/Images/plus.svg"}/>
-          {loadingServices ? <Spinner/> : <DashServiceWidget text={"Sélectionnez en une autre"} services={services} selected={effectIndex} setSelected={setEffectIndex}/>}
+          {loading ? <Spinner/> : <DashServiceWidget text={"Sélectionnez en une autre"} services={data.GetAllServices} selected={effectIndex} setSelected={setEffectIndex}/>}
+          </>}
         </div>
         {(triggerIndex !== -1 && effectIndex !== -1) &&
         <>
@@ -76,11 +71,11 @@ const DashboardPage = () => {
             <h2 className="text-md font-medium">Selectionnez une action</h2>
             <div className="flex flex-row w-full justify-around items-center">
               <div className='flex w-[40%]'>
-                <DropDown actionlist={ACTIONLIST} value={actionsTriggerIndex} onChange={setActionsTriggerIndex} placeHolder="placeholder"/>
+                <DropDown actionlist={actionsTriggerList} value={actionsTriggerIndex} onChange={setActionsTriggerIndex} placeHolder="placeholder"/>
               </div>
               <RoundButton icon={"/assets/Images/arrow-right.svg"}/>
               <div className='flex w-[40%]'>
-                <DropDown actionlist={ACTIONLIST} value={actionsEffectIndex} onChange={setActionsEffectIndex} placeHolder="placeholder"/>
+                <DropDown actionlist={actionsEffectList} value={actionsEffectIndex} onChange={setActionsEffectIndex} placeHolder="placeholder"/>
               </div>
             </div>
           </div>
