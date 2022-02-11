@@ -3,18 +3,27 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+enum ActionType {
+  BOTH
+  EFFECT
+  TRIGGER
+}
+
 """BaseAction"""
 type BaseAction {
   id: ID!
   name: String!
   options: String!
+  type: ActionType!
 }
 
 """Link between trigger and effect"""
 type BayAction {
   action_effect: UniqueAction!
   action_trigger: UniqueAction!
+  active: Boolean
   id: ID!
+  name: String
 }
 
 input CommunicationInput {
@@ -90,6 +99,7 @@ type ResultUser {
 """Services"""
 type Service {
   actions: [BaseAction!]!
+  icon: String!
   id: ID!
   in_url: String!
   name: String!
@@ -102,6 +112,7 @@ type UniqueAction {
   id: ID!
   old_values: String!
   parameters: String!
+  service: Service!
 }
 
 input UniqueActionInput {
@@ -116,5 +127,5 @@ type User {
   id: ID!
   name: String!
   password: String!
-  user_actions: [BaseAction!]!
+  user_actions: [BayAction!]!
 }

@@ -1,6 +1,13 @@
-import {ObjectType, Field, ID, InputType} from 'type-graphql';
+import {ObjectType, Field, ID, InputType, registerEnumType, } from 'type-graphql';
 import {prop as Property, getModelForClass, Ref} from '@typegoose/typegoose';
 
+enum ActionType {
+    TRIGGER,
+    EFFECT,
+    BOTH
+}
+
+registerEnumType(ActionType, {name: 'ActionType'})
 
 @ObjectType({description: 'BaseAction'})
 export class BaseAction {
@@ -14,6 +21,10 @@ export class BaseAction {
     @Field()
     @Property()
     options!: string
+
+    @Field(() => ActionType)
+    @Property({default: ActionType.BOTH})
+    type!: ActionType
 }
 
 @ObjectType({description: 'Derivate from base with params'})
@@ -32,12 +43,25 @@ export class UniqueAction {
     @Field(() => BaseAction)
     @Property({ref: () => BaseAction})
     public action!: Ref<BaseAction>;
+
+    @Field(() => Service)
+    async service(): Promise<Service | null> {
+        // @ts-ignore
+        return await ServiceModel.findOne({actions: this._doc.action}).then((res) => res)
+
+    }
 }
 
 @ObjectType({description: 'Link between trigger and effect'})
 export class BayAction {
     @Field(() => ID)
     id!: string;
+
+    @Field({defaultValue: ""})
+    name!: string;
+
+    @Field({defaultValue: true})
+    active!: boolean;
 
     @Field(() => UniqueAction)
     @Property({ref: () => UniqueAction})
@@ -65,6 +89,10 @@ export class Service {
     @Property()
     in_url!: String;
 
+    @Field()
+    @Property()
+    icon!: String;
+
     @Field(() => [BaseAction])
     @Property({ref: () => BaseAction})
     public actions?: Ref<BaseAction>[];
@@ -87,7 +115,7 @@ export class User {
     @Property()
     password!: string
 
-    @Field(() => [BaseAction])
+    @Field(() => [BayAction])
     @Property({ref: () => BayAction})
     public user_actions!: Ref<BayAction>[];
 }
