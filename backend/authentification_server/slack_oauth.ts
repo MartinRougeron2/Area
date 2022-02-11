@@ -1,8 +1,32 @@
 import {Installation, InstallationQuery} from "@slack/oauth";
-import {LinksModel, UniqueActionModel} from "../microservices/types";
+import {gql} from "apollo-boost";
 
 const {InstallProvider} = require('@slack/oauth');
 const {createEventAdapter} = require('@slack/events-api');
+const {client} = require("./apollo_client")
+
+
+const CREATE_UNIQUE_ACTION = gql`
+    mutation CreateUniqueActionByBaseActionIdMutation($action_id: String!, $parameters: String!, $old_values: String!) {
+        CreateUniqueActionByBaseActionId(data: {action_id: $action_id, parameters: $parameters, old_values: $old_values}) {
+            id
+            action {
+                id
+            }
+        }
+    }
+`;
+
+const CREATE_LINK = gql`
+    mutation CreateLinksWithActionIdMutation($action_id: String!, $token: String!) {
+        CreateLinksWithActionId(data: {action_id: $action_id, token: $token}) {
+            id
+            action {
+                id
+            }
+        }
+    }
+`;
 
 module.exports = (app: any) => {
 
@@ -21,22 +45,29 @@ module.exports = (app: any) => {
         stateSecret: 'putain-je-suis-un-lover-reno-2022',
         installationStore: {
             storeInstallation: async (installation: Installation) => {
-                console.log(installation)
                 const action_id = installation.metadata
                 const parameters = {channel_id: installation?.incomingWebhook?.channelId}
+                const parameters_json = JSON.stringify(parameters)
+                const token = installation.bot?.token + "|" + installation.bot?.refreshToken
 
-                UniqueActionModel.findOne({id: action_id}).then((res) => {
-                    if (!res) return
+                client.mutate({
+                    mutation: CREATE_UNIQUE_ACTION,
+                    variables: {
+                        action_id: action_id,
+                        parameters: parameters_json,
+                        old_values: ""
+                    }
+                }).catch((err: any) => {console.log(err)}).then((result: any) => {
+                    console.log(result.data.CreateUniqueActionByBaseActionId.id)
+                     client.mutate({
+                        mutation: CREATE_LINK,
+                        variables: {
+                            action_id: result.data.CreateUniqueActionByBaseActionId.id,
+                            token: token
+                        }
+                    }).catch((err: any) => {console.log(err)}).then((result: any) => console.log(result));
+                });
 
-                    res.parameters = JSON.stringify(parameters)
-
-                    const link = new LinksModel({
-                        action: res,
-                        token: installation.bot?.token + "|" + installation.bot?.refreshToken
-                    })
-                    link.save()
-                    res.save()
-                })
 
             },
             fetchInstallation: async (installQuery: InstallationQuery<boolean>) => {
@@ -56,7 +87,7 @@ module.exports = (app: any) => {
                     'incoming-webhook', 'chat:write',
                     'calls:read', 'channels:read', 'groups:read', 'mpim:read', 'im:read',
                     'channels:history', 'groups:history', 'im:history', 'mpim:history'],
-                metadata: 'reno',
+                metadata: '620543461cc428870323395f', // TODO: in fx of __req
                 redirectUri: 'https://localhost:3000/auth/slack-redirect'
             })
 

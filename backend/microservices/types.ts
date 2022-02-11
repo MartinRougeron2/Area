@@ -109,10 +109,7 @@ export class Links {
 @InputType()
 export class CommunicationInput {
     @Field()
-    user_id!: string;
-
-    @Field()
-    bayaction_id!: string;
+    action_effect_id!: string;
 
     @Field()
     message!: string;

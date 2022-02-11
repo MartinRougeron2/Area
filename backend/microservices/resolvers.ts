@@ -4,6 +4,8 @@ import {Ref} from "@typegoose/typegoose";
 import {BaseAction, UniqueAction, BayAction, Service, User, Links} from './types';
 import {BaseActionModel, UniqueActionModel, BayActionModel, ServiceModel, UserModel, LinksModel} from './types';
 
+const mongoose = require('mongoose');
+
 const bcrypt = require('bcrypt')
 
 @InputType()
@@ -76,6 +78,17 @@ class InputBayAction {
     action_effect_id!: string
 }
 
+@InputType()
+class UniqueActionInput {
+    @Field()
+    action_id!: string
+
+    @Field()
+    parameters!: string
+
+    @Field()
+    old_values!: string
+}
 
 @Resolver()
 export class BaseActionResolver {
@@ -124,16 +137,16 @@ export class BaseActionResolver {
 @Resolver()
 export class UniqueActionResolver {
     @Mutation((_returns) => UniqueAction, {nullable: true})
-    async CreateUniqueActionByBaseActionId(@Arg('id') id?: string) {
-        if (!id) {
-            return null
-        }
-        const baseAction = await BaseActionModel.findOne({id: id}).then((res) => res)
+    async CreateUniqueActionByBaseActionId(@Arg('data') {action_id, parameters, old_values}: UniqueActionInput) {
+        const id = mongoose.Types.ObjectId(action_id);
+        const baseAction = await BaseActionModel.findById(id).then((res) => res)
+        console.log("baseAction - " + baseAction)
         if (!baseAction) return null
 
         const newAction = await UniqueActionModel.create({
-            parameters: "",
-            action: baseAction
+            parameters: parameters,
+            action: baseAction,
+            old_values: old_values
         })
         await newAction.save()
         return newAction
@@ -156,9 +169,13 @@ export class UniqueActionResolver {
 export class BayActionResolver {
     @Mutation((_returns) => BayAction, {nullable: true})
     async CreateBayAction(@Arg('data') {action_trigger_id, action_effect_id}: InputBayAction) {
+
+        action_trigger_id = mongoose.Types.ObjectId(action_trigger_id)
+        action_effect_id = mongoose.Types.ObjectId(action_effect_id)
+
         const newBay = await BayActionModel.create({
-            action_trigger: UniqueActionModel.findOne({id: action_trigger_id}).then((res) => res),
-            action_effect: UniqueActionModel.findOne({id: action_effect_id}).then((res) => res),
+            action_trigger: await UniqueActionModel.findById(action_trigger_id).then((res) => res),
+            action_effect: await UniqueActionModel.findById(action_effect_id).then((res) => res),
         })
         await newBay.save()
         return newBay
@@ -240,7 +257,14 @@ export class UserResolver {
 export class LinksResolver {
     @Mutation((_returns) => Links, {nullable: true})
     async CreateLinksWithActionId(@Arg('data') {action_id, token}: InputLink) {
-        const obj = await LinksModel.create({action: {id: action_id}}).then((res) => {
+
+        const id = mongoose.Types.ObjectId(action_id);
+
+        const action = await UniqueActionModel.findById(id).then((res) => res)
+
+        const obj = await LinksModel.findOne({action: action})
+            .catch(err => {console.log("CreateLinksWithActionId - " + err)})
+            .then((res) => {
             if (!res) return null
             res.token = token
             res.save()
@@ -248,7 +272,7 @@ export class LinksResolver {
         })
         if (obj) return obj
         const newLink = await LinksModel.create({
-            action: UniqueActionModel.findOne({id: action_id}),
+            action: action,
             token: token
         })
         await newLink.save()
