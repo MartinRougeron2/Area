@@ -75,10 +75,16 @@ type Mutation {
   CreateBaseAction(data: InputBaseAction!): BaseAction
   CreateBayAction(data: InputBayAction!): BayAction
   CreateLinksWithActionId(data: InputLink!): Links
+  CreateOrModifyOptionsBaseAction(data: OptionsInputType!): BaseAction
   CreateService(data: InputService!): Service
   CreateUniqueActionByBaseActionId(data: UniqueActionInput!): UniqueAction
   CreateUser(data: InputUser!): ResultUser
   SendSlackMessage(data: CommunicationInput!): Boolean!
+}
+
+input OptionsInputType {
+  id: String!
+  options: String!
 }
 
 type Query {

@@ -90,6 +90,16 @@ class UniqueActionInput {
     old_values!: string
 }
 
+
+@InputType()
+class OptionsInputType {
+    @Field()
+    id!: string
+
+    @Field()
+    options!: string
+}
+
 @Resolver()
 export class BaseActionResolver {
     @Mutation((_returns) => BaseAction, {nullable: true})
@@ -100,6 +110,16 @@ export class BaseActionResolver {
         })
         await newAction.save()
         return newAction
+    }
+
+    @Mutation((_returns) => BaseAction, {nullable: true})
+    async CreateOrModifyOptionsBaseAction(@Arg('data') {id, options}: OptionsInputType) {
+        const ActionFound = await BaseActionModel.findById(id).then((res) => res)
+        if (!ActionFound) return null // null check
+
+        ActionFound.options = options
+        await ActionFound.save()
+        return ActionFound
     }
 
     @Mutation((_returns) => Service, {nullable: true})
