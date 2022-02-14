@@ -76,6 +76,15 @@ class InputBayAction {
 
     @Field()
     action_effect_id!: string
+
+    @Field()
+    name!: string
+
+    @Field()
+    active!: boolean
+
+    @Field()
+    userid!: string
 }
 
 @InputType()
@@ -188,7 +197,7 @@ export class UniqueActionResolver {
 @Resolver()
 export class BayActionResolver {
     @Mutation((_returns) => BayAction, {nullable: true})
-    async CreateBayAction(@Arg('data') {action_trigger_id, action_effect_id}: InputBayAction) {
+    async CreateBayAction(@Arg('data') {action_trigger_id, action_effect_id, name, active, userid}: InputBayAction) {
 
         action_trigger_id = mongoose.Types.ObjectId(action_trigger_id)
         action_effect_id = mongoose.Types.ObjectId(action_effect_id)
@@ -196,8 +205,18 @@ export class BayActionResolver {
         const newBay = await BayActionModel.create({
             action_trigger: await UniqueActionModel.findById(action_trigger_id).then((res) => res),
             action_effect: await UniqueActionModel.findById(action_effect_id).then((res) => res),
+            name: name,
+            active: active
         })
         await newBay.save()
+        const user = await UserModel.findOne({id: userid}).then((user) => user)
+        if (!user)
+            return newBay
+        await user.populate({
+            path: "user_actions"
+        })
+        user.user_actions?.push(newBay)
+        await user.save()
         return newBay
     }
 

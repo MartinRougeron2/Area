@@ -16,25 +16,6 @@ import TestBay from "../../components/create/TestBay";
 
 import { Pagination, Navigation } from "swiper";
 
-import {
-  useQuery,
-  gql
-} from "@apollo/client";
-
-const GET_SERVICES = gql`
-  query {
-    GetAllServices {
-      id
-      name
-      actions {
-        name
-        id
-        options
-        type
-      }
-    }
-  }`;
-
 const DrawField = ({options, setTested, index, onChange, value}) => {
   const updateValue = (val, index) => {
     let old = {...value}
@@ -56,7 +37,7 @@ const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setV
   const handleChange = (key) => {
     console.log(key)
     setIndex(key)
-    setValueSel({[0]: "", [1]: "", [2]: ""})
+    setValueSel({[0]: "", [1]: "", [2]: "", [3]: ""})
     setTested(false)
   }
   console.log(options)
@@ -64,7 +45,7 @@ const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setV
     <div className="flex flex-col items-start">
       <span className="text-sm italic font-bold">{first ? "When this happen..." : "Do this..."}</span>
       <DropDown actionlist={options} value={index} onChange={handleChange}/>
-      {(index !== -1) && options.map((elem, key) => {
+      {(index !== -1) && JSON.parse(options[index].options).map((elem, key) => {
         return (
           <DrawField key={key} index={key} options={elem} setTested={setTested} onChange={setValueSel} value={valueSel}/>
         )
@@ -124,9 +105,11 @@ export default function CreateBay() {
   const [indexFrom, setIndexFrom] = useState(-1)
   const [connectedTo, setConnectedTo] = useState(false)
   const [indexTo, setIndexTo] = useState(-1)
-  const [valueFrom, setValueFrom] = useState({})
-  const [valueTo, setValueTo] = useState({})
+  const [valueFrom, setValueFrom] = useState({[0]: "", [1]: "", [2]: "", [3]: ""})
+  const [valueTo, setValueTo] = useState({[0]: "", [1]: "", [2]: "", [3]: ""})
   const [tested, setTested] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  const [triggerRefresh, setTrigger] = useState(false)
 
   const slideTo = (index) => {
     swiperRef.slideTo(index, 50);
@@ -135,17 +118,32 @@ export default function CreateBay() {
   useEffect(() => {
     if (window.sessionStorage.getItem("CREATE_BAY")) {
       const storage = JSON.parse(window.sessionStorage.getItem("CREATE_BAY"))
-      if (storage.from.actions && storage.from.actions.index)
+      if (storage.from.actions && storage.from.actions.index !== undefined) {
         setIndexFrom(storage.from.actions.index)
-      if (storage.to.actions && storage.to.actions.index)
+      }
+      if (storage.to.actions && storage.to.actions.index != undefined) {
         setIndexTo(storage.to.actions.index)
-      console.log(storage)
+      }
+      if (storage.from.actions && storage.from.actions.value !== undefined) {
+        setValueFrom(storage.from.actions.value)
+      }
+      if (storage.to.actions && storage.to.actions.value != undefined) {
+        setValueTo(storage.to.actions.value)
+      }
+      if (storage.from.connected !== undefined) {
+        setConnectedFrom(storage.from.connected)
+      }
+      if (storage.to.connected != undefined) {
+        setConnectedTo(storage.to.connected)
+      }
     }
+    setLoaded(true)
   }, [])
 
   useEffect(() => {
     if (!window.sessionStorage.getItem("CREATE_BAY"))
       return;
+    setTrigger(!triggerRefresh)
     window.sessionStorage.setItem("CREATE_BAY", JSON.stringify({
       from: {
         service: JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).from.service,
@@ -173,7 +171,7 @@ export default function CreateBay() {
   return (
     <div className="flex flex-col h-screen w-[100%] p-10">
       <DashHeader />
-      { (typeof window !== "undefined" && window.sessionStorage.getItem("CREATE_BAY")) &&
+      { (loaded) &&
       <Swiper
         onSwiper={setSwiperRef}
         pagination={{clickable: true}}
@@ -183,7 +181,7 @@ export default function CreateBay() {
       >
         <SwiperSlide><Connect slide={0} slideTo={slideTo} setTested={setTested} data={JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).from.service} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
         <SwiperSlide><Connect slide={1} slideTo={slideTo} setTested={setTested} data={JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).to.service} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
-        <SwiperSlide><TestBay slide={2} BayData={JSON.parse(window.sessionStorage.getItem("CREATE_BAY"))} slideTo={slideTo} tested={tested} setTested={setTested}/></SwiperSlide>
+        <SwiperSlide><TestBay slide={2} trigger={triggerRefresh} BayData={JSON.parse(window.sessionStorage.getItem("CREATE_BAY"))} slideTo={slideTo} tested={tested} setTested={setTested}/></SwiperSlide>
       </Swiper>
       }
     </div>

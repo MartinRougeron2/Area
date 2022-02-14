@@ -88,14 +88,12 @@ const DashboardPage = () => {
                   service: data.GetAllServices.find(elem => elem.id == triggerIndex),
                   actions: {
                     index: actionsTriggerIndex,
-                    value: {}
                   }
                 },
                 to: {
                   service: data.GetAllServices.find(elem => elem.id == effectIndex),
                   actions: {
                     index: actionsEffectIndex,
-                    value: {}
                   }
                 }
               }));

@@ -2,6 +2,26 @@ import React, { useEffect, useState } from 'react'
 import MainButton from "../../components/utils/MainButton";
 import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
+import {
+  useMutation,
+  gql
+} from "@apollo/client";
+
+const CREATE_UNIQUE_ACTION = gql`
+  query create_withid($actionid: String!, $param: String!) {
+    CreateUniqueActionByBaseActionId (data: {action_id: $actionid, parameters: $param, old_values: ""}) {
+      id
+    }
+  }
+`
+
+const CREATE_BAYS = gql`
+  query create_withid($actionidfrom: String!, $actionidto: String!, $name: String!, $active: Boolean!, $userid: String!) {
+    CreateBayAction (data: {action_trigger_id: $actionidfrom, action_effect_id: $actionidto, name: $name, active: $active, userid: $userid}) {
+      id
+    }
+  }
+`
 
 const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
   const [checkError, setError] = React.useState({
@@ -14,8 +34,11 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
     message: ""
   })
 
+  // const [createUniqueAction, { data, loading, error }] = useMutation(CREATE_UNIQUE_ACTION);
+  // const [createBay, { data, loading, error }] = useMutation(CREATE_BAYS);
+
   const countKeys = (obj) => {
-    let res = Object.keys(obj).length
+    var res = Object.keys(obj).length
 
     for (var x in obj) {
       if (obj[x] == "")
@@ -25,6 +48,12 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
   }
 
   const checkData = () => {
+    try {
+      console.log(countKeys(BayData.from.actions.value), JSON.parse(BayData.from.service.actions[BayData.from.actions.index].options).length)
+    } catch (e) {}
+    try {
+      console.log(countKeys(BayData.to.actions.value), JSON.parse(BayData.to.service.actions[BayData.to.actions.index].options).length)
+    } catch (e) {}
     if (!BayData) {
       setError({error: true, message: <>Error while loading BayData</>})
     } else if (!BayData.from.service || !BayData.to.service) {
@@ -37,9 +66,9 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       setError({error: true, message: <>Service {BayData.from.service.name} no trigger selectionned!<br/>You need to select one trigger before testing</>})
     } else if (BayData.to.actions.index == -1) {
       setError({error: true, message: <>Service {BayData.to.service.name} no actions selectionned!<br/>You need to select one actions before testing</>})
-    } else if (countKeys(BayData.from.actions.value) != BayData.from.service.actions[BayData.from.actions.index].options.length) {
+    } else if (countKeys(BayData.from.actions.value) != JSON.parse(BayData.from.service.actions[BayData.from.actions.index].options).length) {
       setError({error: true, message: <>Service {BayData.from.service.name} no value filled!<br/>You need to fill every field before testing</>})
-    } else if (countKeys(BayData.to.actions.value) != BayData.to.service.actions[BayData.to.actions.index].options.length) {
+    } else if (countKeys(BayData.to.actions.value) != JSON.parse(BayData.to.service.actions[BayData.to.actions.index].options).length) {
       setError({error: true, message: <>Service {BayData.to.service.name} no value filled!<br/>You need to fill every field before testing</>})
     } else {
       setError({
@@ -78,13 +107,13 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       ) :
       <div className="w-full drop-shadow-lg bg-white rounded p-5 mb-5 w-[80%]">
         <div className="flex flex-row items-center text-center justify-between">
-          <div className='flex flex-row justify-around w-[40%]'>
+          <div className='flex flex-row justify-around w-[45%]'>
             <img className="w-[20%]" src={BayData.from.service.icon} />
             <div className='flex flex-col items-start'>
-              <span className='font-bold text-md'>When {BayData.from.service.happens[BayData.from.happens.index].name}</span>
-              {BayData.from.service.happens[BayData.from.happens.index].options.map((elem, key) => {
+              <span className='font-bold text-md'>When {BayData.from.service.actions[BayData.from.actions.index].name}</span>
+              {JSON.parse(BayData.from.service.actions[BayData.from.actions.index].options).map((elem, key) => {
                 return (
-                  <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.from.happens.value[key]}</span>
+                  <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.from.actions.value[key]}</span>
                 )
               })}
             </div>
@@ -92,11 +121,11 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
           <div className="flex bg-dark rounded-full h-6 w-12 items-center justify-center">
             <img src={"/assets/Images/arrow-right.svg"} />
           </div>
-          <div className='flex flex-row justify-around w-[40%]'>
+          <div className='flex flex-row justify-around w-[45%]'>
             <img className="w-[20%]" src={BayData.to.service.icon} />
             <div className='flex flex-col items-start'>
               <span className='font-bold text-md'>Do {BayData.to.service.actions[BayData.to.actions.index].name}</span>
-              {BayData.to.service.actions[BayData.to.actions.index].options.map((elem, key) => {
+              {JSON.parse(BayData.to.service.actions[BayData.to.actions.index].options).map((elem, key) => {
                 return (
                   <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.to.actions.value[key]}</span>
                 )
@@ -131,7 +160,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
         </div>
         { tested ? 
         <div className="flex w-full justify-end">
-          <MainButton text={"Next"} color='light' action={() => {slideTo(slide + 1)}}></MainButton>
+          <MainButton text={"Create"} color='light' action={() => processCreation()}></MainButton>
         </div> :
         <div className="flex w-full justify-end">
           <MainButton text={"Test"} disable={duringtest.running || checkError.error} color='dark' action={() => {playTest()}}></MainButton>
