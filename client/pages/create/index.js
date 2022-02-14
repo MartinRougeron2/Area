@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 import DashHeader from "../../components/dashboard/DashHeader";
@@ -16,110 +16,24 @@ import TestBay from "../../components/create/TestBay";
 
 import { Pagination, Navigation } from "swiper";
 
-const DATA =   {
-  from: {
-    service: {
-      id: 0,
-      name: "Youtube",
-      icon: "/assets/Images/youtube.svg",
-      happens: [{
-        name: "New video",
-        options: [{
-          name: "Username",
-          type: "textfield",
-          description: "Watch for new videos by this username",
-          required: true
-        }, {
-          name: "Username",
-          type: "textfield",
-          description: "Watch for new videos by this username",
-          required: true
-        }]
-      }, {
-        name: "New video",
-        options: [{
-          name: "Username",
-          type: "textfield",
-          description: "Watch for new videos by this username",
-          required: true
-        }]
-      }],
-      actions: [{}]
-    }
-  },
-  to: {
-    service: {
-      id: 2,
-      name: "Twitter",
-      icon: "/assets/Images/youtube.svg",
-      actions: [{
-        name: "New video",
-        options: [{
-          name: "Username",
-          type: "textfield",
-          description: "Watch for new videos by this username",
-          required: true
-        }]
-      }]
-    }
-  },
-  data: {
-    active: true,
-    description: "Upload vidéo on comment"
-  }
-}
+import {
+  useQuery,
+  gql
+} from "@apollo/client";
 
-// service: {
-//   id: 0,
-//   name: "Youtube",
-//   icon: "/assets/Images/youtube.svg",
-//   happens: [{
-//     name: "New video",
-//     options: [{
-//       name: "Username",
-//       type: "textfield",
-//       description: "Watch for new videos by this username",
-//       required: true
-//     }, {
-//       name: "Username",
-//       type: "textfield",
-//       description: "Watch for new videos by this username",
-//       required: true
-//     }]
-//   }, {
-//     name: "New video",
-//     options: [{
-//       name: "Username",
-//       type: "textfield",
-//       description: "Watch for new videos by this username",
-//       required: true
-//     }]
-//   }],
-//   actions: [{}]
-// }
-
-// {
-//   from: {
-//     service: {},
-//     connected: false,
-//     happens: {
-//       index: 0,
-//       value: {}
-//     }
-//   },
-//   to: {
-//     service: {},
-//     connected: false,
-//     happens: {
-//       index: 0,
-//       value: {}
-//     }
-//   }
-//   data: {
-//     active: true,
-//     description: "Upload vidéo on comment"
-//   }
-// }
+const GET_SERVICES = gql`
+  query {
+    GetAllServices {
+      id
+      name
+      actions {
+        name
+        id
+        options
+        type
+      }
+    }
+  }`;
 
 const DrawField = ({options, setTested, index, onChange, value}) => {
   const updateValue = (val, index) => {
@@ -139,19 +53,18 @@ const DrawField = ({options, setTested, index, onChange, value}) => {
 }
 
 const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setValueSel}) => {
-  const evt = first ? DATA.from.service.happens : DATA.to.service.actions
-
   const handleChange = (key) => {
+    console.log(key)
     setIndex(key)
-    setValueSel({[0]: ""})
+    setValueSel({[0]: "", [1]: "", [2]: ""})
     setTested(false)
   }
-
+  console.log(options)
   return (
     <div className="flex flex-col items-start">
-      <span className="text-sm italic font-bold">When this happen...</span>
+      <span className="text-sm italic font-bold">{first ? "When this happen..." : "Do this..."}</span>
       <DropDown actionlist={options} value={index} onChange={handleChange}/>
-      {(index !== -1) && evt[index].options.map((elem, key) => {
+      {(index !== -1) && options.map((elem, key) => {
         return (
           <DrawField key={key} index={key} options={elem} setTested={setTested} onChange={setValueSel} value={valueSel}/>
         )
@@ -160,21 +73,35 @@ const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setV
   )
 }
 
+const GetActionsToShow = (service, first) => {
+  const actions = []
+
+  service.actions.forEach(action => {
+    if (action.type === "BOTH")
+      actions.push(action)
+    if (!first && action.type == "EFFECT")
+      actions.push(action)
+    if (first && action.type == "TRIGGER")
+      actions.push(action)
+  })
+  return actions;
+}
+
 const Connect = ({data, connected, setConnected, setTested, first, index, setIndex, value, setValue, slideTo, slide}) => {
   return (
     <div className="flex flex-col items-center p-5 h-full w-full">
-      <h2 className="text-lg font-bold mt-6 mb-8">Connect your {data.service.name} account</h2>
+      <h2 className="text-lg font-bold mt-6 mb-8">Connect your {data.name} account</h2>
       <div className="w-full drop-shadow-lg bg-white rounded p-5 mb-5">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center justify-center flex-nowrap">
-            <img src={data.service.icon} className="w-20"/>
-            <span className="text-md p-5">Connexion a {data.service.name}</span>
+            <img src={data.icon} className="w-20"/>
+            <span className="text-md p-5">Connexion a {data.name}</span>
           </div>
           <div className="flex">
             <MainButton text={connected ? "Connected" : "Connection"} color='dark' action={() => {setConnected(true)}}></MainButton>
           </div>
         </div>
-        {connected && (<DrawOptions options={first ? data.service.happens : data.service.actions} setTested={setTested} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue}/>)}
+        {connected && (<DrawOptions options={GetActionsToShow(data, first)} setTested={setTested} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue}/>)}
       </div>
       <div className="flex w-full pt-7">
         {
@@ -205,35 +132,48 @@ export default function CreateBay() {
     swiperRef.slideTo(index, 50);
   };
 
-  const createBayData = () => {
-    let obj = {
+  useEffect(() => {
+    if (window.sessionStorage.getItem("CREATE_BAY")) {
+      const storage = JSON.parse(window.sessionStorage.getItem("CREATE_BAY"))
+      if (storage.from.actions && storage.from.actions.index)
+        setIndexFrom(storage.from.actions.index)
+      if (storage.to.actions && storage.to.actions.index)
+        setIndexTo(storage.to.actions.index)
+      console.log(storage)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!window.sessionStorage.getItem("CREATE_BAY"))
+      return;
+    window.sessionStorage.setItem("CREATE_BAY", JSON.stringify({
       from: {
-        service: DATA.from.service,
+        service: JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).from.service,
         connected: connectedFrom,
-        happens: {
+        actions: {
           index: indexFrom,
-          value: valueFrom
+          value: valueFrom,
         }
       },
       to: {
-        service: DATA.to.service,
+        service: JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).to.service,
         connected: connectedTo,
         actions: {
           index: indexTo,
-          value: valueTo
+          value: valueTo,
         }
       },
       data: {
         active: false,
         description: "Default title"
       }
-    }
-    return obj;
-  }
+    }))
+  }, [connectedFrom, connectedTo, indexFrom, indexTo, valueFrom, valueTo])
 
   return (
     <div className="flex flex-col h-screen w-[100%] p-10">
       <DashHeader />
+      { (typeof window !== "undefined" && window.sessionStorage.getItem("CREATE_BAY")) &&
       <Swiper
         onSwiper={setSwiperRef}
         pagination={{clickable: true}}
@@ -241,11 +181,11 @@ export default function CreateBay() {
         cssMode={true}
         className="mySwiper"
       >
-        <SwiperSlide><Connect slide={0} slideTo={slideTo} setTested={setTested} data={DATA.from} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
-        <SwiperSlide><Connect slide={1} slideTo={slideTo} setTested={setTested} data={DATA.to} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
-        <SwiperSlide><TestBay slide={2} slideTo={slideTo} BayData={createBayData()} tested={tested} setTested={setTested}/></SwiperSlide>
-        <SwiperSlide>Slide 4</SwiperSlide>
+        <SwiperSlide><Connect slide={0} slideTo={slideTo} setTested={setTested} data={JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).from.service} connected={connectedFrom} setConnected={setConnectedFrom} index={indexFrom} setIndex={setIndexFrom} first={true} value={valueFrom} setValue={setValueFrom}/></SwiperSlide>
+        <SwiperSlide><Connect slide={1} slideTo={slideTo} setTested={setTested} data={JSON.parse(window.sessionStorage.getItem("CREATE_BAY")).to.service} connected={connectedTo} setConnected={setConnectedTo} index={indexTo} setIndex={setIndexTo} first={false} value={valueTo} setValue={setValueTo}/></SwiperSlide>
+        <SwiperSlide><TestBay slide={2} BayData={JSON.parse(window.sessionStorage.getItem("CREATE_BAY"))} slideTo={slideTo} tested={tested} setTested={setTested}/></SwiperSlide>
       </Swiper>
+      }
     </div>
   );
 }

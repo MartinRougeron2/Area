@@ -33,11 +33,11 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       setError({error: true, message: <>Service {BayData.from.service.name} not connected!<br/>You need to connect service before testing</>})
     } else if (!BayData.to.connected) {
       setError({error: true, message: <>Service {BayData.to.service.name} not connected!<br/>You need to connect service before testing</>})
-    } else if (BayData.from.happens.index == -1) {
+    } else if (BayData.from.actions.index == -1) {
       setError({error: true, message: <>Service {BayData.from.service.name} no trigger selectionned!<br/>You need to select one trigger before testing</>})
     } else if (BayData.to.actions.index == -1) {
       setError({error: true, message: <>Service {BayData.to.service.name} no actions selectionned!<br/>You need to select one actions before testing</>})
-    } else if (countKeys(BayData.from.happens.value) != BayData.from.service.happens[BayData.from.happens.index].options.length) {
+    } else if (countKeys(BayData.from.actions.value) != BayData.from.service.actions[BayData.from.actions.index].options.length) {
       setError({error: true, message: <>Service {BayData.from.service.name} no value filled!<br/>You need to fill every field before testing</>})
     } else if (countKeys(BayData.to.actions.value) != BayData.to.service.actions[BayData.to.actions.index].options.length) {
       setError({error: true, message: <>Service {BayData.to.service.name} no value filled!<br/>You need to fill every field before testing</>})

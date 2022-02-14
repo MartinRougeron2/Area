@@ -19,8 +19,10 @@ const GET_SERVICES = gql`
       id
       name
       actions {
+        id
         name
         options
+        type
       }
     }
   }`;
@@ -80,7 +82,25 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="flex w-80 mt-10">
-            <MainButton text="Make a Bay"/>
+            <MainButton text="Make a Bay" action={() => {
+              window.sessionStorage.setItem("CREATE_BAY", JSON.stringify({
+                from: {
+                  service: data.GetAllServices.find(elem => elem.id == triggerIndex),
+                  actions: {
+                    index: actionsTriggerIndex,
+                    value: {}
+                  }
+                },
+                to: {
+                  service: data.GetAllServices.find(elem => elem.id == effectIndex),
+                  actions: {
+                    index: actionsEffectIndex,
+                    value: {}
+                  }
+                }
+              }));
+              window.location.href = '/create'
+            }}/>
           </div>
         </>
         }
