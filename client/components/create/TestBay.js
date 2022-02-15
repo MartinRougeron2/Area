@@ -2,21 +2,17 @@ import React, { useEffect, useState } from 'react'
 import MainButton from "../../components/utils/MainButton";
 import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
-import {
-  useMutation,
-  gql
-} from "@apollo/client";
 
-const CREATE_UNIQUE_ACTION = gql`
-  query create_withid($actionid: String!, $param: String!) {
+const CREATE_UNIQUE_ACTION = `
+  mutation create_withid($actionid: String!, $param: String!) {
     CreateUniqueActionByBaseActionId (data: {action_id: $actionid, parameters: $param, old_values: ""}) {
       id
     }
   }
 `
 
-const CREATE_BAYS = gql`
-  query create_withid($actionidfrom: String!, $actionidto: String!, $name: String!, $active: Boolean!, $userid: String!) {
+const CREATE_BAYS = `
+  mutation create_withid($actionidfrom: String!, $actionidto: String!, $name: String!, $active: Boolean!, $userid: String!) {
     CreateBayAction (data: {action_trigger_id: $actionidfrom, action_effect_id: $actionidto, name: $name, active: $active, userid: $userid}) {
       id
     }
@@ -76,6 +72,68 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
         message: ""
       })
     }
+  }
+
+  const processCreation = async () => {
+    let id1, id2;
+    await fetch('http://localhost:5000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: CREATE_UNIQUE_ACTION,
+        variables: {
+          actionid: BayData.from.service.actions[BayData.from.actions.index].id,
+          param: JSON.stringify(BayData.from.actions.value)
+        },
+      }),
+    })
+    .then((res) => res.json())
+    .then((result) => {
+      console.log(result)
+      id1 = result.data.CreateUniqueActionByBaseActionId.id
+    });
+
+    await fetch('http://localhost:5000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: CREATE_UNIQUE_ACTION,
+        variables: {
+          actionid: BayData.to.service.actions[BayData.to.actions.index].id,
+          param: JSON.stringify(BayData.to.actions.value)
+        },
+      }),
+    })
+    .then((res) => res.json())
+    .then((result) => {
+      console.log(result)
+      id2 = result.data.CreateUniqueActionByBaseActionId.id
+    });
+
+    await fetch('http://localhost:5000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: CREATE_BAYS,
+        variables: {
+          actionidfrom: id1,
+          actionidto: id2,
+          name: BayData.data.description,
+          active: BayData.data.active,
+          userid: window.sessionStorage.USERID
+        },
+      }),
+    })
+    .then((res) => res.json())
+    .then((result) => {
+      console.log(result)
+    });
   }
 
   const playTest = async () => {

@@ -209,6 +209,7 @@ export class BayActionResolver {
             active: active
         })
         await newBay.save()
+        console.log(newBay)
         const user = await UserModel.findOne({id: userid}).then((user) => user)
         if (!user)
             return newBay
@@ -285,9 +286,9 @@ export class UserResolver {
         if (!id) {
             return null
         }
-        return await UserModel.findOne({id: id}).then((res) => {
+        return await UserModel.findOne({id: id}).populate('user_actions').populate({path: 'user_actions.action_effect'}).populate({path: 'user_actions.action_trigger'}).then(async (res) => {
             if (!res) return null
-            return res
+            return await res
         })
     }
 }

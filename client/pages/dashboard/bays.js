@@ -13,33 +13,20 @@ const GET_MY_BAYS = gql`
     GetUserById (id: $userid) {
       name
       user_actions {
+        name
+        active
         action_effect {
-          action {
-            name
-            options
-            id
-          }
-          parameters
           service {
             name
             icon
           }
         }
         action_trigger {
-          action {
-            name
-            options
-            id
-          }
-          parameters
           service {
             name
             icon
           }
         }
-        id
-        active
-        name
       }
     }
   }
