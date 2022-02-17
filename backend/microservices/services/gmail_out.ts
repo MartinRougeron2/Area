@@ -29,7 +29,7 @@ function sendMessage(auth: any, to: string, from: string, message: string) {
 function publishMessage(from: string, to: string, text: string, token: string) {
     const oAuth2Client = new google.auth.OAuth2()
     oAuth2Client.setCredentials({access_token: token})
-    return sendMessage(oAuth2Client, from, to, text)
+    return sendMessage(oAuth2Client, to, from, text)
 }
 
 
