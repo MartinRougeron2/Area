@@ -1,32 +1,10 @@
 import {Installation, InstallationQuery} from "@slack/oauth";
-import {gql} from "apollo-boost";
+import {create_unique_action} from "./common";
+import express from "express";
 
 const {InstallProvider} = require('@slack/oauth');
 const {createEventAdapter} = require('@slack/events-api');
-const {client} = require("./apollo_client")
 
-
-const CREATE_UNIQUE_ACTION = gql`
-    mutation CreateUniqueActionByBaseActionIdMutation($action_id: String!, $parameters: String!, $old_values: String!) {
-        CreateUniqueActionByBaseActionId(data: {action_id: $action_id, parameters: $parameters, old_values: $old_values}) {
-            id
-            action {
-                id
-            }
-        }
-    }
-`;
-
-const CREATE_LINK = gql`
-    mutation CreateLinksWithActionIdMutation($action_id: String!, $token: String!) {
-        CreateLinksWithActionId(data: {action_id: $action_id, token: $token}) {
-            id
-            action {
-                id
-            }
-        }
-    }
-`;
 
 module.exports = (app: any) => {
 
@@ -45,28 +23,12 @@ module.exports = (app: any) => {
         stateSecret: 'putain-je-suis-un-lover-reno-2022',
         installationStore: {
             storeInstallation: async (installation: Installation) => {
-                const action_id = installation.metadata
+                const action_id = installation.metadata ?? ""
                 const parameters = {channel_id: installation?.incomingWebhook?.channelId}
                 const parameters_json = JSON.stringify(parameters)
                 const token = installation.bot?.token + "|" + installation.bot?.refreshToken
 
-                client.mutate({
-                    mutation: CREATE_UNIQUE_ACTION,
-                    variables: {
-                        action_id: action_id,
-                        parameters: parameters_json,
-                        old_values: ""
-                    }
-                }).catch((err: any) => {console.log(err)}).then((result: any) => {
-                    console.log(result.data.CreateUniqueActionByBaseActionId.id)
-                     client.mutate({
-                        mutation: CREATE_LINK,
-                        variables: {
-                            action_id: result.data.CreateUniqueActionByBaseActionId.id,
-                            token: token
-                        }
-                    }).catch((err: any) => {console.log(err)}).then((result: any) => console.log(result));
-                });
+                create_unique_action(action_id, parameters_json, token)
 
 
             },
@@ -79,7 +41,7 @@ module.exports = (app: any) => {
         }
     })
 
-    app.get('/auth/slack', async (__req: any, res: any, __next: any) => {
+    app.get('/auth/slack', async (__req: express.Request, res: any, __next: any) => {
         try {
             // feel free to modify the scopes
             const url = await installer.generateInstallUrl({
@@ -97,7 +59,7 @@ module.exports = (app: any) => {
         }
     });
 
-    app.get('/auth/slack-redirect', async (req: any, res: any) => {
+    app.get('/auth/slack-redirect', async (req: express.Request, res: any) => {
         await installer.handleCallback(req, res);
     });
 
