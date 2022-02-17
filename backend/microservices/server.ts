@@ -12,6 +12,7 @@ app.listen(port, () => {
 require('./graphql')(app);
 
 //const {task} = require('./services/slack_in')
+require('./services/gmail_in')
 
 //task.start()
 
