@@ -14,6 +14,7 @@ import {
     LinksResolver
 } from "./resolvers";
 import {SlackOutResolver} from "./services/slack_out";
+import {GmailOutResolver} from "./services/gmail_out";
 
 
 module.exports = async function (app: Application) {
@@ -26,7 +27,9 @@ module.exports = async function (app: Application) {
             ServiceResolver,
             UserResolver,
             LinksResolver,
-            SlackOutResolver
+
+            SlackOutResolver,
+            GmailOutResolver
         ],
         emitSchemaFile: true,
         validate: true,

@@ -40,6 +40,9 @@ class ResultUser {
 
     @Field()
     is_new!: boolean
+
+    @Field()
+    jwt!: string
 }
 
 @InputType()

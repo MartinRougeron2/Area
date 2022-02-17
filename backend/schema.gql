@@ -79,6 +79,7 @@ type Mutation {
   CreateService(data: InputService!): Service
   CreateUniqueActionByBaseActionId(data: UniqueActionInput!): UniqueAction
   CreateUser(data: InputUser!): ResultUser
+  SendGmailMail(data: CommunicationInput!): Boolean!
   SendSlackMessage(data: CommunicationInput!): Boolean!
 }
 
@@ -99,6 +100,7 @@ type Query {
 
 type ResultUser {
   is_new: Boolean!
+  jwt: String!
   user: User!
 }
 
