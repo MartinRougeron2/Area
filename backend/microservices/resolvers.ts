@@ -1,8 +1,9 @@
-import {Resolver, Arg, Query, InputType, Field, Mutation, ObjectType} from 'type-graphql';
+import {Resolver, Arg, Query, InputType, Field, Mutation, ObjectType, Ctx} from 'type-graphql';
 import {prop as Property} from "@typegoose/typegoose/lib/prop";
 import {Ref} from "@typegoose/typegoose";
 import {BaseAction, UniqueAction, BayAction, Service, User, Links} from './types';
 import {BaseActionModel, UniqueActionModel, BayActionModel, ServiceModel, UserModel, LinksModel} from './types';
+// import {Context} from "apollo-server-core";
 
 const mongoose = require('mongoose');
 
@@ -274,10 +275,9 @@ export class UserResolver {
         if (obj) {
             resUser.user = obj as User
             resUser.is_new = false
-            if (bcrypt.compareSync(password, resUser.user.password)){
+            if (bcrypt.compareSync(password, resUser.user.password)) {
                 new_jwt = jwt.sign({id: resUser.user.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
-            }
-            else {
+            } else {
                 resUser.user.password = ""
                 new_jwt = "bad"
             }
@@ -326,10 +326,18 @@ export class UserResolver {
     }
 
 
+    @Query((_returns) => String, {nullable: true})
+    async RefreshToken(@Ctx() ctx: any) {
+        return jwt.sign({id: ctx._id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
+    }
+
     @Query((_returns) => User, {nullable: true})
-    async GetUserById(@Arg('id') id?: string) {
-        if (!id) {
-            return null
+    async GetUser(@Ctx() ctx: any, @Arg('id', {nullable: true}) id?: string) {
+        console.log(ctx)
+        if (!ctx) return null
+
+        if (!id && ctx._id) {
+            id = ctx._id
         }
         return await UserModel.findById(id).populate({
             path: 'user_actions',
