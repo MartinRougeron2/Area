@@ -1,6 +1,13 @@
 import {ObjectType, Field, ID, InputType, registerEnumType, } from 'type-graphql';
 import {prop as Property, getModelForClass, Ref} from '@typegoose/typegoose';
 
+// If you are using mongoose:
+const ObjectId = require('mongoose').Types.ObjectId;
+
+ObjectId.prototype.valueOf = function () {
+	return this.toString();
+};
+
 enum ActionType {
     TRIGGER,
     EFFECT,

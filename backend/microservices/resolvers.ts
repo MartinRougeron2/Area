@@ -269,10 +269,29 @@ export class UserResolver {
         if (!id) {
             return null
         }
-        return await UserModel.findOne({id: id}).then((res) => {
-            if (!res) return null
-            return res
-        })
+        return await UserModel.findById(id).populate({
+            path: 'user_actions',
+            model: BayActionModel,
+            populate: {
+                path: 'action_trigger',
+                model: UniqueActionModel,
+                populate: {
+                    path: 'action',
+                    model: BaseActionModel
+                }
+            },
+        }).populate({
+            path: 'user_actions',
+            model: BayActionModel,
+            populate: {
+                path: 'action_effect',
+                model: UniqueActionModel,
+                populate: {
+                    path: 'action',
+                    model: BaseActionModel
+                }
+            },
+        }).then((res) => res)
     }
 }
 
@@ -286,13 +305,15 @@ export class LinksResolver {
         const action = await UniqueActionModel.findById(id).then((res) => res)
 
         const obj = await LinksModel.findOne({action: action})
-            .catch(err => {console.log("CreateLinksWithActionId - " + err)})
+            .catch(err => {
+                console.log("CreateLinksWithActionId - " + err)
+            })
             .then((res) => {
-            if (!res) return null
-            res.token = token
-            res.save()
-            return res
-        })
+                if (!res) return null
+                res.token = token
+                res.save()
+                return res
+            })
         if (obj) return obj
         const newLink = await LinksModel.create({
             action: action,
