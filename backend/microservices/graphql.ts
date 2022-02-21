@@ -1,6 +1,6 @@
 import {Application} from "express";
 import {ApolloServer} from 'apollo-server-express';
-import {ApolloServerPluginLandingPageGraphQLPlayground} from 'apollo-server-core';
+import {ApolloServerPluginLandingPageGraphQLPlayground, /*AuthenticationError*/} from 'apollo-server-core';
 import 'reflect-metadata';
 import {buildSchema} from 'type-graphql';
 import {connect} from "mongoose";
@@ -14,6 +14,9 @@ import {
     LinksResolver
 } from "./resolvers";
 import {SlackOutResolver} from "./services/slack_out";
+//import { UserModel } from "./types";
+
+//const jwt = require('jsonwebtoken');
 
 
 module.exports = async function (app: Application) {
@@ -41,6 +44,17 @@ module.exports = async function (app: Application) {
     const server = new ApolloServer({
         schema,
         plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
+        context: async ({ req }) => {
+            const token = req.headers["x-token"] || '';
+            // const decoded_token = jwt.verify(token, process.env.TOKEN_JWT)
+            // if (req.body.query.includes("mutation {\n  CreateUser(")) return
+            // if (!decoded_token) return
+            // const user = await UserModel.findById(decoded_token.id).then((res) => res)
+            // if(!user) throw new AuthenticationError('You must be logged in');
+            // if(user.id !== decoded_token.id) throw new AuthenticationError('You must be logged in');
+            // return user;
+            return token
+        },
     });
 
 

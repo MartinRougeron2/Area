@@ -12,6 +12,7 @@ let auth_server = express();
 
 
 require("./slack_oauth")(auth_server)
+require("./discord_oauth")(auth_server)
 
 auth_server.get('/auth/finish', ((__req: any, res: any) => {
     res.send('<h1> Finished ! </h1><h4>You can close it</h4>')
