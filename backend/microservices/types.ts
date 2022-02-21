@@ -48,7 +48,7 @@ export class UniqueAction {
     old_values?: string
 
     @Field(() => BaseAction)
-    @Property({ref: () => BaseAction})
+    @Property({ref: () => BaseAction, autopopulate: true})
     public action!: Ref<BaseAction>;
 
     @Field(() => Service)
@@ -65,17 +65,19 @@ export class BayAction {
     id!: string;
 
     @Field({defaultValue: ""})
+    @Property()
     name!: string;
 
     @Field({defaultValue: true})
+    @Property()
     active!: boolean;
 
     @Field(() => UniqueAction)
-    @Property({ref: () => UniqueAction})
+    @Property({ref: () => UniqueAction, autopopulate: true})
     public action_trigger!: Ref<UniqueAction>;
 
     @Field(() => UniqueAction)
-    @Property({ref: () => UniqueAction})
+    @Property({ref: () => UniqueAction, autopopulate: true})
     public action_effect!: Ref<UniqueAction>;
 }
 

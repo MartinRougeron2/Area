@@ -44,6 +44,9 @@ input InputBaseActionAttach {
 input InputBayAction {
   action_effect_id: String!
   action_trigger_id: String!
+  active: Boolean!
+  name: String!
+  userid: String!
 }
 
 input InputLink {
