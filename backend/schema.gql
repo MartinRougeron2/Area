@@ -98,7 +98,8 @@ type Query {
   GetLinksById(id: String!): Links
   GetServiceById(id: String!): Service
   GetUniqueActionById(id: String!): UniqueAction
-  GetUserById(id: String!): User
+  GetUser(id: String): User
+  RefreshToken: String
 }
 
 type ResultUser {
