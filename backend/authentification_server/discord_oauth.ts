@@ -1,6 +1,26 @@
 import express from "express";
+import {create_unique_action} from "./common";
 
 const DiscordOauth2 = require("discord-oauth2");
+
+interface IResponse {
+    access_token: string,
+    expires_in: number,
+    refresh_token: string,
+    scope: string,
+    token_type: string,
+    webhook: {
+      type: number,
+      id: string,
+      name: string,
+      avatar: string,
+      channel_id: string,
+      guild_id: string,
+      application_id: string,
+      token: string,
+      url: string
+    }
+  }
 
 module.exports = (app: any) => {
     console.log("installing discord auth")
@@ -13,7 +33,7 @@ module.exports = (app: any) => {
         try {
             // feel free to modify the scopes
             const url = oauth.generateAuthUrl({
-                scope: ["identify", "guilds", "messages.read", "bot"],
+                scope: ["webhook.incoming"],
                 state: "renoleplusbo"
             })
 
@@ -28,7 +48,12 @@ module.exports = (app: any) => {
             oauth.tokenRequest({
                 code: req.query.code,
                 grantType: "authorization_code",
-            }).then(console.log)
+            }).then((d: IResponse) => {
+                console.log(d.webhook.url)
+                const paramaters = {url: d.webhook.url}
+                create_unique_action("62te6384ca747da158dr189y", JSON.stringify(paramaters), "");
+            });
+
         } catch (error) {
             console.log(error)
         }
