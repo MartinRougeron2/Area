@@ -274,10 +274,11 @@ export class UserResolver {
         if (obj) {
             resUser.user = obj as User
             resUser.is_new = false
-            if (resUser.user.password == bcrypt.hashSync(password, 8)) {
+            if (bcrypt.compareSync(password, resUser.user.password)){
                 new_jwt = jwt.sign({id: resUser.user.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
             }
             else {
+                resUser.user.password = ""
                 new_jwt = "bad"
             }
             resUser.jwt_token = new_jwt
