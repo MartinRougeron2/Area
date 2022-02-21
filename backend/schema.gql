@@ -100,7 +100,7 @@ type Query {
 
 type ResultUser {
   is_new: Boolean!
-  jwt: String!
+  jwt_token: String!
   user: User!
 }
 

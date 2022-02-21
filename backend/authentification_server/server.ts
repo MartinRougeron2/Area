@@ -24,7 +24,7 @@ auth_server.get('/fail', (__req, res) => {
 
 require("./slack_oauth")(auth_server)
 require("./google_oauth")(auth_server)
-
+// require("./discord_oauth")(auth_server)
 
 auth_server.get('/auth/finish', ((__req: express.Request, res: any) => {
     res.send('<h1> Finished ! </h1><h4>You can close it</h4>')

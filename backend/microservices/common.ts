@@ -18,18 +18,18 @@ function trigger_effects(unique_actions: UniqueAction, text_to_send: string) {
 
 async function dispatch_event(action_effect_ref: Ref<UniqueAction>, msg: string) {
     console.log(action_effect_ref, msg)
-    if (!action_effect_ref) return
-    if (!msg) return
+    if (!action_effect_ref) return // null check
+    if (!msg) return // null check
 
     const action_effect = action_effect_ref as UniqueAction // populate before : Ref => Complete Model
 
-    if (!action_effect) return null
+    if (!action_effect) return // null check
 
     const effect_base = action_effect.action
     const effect_service = await ServiceModel.findOne({actions: effect_base}).then((res) => res)
 
-    if (!effect_service) return
-    if (!effect_service.out_url) return
+    if (!effect_service) return // null check
+    if (!effect_service.out_url) return // null check
 
     const mutation = gql`
         mutation NewEventMutation($action_id: String!, $text: String!) {

@@ -1608,6 +1608,11 @@ diff@^4.0.1:
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
 
+discord-oauth2@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/discord-oauth2/-/discord-oauth2-2.9.0.tgz#5fb64f79f92f654aa4c7d44e993e4dc257126628"
+  integrity sha512-2DtocOmsXw5KjhW4eUMpr6RAih+juON0DOzSWr6F8qZePzuOJWznHbqDJmU70YB4Wv2Psyc6Shr3SEvRQ2Gk4Q==
+
 dot-prop@^5.2.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-5.3.0.tgz#90ccce708cd9cd82cc4dc8c3ddd9abdd55b20e88"

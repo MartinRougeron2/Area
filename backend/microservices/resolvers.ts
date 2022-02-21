@@ -6,7 +6,9 @@ import {BaseActionModel, UniqueActionModel, BayActionModel, ServiceModel, UserMo
 
 const mongoose = require('mongoose');
 
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+
+const jwt = require('jsonwebtoken');
 
 @InputType()
 class InputService {
@@ -42,7 +44,7 @@ class ResultUser {
     is_new!: boolean
 
     @Field()
-    jwt!: string
+    jwt_token!: string
 }
 
 @InputType()
@@ -127,7 +129,7 @@ export class BaseActionResolver {
 
     @Mutation((_returns) => Service, {nullable: true})
     async AttachBaseAction(@Arg('data') {service_id, baseaction_id}: InputBaseActionAttach): Promise<Service | null> {
-        const service = await ServiceModel.findOne({id: service_id}).then((service) => service)
+        const service = await ServiceModel.findById({id: service_id}).then((service) => service)
 
         if (!service) return null // null verif
 
@@ -135,7 +137,7 @@ export class BaseActionResolver {
             path: 'actions',
         })
 
-        const baseAction = await BaseActionModel.findOne({id: baseaction_id}).then((res) => res)
+        const baseAction = await BaseActionModel.findById({id: baseaction_id}).then((res) => res)
         if (!service) return null// null verif
         if (!baseAction) return null // null verif
 
@@ -150,7 +152,7 @@ export class BaseActionResolver {
         if (!id) {
             return null
         }
-        return await BaseActionModel.findOne({id: id}).then((res) => {
+        return await BaseActionModel.findById(id).then((res) => {
             if (!res) return null
             return res
         })
@@ -181,7 +183,7 @@ export class UniqueActionResolver {
         if (!id) {
             return null
         }
-        return await UniqueActionModel.findOne({id: id}).then((res) => {
+        return await UniqueActionModel.findById(id).then((res) => {
             if (!res) return null
             return res
         })
@@ -207,7 +209,7 @@ export class BayActionResolver {
 
     @Query((_returns) => BayAction, {nullable: true})
     async GetBayActionById(@Arg('id') id: string) {
-        return await BayActionModel.findOne({id: id}).then((res) => res)
+        return await BayActionModel.findById(id).then((res) => res)
     }
 }
 
@@ -228,7 +230,7 @@ export class ServiceResolver {
 
     @Query((_returns) => Service, {nullable: true})
     async GetServiceById(@Arg('id') id: string) {
-        return await ServiceModel.findOne({id: id}).then((res) => res)
+        return await ServiceModel.findById(id).then((res) => res)
     }
 
     @Query((_returns) => [Service], {nullable: true})
@@ -242,24 +244,36 @@ export class UserResolver {
     @Mutation((_returns) => ResultUser, {nullable: true})
     async CreateUser(@Arg('data') {name, email, password}: InputUser) {
         const resUser = new ResultUser()
+        let new_jwt = null
+
         const obj = await UserModel.findOne().or([{email: email}, {name: name}]).then((res) => {
             if (!res) return null
             return res
         })
+
         if (obj) {
             resUser.user = obj as User
             resUser.is_new = false
+            if (resUser.user.password == bcrypt.hashSync(password, 8)) {
+                new_jwt = jwt.sign({id: resUser.user.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
+            }
+            else {
+                new_jwt = "bad"
+            }
+            resUser.jwt_token = new_jwt
             return resUser
+            //if bad password jwt is bad
         }
-
         const newUser = await UserModel.create({
             name: name,
             password: bcrypt.hashSync(password, 8),
             email: email
         })
         await newUser.save()
+
         resUser.user = newUser
         resUser.is_new = true
+        resUser.jwt_token = jwt.sign({id: newUser.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
         return resUser
     }
 
@@ -326,6 +340,6 @@ export class LinksResolver {
 
     @Query((_returns) => Links, {nullable: true})
     async GetLinksById(@Arg('id') id: string) {
-        return await LinksModel.findOne({id: id}).then((res) => res)
+        return await LinksModel.findById(id).then((res) => res)
     }
 }
