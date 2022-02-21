@@ -99,6 +99,7 @@ type Query {
   GetServiceById(id: String!): Service
   GetUniqueActionById(id: String!): UniqueAction
   GetUserById(id: String!): User
+  LoginUser(data: InputUser!): ResultUser
 }
 
 type ResultUser {

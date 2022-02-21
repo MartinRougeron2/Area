@@ -298,6 +298,33 @@ export class UserResolver {
         return resUser
     }
 
+    @Query((_returns) => ResultUser, {nullable: true})
+    async LoginUser(@Arg('data') {email, password}: InputUser) {
+        const resUser = new ResultUser()
+        let new_jwt = null
+
+        const obj = await UserModel.findOne().or([{email: email}]).then((res) => {
+            if (!res) return null
+            return res
+        })
+
+        if (obj) {
+            resUser.user = obj as User
+            resUser.is_new = false
+            if (bcrypt.compareSync(password, resUser.user.password)){
+                new_jwt = jwt.sign({id: resUser.user.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
+            }
+            else {
+                resUser.user.password = ""
+                new_jwt = "bad"
+            }
+            resUser.jwt_token = new_jwt
+            return resUser
+        }
+        resUser.is_new = true
+        return resUser
+    }
+
 
     @Query((_returns) => User, {nullable: true})
     async GetUserById(@Arg('id') id?: string) {
