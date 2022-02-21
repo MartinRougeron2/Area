@@ -3,7 +3,7 @@ import {google} from "googleapis";
 import {create_unique_action} from "./common";
 import {LoginTicket} from "google-auth-library/build/src/auth/loginticket";
 
-const SCOPES = ['https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'];
+const SCOPES = ['https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email', "email"];
 
 interface Query {
    code:string;
@@ -43,7 +43,7 @@ module.exports = (app: any) => {
         oAuth2Client.getToken(code, (err: any, token: any | string, __res: any) => {
             if (err)
                 return console.error('Error retrieving access token', err);
-            console.log(token.id_token);
+            console.log(token);
             oAuth2Client.verifyIdToken({idToken: token.id_token, audience: process.env.GOOGLE_CLIENT_ID ?? ""})
                 .catch((err) => console.log(err))
                 .then((res: LoginTicket | void) => {
