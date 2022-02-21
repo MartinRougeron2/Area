@@ -15,8 +15,12 @@ import {
 } from "./resolvers";
 import {SlackOutResolver} from "./services/slack_out";
 import {GmailOutResolver} from "./services/gmail_out";
+<<<<<<< HEAD
 import {GCalendarOutResolver} from "./services/gcalendar_out";
 import { UserModel } from "./types";
+=======
+import {UserModel} from "./types";
+>>>>>>> fix jwt
 
 const jwt = require('jsonwebtoken');
 
@@ -49,18 +53,31 @@ module.exports = async function (app: Application) {
     const server = new ApolloServer({
         schema,
         plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
-        context: async ({ req }) => {
+        context: async ({req}) => {
+            // console.log(req)
+            if (req.body.query.includes("mutation {\n  CreateUser(")) return
+
             const token = req.headers["x-token"] || '';
+<<<<<<< HEAD
 
             if (req.body.query.includes("CreateUser")) return
             if (req.body.query.includes("LoginUser")) return
             const decoded_token = jwt.verify(token, process.env.TOKEN_JWT)
+=======
+            const decoded_token = jwt.verify(token, process.env.TOKEN_JWT)
+
+>>>>>>> fix jwt
             if (!decoded_token) return
 
             const user = await UserModel.findById(decoded_token.id).then((res) => res)
 
+<<<<<<< HEAD
             if(!user) throw new AuthenticationError('You must be logged in');
             if(user.id !== decoded_token.id) throw new AuthenticationError('You must be logged in');
+=======
+            if (!user) throw new AuthenticationError('You must be logged in');
+            if (user.id !== decoded_token.id) throw new AuthenticationError('You must be logged in');
+>>>>>>> fix jwt
 
             return user;
         },
