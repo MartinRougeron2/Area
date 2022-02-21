@@ -42,7 +42,11 @@ var task = cron.schedule('15 * * * * *', () => {
             if (!res_unique_actions) return // null verif
 
             for (let unique_actions of res_unique_actions) {
+                // @ts-ignore
+                if (unique_actions.action.type == 1) continue;
+
                 const obj = JSON.parse(unique_actions.parameters)
+
                 LinksModel.findOne({action: unique_actions}).then(async (link_res) => {
                     if (!link_res) return // null verif
 

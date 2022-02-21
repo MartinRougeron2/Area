@@ -14,6 +14,7 @@ import {
     LinksResolver
 } from "./resolvers";
 import {SlackOutResolver} from "./services/slack_out";
+import {GmailOutResolver} from "./services/gmail_out";
 //import { UserModel } from "./types";
 
 //const jwt = require('jsonwebtoken');
@@ -29,7 +30,9 @@ module.exports = async function (app: Application) {
             ServiceResolver,
             UserResolver,
             LinksResolver,
-            SlackOutResolver
+
+            SlackOutResolver,
+            GmailOutResolver
         ],
         emitSchemaFile: true,
         validate: true,
