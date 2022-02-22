@@ -3,28 +3,26 @@ import {google} from "googleapis";
 import {create_unique_action} from "./common";
 import {LoginTicket} from "google-auth-library/build/src/auth/loginticket";
 
-const SCOPES = ['https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email', "email"];
+const SCOPES = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events', 'https://www.googleapis.com/auth/calendar.events.readonly', 'https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'];
 
 interface Query {
    code:string;
    state:string;
 }
 
-const oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID ?? "", process.env.GOOGLE_CLIENT_SECRET ?? "", "https://localhost:3000/auth/google/callback");
+const oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID ?? "", process.env.GOOGLE_CLIENT_SECRET ?? "", "https://localhost:3000/auth/gcalendar/callback");
 
 module.exports = (app: any) => {
 
     // app.use(authMiddleWare.authn());
 
     console.log(oAuth2Client)
-    app.get('/auth/google', (req: express.Request, res: express.Response) => {
-
-        const email_to_send = req.query.email as unknown as string
+    app.get('/auth/gcalendar', (__req: express.Request, res: express.Response) => {
 
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: SCOPES,
-            state: email_to_send
+            state: ""
         });
         console.log(oAuth2Client)
         res.redirect(authUrl)
@@ -36,9 +34,8 @@ module.exports = (app: any) => {
     //         res.redirect('/auth/google/win');
     //     });
 
-    app.get('/auth/google/callback', async (req: express.Request, res: express.Response) => {
-        const {code, state} = req.query as unknown as Query;
-        const to_email = state
+    app.get('/auth/gcalendar/callback', async (req: express.Request, res: express.Response) => {
+        const {code} = req.query as unknown as Query;
 
         oAuth2Client.getToken(code, (err: any, token: any | string, __res: any) => {
             if (err)
@@ -53,8 +50,8 @@ module.exports = (app: any) => {
                     const payload = res.getPayload()
                     if (!payload)
                         return;
-                    const params = {from_email: payload.email, to_email: to_email};
-                    create_unique_action("620e6324cb747da158da08ee", JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    const params = {date: ""};
+                    create_unique_action("6214aeee87b6d7cc53ccb0bf", JSON.stringify(params), token.access_token + "|" + token.refresh_token);
                 });
 
         });

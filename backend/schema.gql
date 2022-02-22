@@ -77,6 +77,7 @@ type Mutation {
   AttachBaseAction(data: InputBaseActionAttach!): Service
   CreateBaseAction(data: InputBaseAction!): BaseAction
   CreateBayAction(data: InputBayAction!): BayAction
+  CreateEvent(data: CommunicationInput!): Boolean!
   CreateLinksWithActionId(data: InputLink!): Links
   CreateOrModifyOptionsBaseAction(data: OptionsInputType!): BaseAction
   CreateService(data: InputService!): Service
