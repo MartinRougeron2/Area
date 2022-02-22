@@ -14,7 +14,7 @@ import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
 
 const GET_SERVICES = gql`
-  query {
+  query get_services {
     GetAllServices {
       id
       name
