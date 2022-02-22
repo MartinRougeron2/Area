@@ -89,6 +89,7 @@ type Mutation {
   DeleteService(id: String!): Boolean!
   DeleteUniqueAction(id: String!): Boolean!
   DeleteUser(id: String!): Boolean!
+  SendDiscordMessage(data: CommunicationInput!): Boolean!
   SendGmailMail(data: CommunicationInput!): Boolean!
   SendSlackMessage(data: CommunicationInput!): Boolean!
 }

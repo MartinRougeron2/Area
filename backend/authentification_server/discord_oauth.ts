@@ -49,9 +49,8 @@ module.exports = (app: any) => {
                 code: req.query.code,
                 grantType: "authorization_code",
             }).then((d: IResponse) => {
-                console.log(d.webhook.url)
                 const paramaters = {url: d.webhook.url}
-                create_unique_action("62te6384ca747da158dr189y", JSON.stringify(paramaters), "");
+                create_unique_action("6214b22070195fe3fc78625c", JSON.stringify(paramaters), "");
             });
 
         } catch (error) {
