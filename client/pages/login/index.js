@@ -31,7 +31,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (data && data.LoginUser) {
-      if (data.LoginUser.is_new === false && data.LoginUser.jwt_token === "bad") {
+      if (data.LoginUser.is_new === false && data.LoginUser.jwt_token !== "bad") {
         cookies.set('x-token', data.LoginUser.jwt_token, {path: '/'})
         window.location.href = "/dashboard"
       }

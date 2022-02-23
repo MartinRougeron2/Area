@@ -62,7 +62,7 @@ input InputService {
 
 input InputUser {
   email: String!
-  name: String!
+  name: String
   password: String!
 }
 
@@ -98,9 +98,8 @@ type Query {
   GetLinksById(id: String!): Links
   GetServiceById(id: String!): Service
   GetUniqueActionById(id: String!): UniqueAction
-  GetUserById(id: String!): User
-  LoginUser(data: InputUser!): ResultUser
   GetUser(id: String): User
+  LoginUser(data: InputUser!): ResultUser
   RefreshToken: String
 }
 

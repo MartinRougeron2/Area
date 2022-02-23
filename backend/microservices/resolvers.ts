@@ -25,8 +25,8 @@ class InputService {
 
 @InputType()
 class InputUser {
-    @Field()
-    name!: string
+    @Field({nullable: true})
+    name?: string
 
     @Field()
     email!: string
@@ -322,6 +322,7 @@ export class UserResolver {
             return resUser
         }
         resUser.is_new = true
+        resUser.jwt_token = "account not registered"
         return resUser
     }
 

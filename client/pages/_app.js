@@ -1,15 +1,37 @@
 import '../styles/globals.css'
-import React from 'react'
+import React, {useEffect} from 'react'
 import {
   ApolloClient,
   InMemoryCache,
-  ApolloProvider
+  ApolloProvider,
+  createHttpLink
 } from "@apollo/client";
 
+import { setContext } from '@apollo/client/link/context';
+
 import "./styles.css";
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
+
+const httpLink = createHttpLink({
+  uri: 'http://localhost:5000/graphql',
+  credentials: 'include'
+});
+
+const authLink = setContext((_, { headers }) => {
+  console.log(_)
+  const token = cookies.getItem('x-token');
+  return {
+    headers: {
+      ...headers,
+      'x-token': token ?? '',
+    }
+  }
+});
 
 const client = new ApolloClient({
-  uri: "http://localhost:5000/graphql",
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
 
