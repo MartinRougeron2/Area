@@ -3,6 +3,10 @@ import MainButton from "../../components/utils/MainButton";
 import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
 
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
+
 const CREATE_UNIQUE_ACTION = `
   mutation create_withid($actionid: String!, $param: String!) {
     CreateUniqueActionByBaseActionId (data: {action_id: $actionid, parameters: $param, old_values: ""}) {
@@ -12,8 +16,8 @@ const CREATE_UNIQUE_ACTION = `
 `
 
 const CREATE_BAYS = `
-  mutation create_withid($actionidfrom: String!, $actionidto: String!, $name: String!, $active: Boolean!, $userid: String!) {
-    CreateBayAction (data: {action_trigger_id: $actionidfrom, action_effect_id: $actionidto, name: $name, active: $active, userid: $userid}) {
+  mutation create_withid($actionidfrom: String!, $actionidto: String!, $name: String!, $active: Boolean!) {
+    CreateBayAction (data: {action_trigger_id: $actionidfrom, action_effect_id: $actionidto, name: $name, active: $active}) {
       id
     }
   }
@@ -30,9 +34,6 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
     message: ""
   })
 
-  // const [createUniqueAction, { data, loading, error }] = useMutation(CREATE_UNIQUE_ACTION);
-  // const [createBay, { data, loading, error }] = useMutation(CREATE_BAYS);
-
   const countKeys = (obj) => {
     var res = Object.keys(obj).length
 
@@ -43,13 +44,11 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
     return res;
   }
 
+  const getActionById = (actions, id) => {
+    return actions.find(elem => elem.id === id)
+  }
+
   const checkData = () => {
-    try {
-      console.log(countKeys(BayData.from.actions.value), JSON.parse(BayData.from.service.actions[BayData.from.actions.index].options).length)
-    } catch (e) {}
-    try {
-      console.log(countKeys(BayData.to.actions.value), JSON.parse(BayData.to.service.actions[BayData.to.actions.index].options).length)
-    } catch (e) {}
     if (!BayData) {
       setError({error: true, message: <>Error while loading BayData</>})
     } else if (!BayData.from.service || !BayData.to.service) {
@@ -62,9 +61,9 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       setError({error: true, message: <>Service {BayData.from.service.name} no trigger selectionned!<br/>You need to select one trigger before testing</>})
     } else if (BayData.to.actions.index == -1) {
       setError({error: true, message: <>Service {BayData.to.service.name} no actions selectionned!<br/>You need to select one actions before testing</>})
-    } else if (countKeys(BayData.from.actions.value) != JSON.parse(BayData.from.service.actions[BayData.from.actions.index].options).length) {
+    } else if (countKeys(BayData.from.actions.value) != JSON.parse(getActionById(BayData.from.service.actions, BayData.from.actions.index).options).length) {
       setError({error: true, message: <>Service {BayData.from.service.name} no value filled!<br/>You need to fill every field before testing</>})
-    } else if (countKeys(BayData.to.actions.value) != JSON.parse(BayData.to.service.actions[BayData.to.actions.index].options).length) {
+    } else if (countKeys(BayData.to.actions.value) != JSON.parse(getActionById(BayData.to.service.actions, BayData.to.actions.index).options).length) {
       setError({error: true, message: <>Service {BayData.to.service.name} no value filled!<br/>You need to fill every field before testing</>})
     } else {
       setError({
@@ -80,18 +79,18 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-token': cookies.get('x-token')
       },
       body: JSON.stringify({
         query: CREATE_UNIQUE_ACTION,
         variables: {
-          actionid: BayData.from.service.actions[BayData.from.actions.index].id,
+          actionid: getActionById(BayData.from.service.actions, BayData.from.actions.index).id,
           param: JSON.stringify(BayData.from.actions.value)
         },
       }),
     })
     .then((res) => res.json())
     .then((result) => {
-      console.log(result)
       id1 = result.data.CreateUniqueActionByBaseActionId.id
     });
 
@@ -99,11 +98,12 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-token': cookies.get('x-token')
       },
       body: JSON.stringify({
         query: CREATE_UNIQUE_ACTION,
         variables: {
-          actionid: BayData.to.service.actions[BayData.to.actions.index].id,
+          actionid: getActionById(BayData.to.service.actions, BayData.to.actions.index).id,
           param: JSON.stringify(BayData.to.actions.value)
         },
       }),
@@ -118,6 +118,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-token': cookies.get('x-token')
       },
       body: JSON.stringify({
         query: CREATE_BAYS,
@@ -126,7 +127,6 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
           actionidto: id2,
           name: BayData.data.description,
           active: BayData.data.active,
-          userid: window.sessionStorage.USERID
         },
       }),
     })
@@ -168,8 +168,8 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
           <div className='flex flex-row justify-around w-[45%]'>
             <img className="w-[20%]" src={BayData.from.service.icon} />
             <div className='flex flex-col items-start'>
-              <span className='font-bold text-md'>When {BayData.from.service.actions[BayData.from.actions.index].name}</span>
-              {JSON.parse(BayData.from.service.actions[BayData.from.actions.index].options).map((elem, key) => {
+              <span className='font-bold text-md'>When {getActionById(BayData.from.service.actions, BayData.from.actions.index).name}</span>
+              {JSON.parse(getActionById(BayData.from.service.actions, BayData.from.actions.index).options).map((elem, key) => {
                 return (
                   <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.from.actions.value[key]}</span>
                 )
@@ -182,8 +182,8 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
           <div className='flex flex-row justify-around w-[45%]'>
             <img className="w-[20%]" src={BayData.to.service.icon} />
             <div className='flex flex-col items-start'>
-              <span className='font-bold text-md'>Do {BayData.to.service.actions[BayData.to.actions.index].name}</span>
-              {JSON.parse(BayData.to.service.actions[BayData.to.actions.index].options).map((elem, key) => {
+              <span className='font-bold text-md'>Do {getActionById(BayData.to.service.actions, BayData.to.actions.index).name}</span>
+              {JSON.parse(getActionById(BayData.to.service.actions, BayData.to.actions.index).options).map((elem, key) => {
                 return (
                   <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.to.actions.value[key]}</span>
                 )

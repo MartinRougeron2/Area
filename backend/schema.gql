@@ -46,7 +46,6 @@ input InputBayAction {
   action_trigger_id: String!
   active: Boolean!
   name: String!
-  userid: String!
 }
 
 input InputLink {
