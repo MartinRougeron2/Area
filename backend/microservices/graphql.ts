@@ -51,9 +51,10 @@ module.exports = async function (app: Application) {
         plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
         context: async ({ req }) => {
             const token = req.headers["x-token"] || '';
-            const decoded_token = jwt.verify(token, process.env.TOKEN_JWT)
 
-            if (req.body.query.includes("mutation {\n  CreateUser(")) return
+            if (req.body.query.includes("CreateUser")) return
+            if (req.body.query.includes("LoginUser")) return
+            const decoded_token = jwt.verify(token, process.env.TOKEN_JWT)
             if (!decoded_token) return
 
             const user = await UserModel.findById(decoded_token.id).then((res) => res)

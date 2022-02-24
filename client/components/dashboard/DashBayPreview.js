@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import DashServiceBox from "./DashServiceBox";
 import RoundButton from "../../components/dashboard/RoundButton";
 import Switch from "react-switch";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { AiFillDelete } from "react-icons/ai";
 import { EditText } from "react-edit-text";
 
 const DashBayPreview = ({ bay }) => {
-  const { data, from, to } = bay;
-  const [activated, setActive] = useState(data.active);
+  console.log(bay)
+  const { active, action_effect, action_trigger, name } = bay;
+  const [activated, setActive] = useState(active);
 
   const switchClick = (check) => {
     setActive(check);
@@ -24,16 +25,16 @@ const DashBayPreview = ({ bay }) => {
   return (
     <div className="flex flex-row w-full h-[15%] drop-shadow-lg bg-white rounded p-5 mb-5 justify-between">
       <div className="flex flex-row items-center w-[15%]">
-        <img className="w-full" src={from.service.icon} />
+        <img className="w-full" src={action_trigger.service.icon} />
         <div className="flex bg-dark rounded-full w-[50%] items-center justify-center">
           <img src={"/assets/Images/arrow-right.svg"} />
         </div>
-        <img className="w-full" src={to.service.icon} />
+        <img className="w-full" src={action_effect.service.icon} />
       </div>
       <div className="flex items-center" style={{whiteSpace: 'nowrap'}}>
         <span className="text-sm">
           <EditText
-            defaultValue={data.description}
+            defaultValue={name}
             style={{border: "1px solid #ccc" }}
             onSave={changeName}
             inline
@@ -48,8 +49,8 @@ const DashBayPreview = ({ bay }) => {
             uncheckedIcon={false}
           />
         </div>
-        <div className="flex cursor-pointer" onClick={triggerEdit}>
-          <BsThreeDotsVertical />
+        <div className="flex cursor-pointer" onClick={triggerDelete}>
+          <AiFillDelete />
         </div>
       </div>
     </div>

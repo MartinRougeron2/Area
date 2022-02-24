@@ -28,8 +28,8 @@ const GET_SERVICES = gql`
   }`;
 
 const DashboardPage = () => {
-  const [triggerIndex, setTriggerIndex] = useState(-1)
-  const [effectIndex, setEffectIndex] = useState(-1)
+  const [triggerId, setTriggerId] = useState(-1)
+  const [effectId, setEffectId] = useState(-1)
 
   const [actionsTriggerList, setActionsTriggerList] = useState([])
   const [actionsEffectList, setActionsEffectList] = useState([])
@@ -41,18 +41,18 @@ const DashboardPage = () => {
   useEffect(() => {
     if (data) {
       setActionsTriggerIndex(-1)
-      const service = data.GetAllServices.find(elem => elem.id === triggerIndex)
+      const service = data.GetAllServices.find(elem => elem.id === triggerId)
       setActionsTriggerList(service.actions)
     }
-  }, [triggerIndex])
+  }, [triggerId])
 
   useEffect(() => {
     if (data) {
       setActionsEffectIndex(-1)
-      const service = data.GetAllServices.find(elem => elem.id === effectIndex)
+      const service = data.GetAllServices.find(elem => elem.id === effectId)
       setActionsEffectList(service.actions)
     }
-  }, [effectIndex])
+  }, [effectId])
 
   return (
     <div className="w-screen h-screen flex flex-row">
@@ -62,12 +62,12 @@ const DashboardPage = () => {
         <h2 className="text-center text-lg font-bold">Make a Bay</h2>
         <div className="flex flex-row justify-between items-center w-full mt-3">
           {error ? <p>Error while loading services</p> : <>
-          {loading ? <Spinner/> : <DashServiceWidget text={"Séléctionez une application"} services={data.GetAllServices} selected={triggerIndex} setSelected={setTriggerIndex}/>}
+          {loading ? <Spinner/> : <DashServiceWidget text={"Séléctionez une application"} services={data.GetAllServices} selected={triggerId} setSelected={setTriggerId}/>}
           <RoundButton icon={"/assets/Images/plus.svg"}/>
-          {loading ? <Spinner/> : <DashServiceWidget text={"Sélectionnez en une autre"} services={data.GetAllServices} selected={effectIndex} setSelected={setEffectIndex}/>}
+          {loading ? <Spinner/> : <DashServiceWidget text={"Sélectionnez en une autre"} services={data.GetAllServices} selected={effectId} setSelected={setEffectId}/>}
           </>}
         </div>
-        {(triggerIndex !== -1 && effectIndex !== -1) &&
+        {(triggerId !== -1 && effectId !== -1) &&
         <>
           <div className="bg-white w-full drop-shadow-md mt-8 p-5">
             <h2 className="text-md font-medium">Selectionnez une action</h2>
@@ -85,15 +85,15 @@ const DashboardPage = () => {
             <MainButton text="Make a Bay" action={() => {
               window.sessionStorage.setItem("CREATE_BAY", JSON.stringify({
                 from: {
-                  service: data.GetAllServices.find(elem => elem.id == triggerIndex),
+                  service: data.GetAllServices.find(elem => elem.id == triggerId),
                   actions: {
-                    index: actionsTriggerIndex,
+                    index: actionsTriggerList[actionsTriggerIndex].id,
                   }
                 },
                 to: {
-                  service: data.GetAllServices.find(elem => elem.id == effectIndex),
+                  service: data.GetAllServices.find(elem => elem.id == effectId),
                   actions: {
-                    index: actionsEffectIndex,
+                    index: actionsEffectList[actionsEffectIndex].id,
                   }
                 }
               }));

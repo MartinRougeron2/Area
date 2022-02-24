@@ -25,8 +25,8 @@ class InputService {
 
 @InputType()
 class InputUser {
-    @Field()
-    name!: string
+    @Field({nullable: true})
+    name?: string
 
     @Field()
     email!: string
@@ -88,9 +88,6 @@ class InputBayAction {
 
     @Field()
     active!: boolean
-
-    @Field()
-    userid!: string
 }
 
 @InputType()
@@ -203,7 +200,7 @@ export class UniqueActionResolver {
 @Resolver()
 export class BayActionResolver {
     @Mutation((_returns) => BayAction, {nullable: true})
-    async CreateBayAction(@Arg('data') {action_trigger_id, action_effect_id, name, active, userid}: InputBayAction) {
+    async CreateBayAction(@Ctx() ctx: any, @Arg('data') {action_trigger_id, action_effect_id, name, active}: InputBayAction) {
 
         action_trigger_id = mongoose.Types.ObjectId(action_trigger_id)
         action_effect_id = mongoose.Types.ObjectId(action_effect_id)
@@ -215,8 +212,9 @@ export class BayActionResolver {
             active: active
         })
         await newBay.save()
-        console.log(newBay)
-        const user = await UserModel.findOne({id: userid}).then((user) => user)
+        console.log(ctx)
+        const user = await UserModel.findById(ctx._id)
+        console.log(user)
         if (!user)
             return newBay
         await user.populate({
@@ -322,6 +320,7 @@ export class UserResolver {
             return resUser
         }
         resUser.is_new = true
+        resUser.jwt_token = "account not registered"
         return resUser
     }
 

@@ -4,13 +4,13 @@ import DashBayPreview from "../../components/dashboard/DashBayPreview";
 import DashSideBar from "../../components/dashboard/DashSideBar";
 import MainButton from "../../components/utils/MainButton";
 import {
-  useLazyQuery,
+  useQuery,
   gql
 } from "@apollo/client";
 
 const GET_MY_BAYS = gql`
-  query userId($userid: String!) {
-    GetUserById (id: $userid) {
+  query FetchBay {
+    GetUser {
       name
       user_actions {
         name
@@ -18,13 +18,11 @@ const GET_MY_BAYS = gql`
         action_effect {
           service {
             name
-            icon
           }
         }
         action_trigger {
           service {
             name
-            icon
           }
         }
       }
@@ -33,12 +31,9 @@ const GET_MY_BAYS = gql`
 `
 
 const BaysPage = () => {
-  const [getBays, {loaded, error, data}] = useLazyQuery(GET_MY_BAYS)
-
-  console.log(data)
-  useEffect(() => {
-    getBays({variables: {userid: window.sessionStorage.USERID}})
-  }, [])
+  const {loaded, error, data} = useQuery(GET_MY_BAYS)
+  if (data)
+    console.log(data.GetUser.user_actions)
 
   return (
     <div className="w-screen h-screen flex flex-row">
@@ -46,15 +41,15 @@ const BaysPage = () => {
       <div className="flex flex-col h-screen w-[82%] p-10">
         <DashHeader />
         <h2 className="text-lg font-bold">Mes Bays</h2>
-        { data &&
+        { (data && data.GetUser.user_actions) &&
         <div className="flex flex-col w-full h-[100%] mt-3">
-          {data.length === 0 ?
+          {data.GetUser.user_actions.length === 0 ?
           <div className="flex flex-col w-[35%]">
             <h2>Oh no... you haven't setup bays<br/>Let's create some</h2>
             <MainButton color="dark" text="Make a Bay" action={() => {window.location.href = "/dashboard"}}/>
           </div> :
           <>
-            {data.map((elem, id) => {
+            {data.GetUser.user_actions.map((elem, id) => {
               return(
                 <DashBayPreview bay={elem} key={id}/>
                 )
