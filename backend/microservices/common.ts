@@ -5,6 +5,7 @@ import {client as apolloClient} from "../authentification_server/apollo_client";
 
 function trigger_effects(unique_actions: UniqueAction, text_to_send: string) {
     BayActionModel.find({action_trigger: unique_actions}).populate('action_effect').then(async (res_bay) => {
+    console.log("res", res_bay)
         for (const i in res_bay) {
             await res_bay[i].populate('action_effect.action')
             if (!res_bay[i]) return;
