@@ -82,6 +82,12 @@ type Mutation {
   CreateService(data: InputService!): Service
   CreateUniqueActionByBaseActionId(data: UniqueActionInput!): UniqueAction
   CreateUser(data: InputUser!): ResultUser
+  DeleteBaseAction(id: String!): Boolean!
+  DeleteBayAction(id: String!): Boolean!
+  DeleteLinks(id: String!): Boolean!
+  DeleteService(id: String!): Boolean!
+  DeleteUniqueAction(id: String!): Boolean!
+  DeleteUser(id: String!): Boolean!
   SendGmailMail(data: CommunicationInput!): Boolean!
   SendSlackMessage(data: CommunicationInput!): Boolean!
 }
