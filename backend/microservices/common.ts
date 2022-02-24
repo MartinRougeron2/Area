@@ -1,4 +1,4 @@
-import {BayActionModel, ServiceModel, UniqueAction} from "./types";
+import {BaseAction, BayActionModel, UniqueAction} from "./types";
 import {Ref} from "@typegoose/typegoose";
 import {gql} from "apollo-boost";
 import {client as apolloClient} from "../authentification_server/apollo_client";
@@ -27,14 +27,13 @@ async function dispatch_event(action_effect_ref: Ref<UniqueAction>, msg: string)
     if (!action_effect) return // null check
 
     const effect_base = action_effect.action
-    const effect_service = await ServiceModel.findOne({actions: effect_base}).then((res) => res)
 
-    if (!effect_service) return // null check
-    if (!effect_service.out_url) return // null check
+    if (!effect_base) return // null check
+    if (!(effect_base instanceof BaseAction) || effect_base?.name) return // null check
 
     const mutation = gql`
         mutation NewEventMutation($action_id: String!, $text: String!) {
-            ${effect_service.out_url}(data: {action_effect_id: $action_id, message: $text})
+            ${effect_base.name}(data: {action_effect_id: $action_id, message: $text})
         }`;
 
     apolloClient.mutate({
