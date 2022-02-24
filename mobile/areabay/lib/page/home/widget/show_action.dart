@@ -18,7 +18,12 @@ class ActionWidget extends StatefulWidget {
   _ActionWidgetState createState() => _ActionWidgetState();
 }
 
+enum actionMenu { modify, delete }
+
 class _ActionWidgetState extends State<ActionWidget> {
+  actionMenu _selection = actionMenu.modify;
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,15 +48,33 @@ class _ActionWidgetState extends State<ActionWidget> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             DescBay(
-                logo: "assets/service/instagram.png",
-                desc:
-                    "When someone like my publication aze aze qsd qs dwxccwsdqsd qsd "),
-            Icon(Icons.arrow_forward_rounded, size: 40, color: Colors.white),
-            DescBay(logo: "assets/service/instagram.png", desc: "wxc"),
-
-            // const DescBay(logo: "qsd", desc: "wxc"),
+              logo: widget.reactionLogo,
+              desc: widget.reactionDesc,
+            ),
+            const Icon(Icons.arrow_forward_rounded,
+                size: 40, color: Colors.white),
+            DescBay(logo: widget.actionLogo, desc: widget.actionDesc),
+            PopupMenuButton<actionMenu>(
+              onSelected: (actionMenu result) {
+                setState(() {
+                  _selection = result;
+                  print(_selection);
+                });
+              },
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuEntry<actionMenu>>[
+                const PopupMenuItem<actionMenu>(
+                  value: actionMenu.modify,
+                  child: Text('Modify'),
+                ),
+                const PopupMenuItem<actionMenu>(
+                  value: actionMenu.delete,
+                  child: Text('Delete'),
+                ),
+              ],
+            )
           ],
         ));
   }
@@ -77,11 +100,12 @@ class _DescBayState extends State<DescBay> {
       children: [
         Image(image: AssetImage(widget.logo)),
         const Padding(padding: EdgeInsets.all(5)),
-        Container(
+        SizedBox(
             width: MediaQuery.of(context).size.width * 0.3,
             child: Center(
                 child: Text(widget.desc,
-                    maxLines: 3,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: Colors.white),
                     textAlign: TextAlign.center))),
       ],
