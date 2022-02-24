@@ -24,7 +24,6 @@ const CREATE_LINK = gql`
 `;
 
 function create_unique_action(action_id: string, parameters_json: string, token: string) {
-
     client.mutate({
         mutation: CREATE_UNIQUE_ACTION,
         variables: {

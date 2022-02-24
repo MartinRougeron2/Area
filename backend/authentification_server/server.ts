@@ -23,6 +23,7 @@ require("./slack_oauth")(auth_server)
 require("./gcalendar_oauth")(auth_server)
 require("./gmail_oauth")(auth_server)
 require("./discord_oauth")(auth_server)
+require("./discord_bot_oauth")(auth_server)
 
 auth_server.get('/auth/finish', ((__req: express.Request, res: any) => {
     res.send('<h1> Finished ! </h1><h4>You can close it</h4>')
