@@ -26,7 +26,6 @@ const Event = (title: string, __date: string) => {
 async function createEvent(event: any, auth: OAuth2Client) {
 
     const calendar = google.calendar({version: 'v3', auth: auth});
-    console.log(calendar.events.insert({calendarId: "martin.rougeron@gmail.com", requestBody: {summary: event.summary, start: event.start, end: event.end}}))
     return await calendar.events.insert({calendarId: "martin.rougeron@gmail.com", requestBody: {summary: event.summary, start: event.start, end: event.end}, });
 }
 
