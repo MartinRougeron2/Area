@@ -18,23 +18,14 @@ class ActionWidget extends StatefulWidget {
   _ActionWidgetState createState() => _ActionWidgetState();
 }
 
-enum actionMenu { modify, delete }
-
 class _ActionWidgetState extends State<ActionWidget> {
-  actionMenu _selection = actionMenu.modify;
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.all(5),
         height: MediaQuery.of(context).size.height * 0.15,
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -55,26 +46,7 @@ class _ActionWidgetState extends State<ActionWidget> {
             ),
             const Icon(Icons.arrow_forward_rounded,
                 size: 40, color: Colors.white),
-            DescBay(logo: widget.actionLogo, desc: widget.actionDesc),
-            PopupMenuButton<actionMenu>(
-              onSelected: (actionMenu result) {
-                setState(() {
-                  _selection = result;
-                  print(_selection);
-                });
-              },
-              itemBuilder: (BuildContext context) =>
-                  <PopupMenuEntry<actionMenu>>[
-                const PopupMenuItem<actionMenu>(
-                  value: actionMenu.modify,
-                  child: Text('Modify'),
-                ),
-                const PopupMenuItem<actionMenu>(
-                  value: actionMenu.delete,
-                  child: Text('Delete'),
-                ),
-              ],
-            )
+            DescBay(logo: widget.actionLogo, desc: widget.actionDesc)
           ],
         ));
   }

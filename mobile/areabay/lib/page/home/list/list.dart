@@ -53,6 +53,7 @@ class ShowAllActionState extends State<ShowAllAction> {
         actionLogo: "assets\\instagram.png",
         actionDesc: "actionDesc"),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,7 +61,25 @@ class ShowAllActionState extends State<ShowAllAction> {
         child: ListView.separated(
           itemCount: actionList.length,
           itemBuilder: (BuildContext context, int index) {
-            return actionList[index];
+            return Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.endToStart,
+              onDismissed: (_) {
+                setState(() {
+                  actionList.removeAt(index);
+                });
+              },
+              child: actionList[index],
+              background: Container(
+                color: Colors.red,
+                padding: const EdgeInsets.only(right: 15),
+                alignment: Alignment.centerRight,
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+              ),
+            );
           },
           separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
