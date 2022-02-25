@@ -21,21 +21,20 @@ async function dispatch_event(action_effect_ref: Ref<UniqueAction>, msg: string)
     console.log(action_effect_ref, msg)
     if (!action_effect_ref) return // null check
     if (!msg) return // null check
-
     const action_effect = action_effect_ref as UniqueAction // populate before : Ref => Complete Model
 
     if (!action_effect) return // null check
 
-    const effect_base = action_effect.action
+    const effect_base : BaseAction = action_effect.action as unknown as BaseAction
 
     if (!effect_base) return // null check
-    if (!(effect_base instanceof BaseAction) || effect_base?.name) return // null check
+
+    if (!effect_base?.name) return // null check
 
     const mutation = gql`
         mutation NewEventMutation($action_id: String!, $text: String!) {
             ${effect_base.name}(data: {action_effect_id: $action_id, message: $text})
         }`;
-
     apolloClient.mutate({
         mutation: mutation,
         variables: {

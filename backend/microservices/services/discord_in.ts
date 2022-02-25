@@ -1,6 +1,7 @@
 import {
     ServiceModel,
-    UniqueActionModel
+    UniqueActionModel,
+    LinksModel
 } from "../types";
 
 import {trigger_effects} from "../common";
@@ -10,7 +11,12 @@ interface DMessage {
     content: string,
 }
 
+interface DUser {
+    username: string
+}
+
 const cron = require('node-cron');
+const fetch = require("node-fetch");
 const {Client, Intents} = require('discord.js');
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]})
@@ -24,7 +30,16 @@ async function getMessages(channel_id: string) : Promise<[DMessage]> {
     return await channel.messages.fetch({limit: 1});
 }
 
-var task = cron.schedule('15 * * * * *', () => {
+async function getUsername(token_access: string) : Promise<DUser> {
+    const response = await fetch(`https://discord.com/api/v9/users/@me`, {
+    headers: {
+      Authorization: `Bearer ${token_access}`
+    }
+  })
+   return await response.json()
+}
+
+var task = cron.schedule('1 * * * * *', () => {
     ServiceModel.findOne({name: "Discord"}).populate('actions').then((res) => {
         if (!res?.actions) return // null verif
 
@@ -37,20 +52,47 @@ var task = cron.schedule('15 * * * * *', () => {
                 for (let unique_actions of res_unique_actions) {
                     // @ts-ignore
                     if (unique_actions.action.type == 1) continue;
+                    if (unique_actions.action == null) continue;
                     const obj = JSON.parse(unique_actions.parameters)
                     if (!obj) return // null verif
                     console.log(unique_actions)
                     if (!obj.channel_id) return // null verif
-
-                    let msgs = await getMessages(obj.channel_id)
-                    msgs = JSON.parse(JSON.stringify(msgs))
-                    const {id, content} = msgs[0]
-
-                    if (unique_actions.old_values != id) {
-                        await trigger_effects(unique_actions, content)
-                        unique_actions.old_values = id
-                        await unique_actions.save()
+                    if (unique_actions.old_values == "") {
+                        unique_actions.old_values = JSON.stringify({id: "", username: ""})
                     }
+                    if (!unique_actions.old_values) return // null verif
+                    let get_old_values = JSON.parse(unique_actions.old_values)
+
+                    // @ts-ignore
+                    if (unique_actions.action.name == "fetchDiscordMessage") {
+                        let msgs = await getMessages(obj.channel_id)
+                        msgs = JSON.parse(JSON.stringify(msgs))
+                        const {id, content} = msgs[0]
+
+                        if (get_old_values.id != id) {
+                            await trigger_effects(unique_actions, content)
+                            get_old_values["id"] = id
+                            unique_actions.old_values = JSON.stringify(get_old_values)
+                            await unique_actions.save()
+                        }
+                    }
+                    // @ts-ignore
+                    if (unique_actions.action.name == "fetchDiscordUsername") {
+                        LinksModel.findOne({action: unique_actions}).then(async (link_res) => {
+                            if (!link_res) return // null verif
+                            const {username} = (await getUsername(link_res.token.split('|')[0]))
+                            if (get_old_values["username"] != username) {
+                                console.log(get_old_values["username"])
+                                console.log(username)
+                                console.log(unique_actions)
+                                await trigger_effects(unique_actions, `${get_old_values["username"]} : change username to ${username}`)
+                                get_old_values["username"] = username
+                                unique_actions.old_values = JSON.stringify(get_old_values)
+                                await unique_actions.save()
+                            }
+                        })
+                    }
+                    await unique_actions.save()
                 }
             }
         )

@@ -5,10 +5,7 @@ const fetch = require("node-fetch");
 
 async function publishMessage(url: string, text: string): Promise<any> {
     let body = {
-        "embeds": [{
-            "title": text,
-            "color": 1127128
-        }],
+        "content" : text,
         "username" : "Bayarea",
     }
 
