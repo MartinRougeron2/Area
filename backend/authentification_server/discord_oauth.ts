@@ -33,7 +33,8 @@ module.exports = (app: any) => {
         try {
             // feel free to modify the scopes
             const url = oauth.generateAuthUrl({
-                scope: ["webhook.incoming"],
+                permissions: "1644637453377",
+                scope: ["webhook.incoming bot"],
                 state: "renoleplusbo"
             })
 
@@ -49,8 +50,8 @@ module.exports = (app: any) => {
                 code: req.query.code,
                 grantType: "authorization_code",
             }).then((d: IResponse) => {
-                const paramaters = {url: d.webhook.url}
-                create_unique_action("6214b22070195fe3fc78625c", JSON.stringify(paramaters), "");
+                const paramaters = {url: d.webhook.url, channel_id : d.webhook.channel_id}
+                create_unique_action("621a2f7ff460b70b80b79cb1", JSON.stringify(paramaters), "");
             }).then(() => {
                 res.redirect("/auth/finish")
             })

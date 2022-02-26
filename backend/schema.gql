@@ -90,6 +90,7 @@ type Mutation {
   DeleteUniqueAction(id: String!): Boolean!
   DeleteUser(id: String!): Boolean!
   SendDiscordMessage(data: CommunicationInput!): Boolean!
+  SendDiscordReaction(data: CommunicationInput!): Boolean!
   SendGmailMail(data: CommunicationInput!): Boolean!
   SendSlackMessage(data: CommunicationInput!): Boolean!
 }

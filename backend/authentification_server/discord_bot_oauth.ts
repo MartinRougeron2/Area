@@ -50,6 +50,17 @@ interface DResponse {
       embed_enabled: boolean,
       embed_channel_id: string
     }
+    webhook: {
+        type: number,
+        id: string,
+        name: string,
+        avatar: string,
+        channel_id: string,
+        guild_id: string,
+        application_id: string,
+        token: string,
+        url: string
+    }
 }
 
 module.exports = (app: any) => {
@@ -64,7 +75,7 @@ module.exports = (app: any) => {
             // feel free to modify the scopes
             const url = oauth.generateAuthUrl({
                 permissions: "1644637453377",
-                scope: "bot identify",
+                scope: "webhook.incoming bot identify",
                 state: "renoleplusbo"
             })
 
@@ -81,8 +92,8 @@ module.exports = (app: any) => {
                 grantType: "authorization_code",
             }).then((d: DResponse) => {
                 const token = d?.access_token + "|" + d?.refresh_token
-                const paramaters = {channel_id: d.guild.system_channel_id}
-                create_unique_action("6218dddcfbd7325061ac8720", JSON.stringify(paramaters), token);
+                const paramaters = {channel_id: d.webhook.channel_id}
+                create_unique_action("6216719c0012d003d60780b3", JSON.stringify(paramaters), token);
             }).then(() => {
                 res.redirect("/auth/finish")
             })

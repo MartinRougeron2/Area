@@ -5,10 +5,13 @@ import {
 } from "../types";
 
 import {trigger_effects} from "../common";
+const client = require("../server")
 
 interface DMessage {
     id: string,
     content: string,
+    authorId: string,
+    guildId: string
 }
 
 interface DUser {
@@ -17,13 +20,6 @@ interface DUser {
 
 const cron = require('node-cron');
 const fetch = require("node-fetch");
-const {Client, Intents} = require('discord.js');
-
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]})
-client.login(process.env.BOT_DISCORD_TOKEN)
-client.once('ready', () => {
-    console.log("Discord bot online")
-});
 
 async function getMessages(channel_id: string) : Promise<[DMessage]> {
     const channel = client.channels.cache.get(channel_id)
@@ -67,10 +63,9 @@ var task = cron.schedule('1 * * * * *', () => {
                     if (unique_actions.action.name == "fetchDiscordMessage") {
                         let msgs = await getMessages(obj.channel_id)
                         msgs = JSON.parse(JSON.stringify(msgs))
-                        const {id, content} = msgs[0]
-
-                        if (get_old_values.id != id) {
-                            await trigger_effects(unique_actions, content)
+                        const {id, content, authorId, guildId} = msgs[0]
+                        if (get_old_values["id"] != id) {
+                            await trigger_effects(unique_actions, `**${client.users.cache.get(authorId).username}** send : **${content}** | server : **${client.guilds.cache.get(guildId).name}** | channel : **${client.channels.cache.get(obj.channel_id).name}**`)
                             get_old_values["id"] = id
                             unique_actions.old_values = JSON.stringify(get_old_values)
                             await unique_actions.save()
@@ -82,9 +77,6 @@ var task = cron.schedule('1 * * * * *', () => {
                             if (!link_res) return // null verif
                             const {username} = (await getUsername(link_res.token.split('|')[0]))
                             if (get_old_values["username"] != username) {
-                                console.log(get_old_values["username"])
-                                console.log(username)
-                                console.log(unique_actions)
                                 await trigger_effects(unique_actions, `${get_old_values["username"]} : change username to ${username}`)
                                 get_old_values["username"] = username
                                 unique_actions.old_values = JSON.stringify(get_old_values)

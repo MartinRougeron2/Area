@@ -9,6 +9,15 @@ app.listen(port, () => {
   console.log(`micro-services communication is running on port http://localhost:${port}/graphql.`);
 });
 
+const {Client, Intents} = require('discord.js');
+
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]})
+client.login(process.env.BOT_DISCORD_TOKEN)
+client.once('ready', () => {
+    console.log("Discord bot online")
+});
+module.exports = client
+
 require('./graphql')(app);
 
 //const {task} = require('./services/slack_in')
