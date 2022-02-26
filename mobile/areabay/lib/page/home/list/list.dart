@@ -71,7 +71,9 @@ class ShowAllActionState extends State<ShowAllAction> {
               },
               child: actionList[index],
               background: Container(
-                color: Colors.red,
+                decoration: const BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
                 padding: const EdgeInsets.only(right: 15),
                 alignment: Alignment.centerRight,
                 child: const Icon(
