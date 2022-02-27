@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home/list/list.dart';
+import 'home/create/create.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,10 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     ShowAllAction(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
+    CreateBayPage(),
     Text(
       'Index 2: School',
       style: optionStyle,
