@@ -34,6 +34,22 @@ class _CreateBayPageState extends State<CreateBayPage> {
     'In': ['on steam', 'on reno']
   };
 
+  Map data = {
+    "Action": {
+      "Service": "",
+      "Action": "",
+    },
+    "Reaction": {
+      "Service": "",
+      "Action": "",
+    }
+  };
+
+  callBackSetData(String type, String service, String action) => setState(() {
+        data[type]["Service"] = service;
+        data[type]["Action"] = action;
+      });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,10 +58,20 @@ class _CreateBayPageState extends State<CreateBayPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ServiceAction(data: action),
+            ServiceAction(
+                data: action, callBack: callBackSetData, type: "Action"),
             const Icon(Icons.arrow_circle_down_outlined,
                 size: 50, color: Colors.black),
-            ServiceAction(data: reaction),
+            ServiceAction(
+                data: reaction, callBack: callBackSetData, type: "Reaction"),
+            ElevatedButton(
+              onPressed: () {
+                if (!data["Action"]["Service"].toString().isNotEmpty && data["Reaction"]["Service"].toString().isNotEmpty) {
+                  Navigator.pushNamed(context, "/homePage/create/linkAccount");
+                }
+              },
+              child: const Text("Create bay"),
+            )
           ],
         ));
   }
