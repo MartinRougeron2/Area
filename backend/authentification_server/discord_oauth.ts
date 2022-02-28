@@ -1,26 +1,7 @@
 import express from "express";
-import {create_unique_action} from "./common";
+import {create_unique_action, IResponse} from "./common";
 
 const DiscordOauth2 = require("discord-oauth2");
-
-interface IResponse {
-    access_token: string,
-    expires_in: number,
-    refresh_token: string,
-    scope: string,
-    token_type: string,
-    webhook: {
-      type: number,
-      id: string,
-      name: string,
-      avatar: string,
-      channel_id: string,
-      guild_id: string,
-      application_id: string,
-      token: string,
-      url: string
-    }
-  }
 
 module.exports = (app: any) => {
     console.log("installing discord auth")

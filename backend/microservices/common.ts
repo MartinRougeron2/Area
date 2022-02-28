@@ -3,6 +3,17 @@ import {Ref} from "@typegoose/typegoose";
 import {gql} from "apollo-boost";
 import {client as apolloClient} from "../authentification_server/apollo_client";
 
+interface DMessage {
+    id: string,
+    content: string,
+    authorId: string,
+    guildId: string
+}
+
+interface DUser {
+    username: string
+}
+
 function trigger_effects(unique_actions: UniqueAction, text_to_send: string) {
     BayActionModel.find({action_trigger: unique_actions}).populate('action_effect').then(async (res_bay) => {
     console.log("res", res_bay)
@@ -50,4 +61,4 @@ async function dispatch_event(action_effect_ref: Ref<UniqueAction>, msg: string)
 
 }
 
-export {trigger_effects, dispatch_event}
+export {trigger_effects, dispatch_event, DMessage, DUser}

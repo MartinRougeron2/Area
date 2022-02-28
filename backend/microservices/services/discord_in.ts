@@ -4,19 +4,8 @@ import {
     LinksModel
 } from "../types";
 
-import {trigger_effects} from "../common";
+import {trigger_effects, DMessage, DUser} from "../common";
 const client = require("../server")
-
-interface DMessage {
-    id: string,
-    content: string,
-    authorId: string,
-    guildId: string
-}
-
-interface DUser {
-    username: string
-}
 
 const cron = require('node-cron');
 const fetch = require("node-fetch");
