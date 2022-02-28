@@ -1,3 +1,4 @@
+import 'package:areabay/page/home/create/link_account.dart';
 import 'package:areabay/page/home/create/widget/service_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -34,7 +35,7 @@ class _CreateBayPageState extends State<CreateBayPage> {
     'In': ['on steam', 'on reno']
   };
 
-  Map data = {
+  Map<String, Map<String, String>> data= {
     "Action": {
       "Service": "",
       "Action": "",
@@ -46,8 +47,8 @@ class _CreateBayPageState extends State<CreateBayPage> {
   };
 
   callBackSetData(String type, String service, String action) => setState(() {
-        data[type]["Service"] = service;
-        data[type]["Action"] = action;
+        data[type]!["Service"] = service;
+        data[type]!["Action"] = action;
       });
 
   @override
@@ -66,9 +67,10 @@ class _CreateBayPageState extends State<CreateBayPage> {
                 data: reaction, callBack: callBackSetData, type: "Reaction"),
             ElevatedButton(
               onPressed: () {
-                if (!data["Action"]["Service"].toString().isNotEmpty && data["Reaction"]["Service"].toString().isNotEmpty) {
-                  Navigator.pushNamed(context, "/homePage/create/linkAccount");
-                }
+                  Navigator.pushNamed(context, "/homePage/create/linkAccount", arguments: LinkAccountArgs(data));
+                // if (data["Action"]["Service"].toString().isNotEmpty && data["Reaction"]["Service"].toString().isNotEmpty) {
+                //   Navigator.pushNamed(context, "/homePage/create/linkAccount", arguments: data);
+                // }
               },
               child: const Text("Create bay"),
             )

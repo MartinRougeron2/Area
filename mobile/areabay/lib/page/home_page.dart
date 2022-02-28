@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'home/create/create.dart';
+import 'home/create/link_account.dart';
 import 'home/list/list.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,28 +34,31 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        routes: <String, WidgetBuilder>{
+          "/homePage/create/linkAccount": (BuildContext context) => const LinkAccount(),
+        },
         home: Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.apps),
-            label: 'List',
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.apps),
+                label: 'List',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add_to_photos_sharp),
+                label: 'Create',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Settings',
+              ),
+            ],
+            backgroundColor: const Color.fromRGBO(34, 79, 129, 1),
+            selectedItemColor: const Color.fromARGB(255, 197, 197, 197),
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_to_photos_sharp),
-            label: 'Create',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        backgroundColor: const Color.fromRGBO(34, 79, 129, 1),
-        selectedItemColor: const Color.fromARGB(255, 197, 197, 197),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-      body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
-    ));
+          body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
+        ));
   }
 }
