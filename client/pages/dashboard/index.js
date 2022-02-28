@@ -31,26 +31,42 @@ const DashboardPage = () => {
   const [triggerId, setTriggerId] = useState(-1)
   const [effectId, setEffectId] = useState(-1)
 
-  const [actionsTriggerList, setActionsTriggerList] = useState([])
-  const [actionsEffectList, setActionsEffectList] = useState([])
+  const [actionsTriggerList, setActionsTriggerList] = useState({})
+  const [actionsEffectList, setActionsEffectList] = useState({})
   const [actionsTriggerIndex, setActionsTriggerIndex] = useState(-1)
   const [actionsEffectIndex, setActionsEffectIndex] = useState(-1)
 
   const {loading, error, data} = useQuery(GET_SERVICES)
 
   useEffect(() => {
-    if (data) {
+    if (data && triggerId !== -1) {
       setActionsTriggerIndex(-1)
       const service = data.GetAllServices.find(elem => elem.id === triggerId)
-      setActionsTriggerList(service.actions)
+      const actions = {}
+
+      service.actions.forEach(action => {
+        if (action.type === "BOTH")
+          actions[action.id] = (action)
+        if (action.type == "TRIGGER")
+          actions[action.id] = (action)
+      })
+      setActionsTriggerList(actions)
     }
   }, [triggerId])
 
   useEffect(() => {
-    if (data) {
+    if (data && effectId !== -1) {
       setActionsEffectIndex(-1)
       const service = data.GetAllServices.find(elem => elem.id === effectId)
-      setActionsEffectList(service.actions)
+      const actions = {}
+      service.actions.forEach(action => {
+        if (action.type === "BOTH")
+          actions[action.id] = (action)
+        if (action.type == "EFFECT")
+          actions[action.id] = (action)
+        })
+      Object.keys(actions).map(elem => console.log(elem))
+      setActionsEffectList(actions)
     }
   }, [effectId])
 

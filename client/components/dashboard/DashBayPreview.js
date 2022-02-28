@@ -5,7 +5,7 @@ import Switch from "react-switch";
 import { AiFillDelete } from "react-icons/ai";
 import { EditText } from "react-edit-text";
 
-const DashBayPreview = ({ bay }) => {
+const DashBayPreview = ({ bay, onDelete }) => {
   console.log(bay)
   const { active, action_effect, action_trigger, name } = bay;
   const [activated, setActive] = useState(active);
@@ -16,10 +16,6 @@ const DashBayPreview = ({ bay }) => {
 
   const changeName = (value) => {
     //TODO SAVE NEW NAME
-  };
-
-  const triggerEdit = () => {
-    //TODO EDIT
   };
 
   return (
@@ -49,7 +45,7 @@ const DashBayPreview = ({ bay }) => {
             uncheckedIcon={false}
           />
         </div>
-        <div className="flex cursor-pointer" onClick={triggerDelete}>
+        <div className="flex cursor-pointer" onClick={() => onDelete()}>
           <AiFillDelete />
         </div>
       </div>

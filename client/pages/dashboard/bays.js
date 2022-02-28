@@ -5,8 +5,15 @@ import DashSideBar from "../../components/dashboard/DashSideBar";
 import MainButton from "../../components/utils/MainButton";
 import {
   useQuery,
+  useMutation,
   gql
 } from "@apollo/client";
+
+const DELETE_BAYS = gql`
+  mutation DeleteBays($id: String!) {
+    DeleteBayAction(id: $id)
+  }
+`
 
 const GET_MY_BAYS = gql`
   query FetchBay {
@@ -15,6 +22,7 @@ const GET_MY_BAYS = gql`
       user_actions {
         name
         active
+        id
         action_effect {
           service {
             name
@@ -31,7 +39,8 @@ const GET_MY_BAYS = gql`
 `
 
 const BaysPage = () => {
-  const {loaded, error, data} = useQuery(GET_MY_BAYS)
+  const {loaded, error, data, refetch} = useQuery(GET_MY_BAYS)
+  const [deleteBays, {}] = useMutation(DELETE_BAYS)
   if (data)
     console.log(data.GetUser.user_actions)
 
@@ -51,7 +60,7 @@ const BaysPage = () => {
           <>
             {data.GetUser.user_actions.map((elem, id) => {
               return(
-                <DashBayPreview bay={elem} key={id}/>
+                <DashBayPreview bay={elem} key={id} onDelete={() => {deleteBays({variables: {id: elem.id}}); refetch()}}/>
                 )
               })}
           </>

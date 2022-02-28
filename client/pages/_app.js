@@ -50,7 +50,7 @@ const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache()
 });
- 
+
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (!cookies.get('x-token')) return;
