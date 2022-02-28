@@ -102,6 +102,10 @@ export class Service {
     @Property()
     icon!: String;
 
+    @Field({defaultValue: ""})
+    @Property()
+    refresh_token_url!: String
+
     @Field(() => [BaseAction])
     @Property({ref: () => BaseAction})
     public actions?: Ref<BaseAction>[];

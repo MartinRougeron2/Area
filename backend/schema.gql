@@ -123,6 +123,7 @@ type Service {
   in_url: String!
   name: String!
   out_url: String!
+  refresh_token_url: String
 }
 
 """Derivate from base with params"""

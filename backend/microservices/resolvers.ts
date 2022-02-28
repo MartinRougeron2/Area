@@ -3,7 +3,6 @@ import {prop as Property} from "@typegoose/typegoose/lib/prop";
 import {Ref} from "@typegoose/typegoose";
 import {BaseAction, UniqueAction, BayAction, Service, User, Links} from './types';
 import {BaseActionModel, UniqueActionModel, BayActionModel, ServiceModel, UserModel, LinksModel} from './types';
-// import {Context} from "apollo-server-core";
 
 const mongoose = require('mongoose');
 
