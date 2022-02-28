@@ -56,9 +56,7 @@ module.exports = (app: any) => {
                     const params = {from_email: payload.email, to_email: to_email};
                     create_unique_action("620e6324cb747da158da08ee", JSON.stringify(params), token.access_token + "|" + token.refresh_token);
                 });
-
         });
-
         res.redirect('/auth/google/win')
     })
 
