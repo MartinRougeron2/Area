@@ -166,7 +166,7 @@ export class BaseActionResolver {
 
     @Mutation((_returns) => Boolean)
     async DeleteBaseAction(@Arg('id') id: string) {
-        return !!(BaseActionModel.findByIdAndDelete(id))
+        return await BaseActionModel.findByIdAndDelete(id).then((res) => !!res)
     }
 }
 
@@ -203,7 +203,7 @@ export class UniqueActionResolver {
 
     @Mutation((_returns) => Boolean)
     async DeleteUniqueAction(@Arg('id') id: string) {
-        return !!(UniqueActionModel.findByIdAndDelete(id))
+        return await UniqueActionModel.findByIdAndDelete(id).then((res) => !!res)
     }
 }
 
@@ -243,7 +243,7 @@ export class BayActionResolver {
 
     @Mutation((_returns) => Boolean)
     async DeleteBayAction(@Arg('id') id: string) {
-        return !!(BayActionModel.findByIdAndDelete(id))
+        return await BayActionModel.findByIdAndDelete(id).then((res) => !!res)
     }
 }
 
@@ -275,7 +275,7 @@ export class ServiceResolver {
 
     @Mutation((_returns) => Boolean)
     async DeleteService(@Arg('id') id: string) {
-        return !!(ServiceModel.findByIdAndDelete(id))
+        return await ServiceModel.findByIdAndDelete(id).then((res) => !!res)
     }
 }
 
@@ -387,7 +387,7 @@ export class UserResolver {
 
     @Mutation((_returns) => Boolean)
     async DeleteUser(@Arg('id') id: string) {
-        return !!(UserModel.findByIdAndDelete(id))
+        return await UserModel.findByIdAndDelete(id).then((res) => !!res)
     }
 }
 
@@ -430,6 +430,6 @@ export class LinksResolver {
 
     @Mutation((_returns) => Boolean)
     async DeleteLinks(@Arg('id') id: string) {
-        return !!(LinksModel.findByIdAndDelete(id))
+        return await LinksModel.findByIdAndDelete(id).then((res) => !!res)
     }
 }
