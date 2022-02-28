@@ -11,6 +11,7 @@ enum ActionType {
 
 """BaseAction"""
 type BaseAction {
+  auth_url: String!
   id: ID!
   name: String!
   options: String!

@@ -41,7 +41,7 @@ module.exports = (app: any) => {
         }
     })
 
-    app.get('/auth/slack', async (__req: express.Request, res: any, __next: any) => {
+    app.get('/auth/slack', async (req: express.Request, res: any, __next: any) => {
         try {
             // feel free to modify the scopes
             const url = await installer.generateInstallUrl({
@@ -49,7 +49,7 @@ module.exports = (app: any) => {
                     'incoming-webhook', 'chat:write',
                     'calls:read', 'channels:read', 'groups:read', 'mpim:read', 'im:read',
                     'channels:history', 'groups:history', 'im:history', 'mpim:history'],
-                metadata: '620543461cc428870323395f', // TODO: in fx of __req
+                metadata: req.query.id,
                 redirectUri: 'https://localhost:3000/auth/slack-redirect'
             })
 

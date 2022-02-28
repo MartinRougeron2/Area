@@ -10,13 +10,13 @@ module.exports = (app: any) => {
         clientSecret: process.env.DISCORD_CLIENT_SECRET,
         redirectUri: "https://localhost:3000/auth/discord/redirect",
     });
-    app.get('/auth/discord', async (__req: any, res: any, __next: any) => {
+    app.get('/auth/discord', async (req: any, res: any, __next: any) => {
         try {
             // feel free to modify the scopes
             const url = oauth.generateAuthUrl({
                 permissions: "1644637453377",
                 scope: ["webhook.incoming bot"],
-                state: "renoleplusbo"
+                state: req.query.id
             })
 
             res.redirect(url)
@@ -32,7 +32,9 @@ module.exports = (app: any) => {
                 grantType: "authorization_code",
             }).then((d: IResponse) => {
                 const paramaters = {url: d.webhook.url, channel_id : d.webhook.channel_id}
-                create_unique_action("621a2f7ff460b70b80b79cb1", JSON.stringify(paramaters), "");
+                const action_id = (req.query.state ?? "") as unknown as string
+
+                create_unique_action(action_id, JSON.stringify(paramaters), "");
             }).then(() => {
                 res.redirect("/auth/finish")
             })

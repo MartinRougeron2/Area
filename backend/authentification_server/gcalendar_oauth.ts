@@ -17,12 +17,12 @@ module.exports = (app: any) => {
     // app.use(authMiddleWare.authn());
 
     console.log(oAuth2Client)
-    app.get('/auth/gcalendar', (__req: express.Request, res: express.Response) => {
+    app.get('/auth/gcalendar', (req: express.Request, res: express.Response) => {
 
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: SCOPES,
-            state: ""
+            state: req.query.id as unknown as string
         });
         console.log(oAuth2Client)
         res.redirect(authUrl)
@@ -51,7 +51,9 @@ module.exports = (app: any) => {
                     if (!payload)
                         return;
                     const params = {date: ""};
-                    create_unique_action("6214ef5ebf6badb7f46d12a3", JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    const id = req.query.state as unknown as string
+
+                    create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
                 });
 
         });

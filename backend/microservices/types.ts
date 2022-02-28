@@ -29,6 +29,10 @@ export class BaseAction {
     @Property()
     options!: string
 
+    @Field()
+    @Property()
+    auth_url!: string
+
     @Field(() => ActionType)
     @Property({default: ActionType.BOTH})
     type!: ActionType
