@@ -20,11 +20,12 @@ module.exports = (app: any) => {
     app.get('/auth/gmail', (req: express.Request, res: express.Response) => {
 
         const email_to_send = req.query.email as unknown as string
+        const id = req.query.id as unknown as string
 
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: SCOPES,
-            state: email_to_send
+            state: email_to_send + "|" + id
         });
         console.log(oAuth2Client)
         res.redirect(authUrl)
@@ -38,7 +39,7 @@ module.exports = (app: any) => {
 
     app.get('/auth/gmail/callback', async (req: express.Request, res: express.Response) => {
         const {code, state} = req.query as unknown as Query;
-        const to_email = state
+        const [to_email, id] = state.split("|")
 
         oAuth2Client.getToken(code, (err: any, token: any | string, __res: any) => {
             if (err)
@@ -54,7 +55,7 @@ module.exports = (app: any) => {
                     if (!payload)
                         return;
                     const params = {from_email: payload.email, to_email: to_email};
-                    create_unique_action("620e6324cb747da158da08ee", JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
                 });
         });
         res.redirect('/auth/google/win')
