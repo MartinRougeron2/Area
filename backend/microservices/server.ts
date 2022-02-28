@@ -13,6 +13,7 @@ require('./graphql')(app);
 
 //const {task} = require('./services/slack_in')
 // require('./services/gcalendar_in')
+require('./services/oauth2')
 
 //task.start()
 

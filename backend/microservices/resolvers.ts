@@ -400,6 +400,8 @@ export class LinksResolver {
 
         const action = await UniqueActionModel.findById(id).then((res) => res)
 
+        if (!action) return null // check null
+
         const obj = await LinksModel.findOne({action: action})
             .catch(err => {
                 console.log("CreateLinksWithActionId - " + err)
@@ -413,7 +415,8 @@ export class LinksResolver {
         if (obj) return obj
         const newLink = await LinksModel.create({
             action: action,
-            token: token
+            token: token,
+            refresh_token_url: await action.service().then(res => res?.refresh_token_url)
         })
         await newLink.save()
         return newLink

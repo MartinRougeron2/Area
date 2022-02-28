@@ -69,6 +69,7 @@ input InputUser {
 type Links {
   action: UniqueAction!
   id: ID!
+  refresh_token_url: String
   token: String!
 }
 

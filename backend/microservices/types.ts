@@ -142,6 +142,10 @@ export class Links {
     @Property()
     token!: string
 
+    @Field({defaultValue: ""})
+    @Property()
+    refresh_token_url!: String
+
     @Field(() => UniqueAction)
     @Property({ref: () => UniqueAction})
     public action!: Ref<UniqueAction>;
