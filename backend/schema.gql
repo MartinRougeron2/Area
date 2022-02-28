@@ -93,7 +93,7 @@ type Mutation {
   SendDiscordReaction(data: CommunicationInput!): Boolean!
   SendGmailMail(data: CommunicationInput!): Boolean!
   SendSlackMessage(data: CommunicationInput!): Boolean!
-  UpdateBayAction(data: UpdateBayAction!, id: String!): Boolean!
+  UpdateBayAction(data: UpdateBayAction, id: String!): BayAction!
 }
 
 input OptionsInputType {
@@ -146,8 +146,8 @@ input UniqueActionInput {
 }
 
 input UpdateBayAction {
-  active: Boolean!
-  name: String!
+  active: Boolean
+  name: String
 }
 
 """User"""

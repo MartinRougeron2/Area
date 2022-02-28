@@ -4,18 +4,32 @@ import RoundButton from "../../components/dashboard/RoundButton";
 import Switch from "react-switch";
 import { AiFillDelete } from "react-icons/ai";
 import { EditText } from "react-edit-text";
+import {
+  useMutation,
+  gql
+} from "@apollo/client";
+
+const UPDATE_BAYS = gql`
+  mutation UpdateBays($id: String!, $name: String, $active: Boolean) {
+    UpdateBayAction(id: $id, data: {name: $name, active: $active}) {
+      id
+    }
+  }
+`
 
 const DashBayPreview = ({ bay, onDelete }) => {
   console.log(bay)
   const { active, action_effect, action_trigger, name } = bay;
   const [activated, setActive] = useState(active);
+  const [updateBay] = useMutation(UPDATE_BAYS)
 
   const switchClick = (check) => {
     setActive(check);
+    updateBay({variables: {id: bay.id, active: check}})
   };
 
   const changeName = (value) => {
-    //TODO SAVE NEW NAME
+    updateBay({variables: {id: bay.id, name: value.value}})
   };
 
   return (

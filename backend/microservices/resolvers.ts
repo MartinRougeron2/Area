@@ -91,10 +91,10 @@ class InputBayAction {
 
 @InputType()
 class UpdateBayAction {
-    @Field()
+    @Field({nullable: true})
     name?: string
 
-    @Field()
+    @Field({nullable: true})
     active?: boolean
 }
 
@@ -255,9 +255,9 @@ export class BayActionResolver {
         return await BayActionModel.findByIdAndDelete(id).then((res) => !!res)
     }
 
-    @Mutation((_returns) => Boolean)
-    async UpdateBayAction(@Arg('id') id: string, @Arg('data') update: UpdateBayAction) {
-        return !!(BayActionModel.findByIdAndUpdate(id, update))
+    @Mutation((_returns) => BayAction)
+    async UpdateBayAction(@Arg('id') id: string, @Arg('data', {nullable: true}) update: UpdateBayAction) {
+        return await (BayActionModel.findByIdAndUpdate(id, update).then(res => res))
     }
 }
 
