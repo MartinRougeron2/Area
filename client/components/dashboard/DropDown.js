@@ -14,14 +14,14 @@ const DropDown = ({ actionlist, value, onChange, placeHolder = "" }) => {
       </div>
       {activate && (
         <div className="absolute z-40 w-96 flex flex-col">
-          {actionlist.map((action, key) => (
+          {Object.keys(actionlist).map((action, key) => (
             <p key={key} className="cursor-pointer font-bold bg-white p-2"
               onClick={() => {
                 setActivate(false);
-                onChange(key);
+                onChange(actionlist[action].id);
               }}
             >
-              {action.name}
+              {actionlist[action].name}
             </p>
           ))}
         </div>

@@ -55,7 +55,7 @@ const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setV
 }
 
 const GetActionsToShow = (service, first) => {
-  const actions = []
+  const actions = {}
 
   service.actions.forEach(action => {
     if (action.type === "BOTH")

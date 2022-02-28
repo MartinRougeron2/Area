@@ -90,6 +90,15 @@ class InputBayAction {
 }
 
 @InputType()
+class UpdateBayAction {
+    @Field()
+    name?: string
+
+    @Field()
+    active?: boolean
+}
+
+@InputType()
 class UniqueActionInput {
     @Field()
     action_id!: string
@@ -244,6 +253,11 @@ export class BayActionResolver {
     @Mutation((_returns) => Boolean)
     async DeleteBayAction(@Arg('id') id: string) {
         return await BayActionModel.findByIdAndDelete(id).then((res) => !!res)
+    }
+
+    @Mutation((_returns) => Boolean)
+    async UpdateBayAction(@Arg('id') id: string, @Arg('data') update: UpdateBayAction) {
+        return !!(BayActionModel.findByIdAndUpdate(id, update))
     }
 }
 
