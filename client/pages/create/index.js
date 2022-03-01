@@ -26,30 +26,56 @@ const DrawField = ({options, setTested, index, onChange, value}) => {
     setTested(false)
   }
   return (
-    <div className="pt-5">
-      <InputSimple name={options.name} value={value[index]} onChange={(val) => updateValue(val, index)}></InputSimple>
-      <span className="text-sm">{options.description}</span>
-    </div>
+      <div className="pt-5">
+        <InputSimple name={options.name} value={value[index]} onChange={(val) => updateValue(val, index)}></InputSimple>
+        <span className="text-sm">{options.description}</span>
+      </div>
   )
 }
 
-const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setValueSel}) => {
+const DrawOptions = ({options, index, setTested, setIndex, first, valueSel, setValueSel, connected, setConnected}) => {
+  const [isConnecting, setConnecting] = useState(false)
+
   const handleChange = (key) => {
     console.log(key)
     setIndex(key)
     setValueSel({[0]: "", [1]: "", [2]: "", [3]: ""})
     setTested(false)
   }
-  console.log(options, index)
+
+  const doConnect = () => {
+    if (connected)
+      return;
+    setConnecting(true)
+    setTimeout(() => {
+      setConnecting(false)
+      setConnected(true)
+    }, 1500);
+  }
+
   return (
     <div className="flex flex-col items-start">
       <span className="text-sm italic font-bold">{first ? "When this happen..." : "Do this..."}</span>
-      <DropDown actionlist={options} value={index} onChange={handleChange}/>
-      {(index !== -1) && JSON.parse(options[index].options).map((elem, key) => {
-        return (
-          <DrawField key={key} index={key} options={elem} setTested={setTested} onChange={setValueSel} value={valueSel}/>
-        )
-      })}
+      <div className="flex w-full justify-between">
+        <DropDown actionlist={options} value={index} onChange={handleChange}/>
+        {index !== -1 && (
+          <div className="flex">
+            <MainButton text={connected ? "Connected" : "Connection"} disable={isConnecting} color='dark' action={() => {doConnect()}}></MainButton>
+          </div>
+        )}
+      </div>
+      {(index !== -1) &&
+      <div className="flex row w-full">
+        <div className="flex col w-[50%]">
+          {JSON.parse(options[index].options).map((elem, key) => {
+            return (
+              <DrawField key={key} index={key} options={elem} setTested={setTested} onChange={setValueSel} value={valueSel}/>
+            )
+            })
+          }
+        </div>
+      </div>
+      }
     </div>
   )
 }
@@ -71,18 +97,11 @@ const GetActionsToShow = (service, first) => {
 const Connect = ({data, connected, setConnected, setTested, first, index, setIndex, value, setValue, slideTo, slide}) => {
   return (
     <div className="flex flex-col items-center p-5 h-full w-full">
-      <h2 className="text-lg font-bold mt-6 mb-8">Connect your {data.name} account</h2>
+      <h2 className="text-lg font-bold mt-6 mb-8">{data.name} services</h2>
       <div className="w-full drop-shadow-lg bg-white rounded p-5 mb-5">
         <div className="flex flex-row items-center justify-between">
-          <div className="flex flex-row items-center justify-center flex-nowrap">
-            <img src={data.icon} className="w-20"/>
-            <span className="text-md p-5">Connexion a {data.name}</span>
-          </div>
-          <div className="flex">
-            <MainButton text={connected ? "Connected" : "Connection"} color='dark' action={() => {setConnected(true)}}></MainButton>
-          </div>
         </div>
-        {connected && (<DrawOptions options={GetActionsToShow(data, first)} setTested={setTested} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue}/>)}
+        <DrawOptions options={GetActionsToShow(data, first)} setTested={setTested} index={index} setIndex={setIndex} first={first} valueSel={value} setValueSel={setValue} connected={connected} setConnected={setConnected}/>
       </div>
       <div className="flex w-full pt-7">
         {

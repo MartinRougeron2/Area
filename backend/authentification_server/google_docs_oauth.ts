@@ -6,7 +6,7 @@ const SCOPES = ["https://www.googleapis.com/auth/drive"];
 const oAuth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID ?? "",
   process.env.GOOGLE_CLIENT_SECRET ?? "",
-  "https://localhost:3000/auth/google/callback"
+  "https://localhost:5001/auth/google/callback"
 );
 
 module.exports = (app: any) => {

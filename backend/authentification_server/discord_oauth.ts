@@ -8,7 +8,7 @@ module.exports = (app: any) => {
     const oauth = new DiscordOauth2({
         clientId: process.env.DISCORD_CLIENT_ID,
         clientSecret: process.env.DISCORD_CLIENT_SECRET,
-        redirectUri: "https://localhost:3000/auth/discord/redirect",
+        redirectUri: "https://localhost:5001/auth/discord/redirect",
     });
     app.get('/auth/discord', async (req: any, res: any, __next: any) => {
         try {

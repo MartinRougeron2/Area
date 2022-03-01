@@ -10,7 +10,7 @@ interface Query {
    state:string;
 }
 
-const oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID ?? "", process.env.GOOGLE_CLIENT_SECRET ?? "", "https://localhost:3000/auth/gmail/callback");
+const oAuth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID ?? "", process.env.GOOGLE_CLIENT_SECRET ?? "", "https://localhost:5001/auth/gmail/callback");
 
 module.exports = (app: any) => {
 

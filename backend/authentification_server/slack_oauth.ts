@@ -50,7 +50,7 @@ module.exports = (app: any) => {
                     'calls:read', 'channels:read', 'groups:read', 'mpim:read', 'im:read',
                     'channels:history', 'groups:history', 'im:history', 'mpim:history'],
                 metadata: req.query.id,
-                redirectUri: 'https://localhost:3000/auth/slack-redirect'
+                redirectUri: 'https://localhost:5001/auth/slack-redirect'
             })
 
             res.redirect(url)
