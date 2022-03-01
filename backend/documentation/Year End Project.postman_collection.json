@@ -1,0 +1,472 @@
+{
+	"info": {
+		"_postman_id": "bb861193-1356-46f3-b850-b9764e9ee48d",
+		"name": "Year End Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation createUser($name: String!, $password: String!, $email: String!) {\n    CreateUser(name: $name, password: $password, email: $email) {\n        user {\n            name\n            email\n        }\n        is_new\n        jwt_token\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": "{{url}}/graphql"
+					},
+					"response": []
+				},
+				{
+					"name": "SIgn In",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query signIn ($email: String!, $password: String!) {\n    LoginUser(email: $email, password: $password) {\n        jwt_token\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Delete User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation ($id: ID!) {\n    DeleteUser (id: $id)\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getUser($id: String!) {\n    GetUser(id: $id) {\n        \n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Actions",
+			"item": [
+				{
+					"name": "Unique Action",
+					"item": [
+						{
+							"name": "Delete Unique Action",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteUniqueAction($id: String!) {\n    DeleteUniqueAction(id: $id) {\n        id\n        parameters\n        old_values\n        action {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n        service {\n            id\n            name\n            out_url\n            in_url\n            icon\n            refresh_token_url\n        }\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Unique Action by Action Id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createUniqueActionByBaseActionId($action_id: String!, $parameters: String!, $old_values: String!) {\n    CreateUniqueActionByBaseActionId(action_id: $action_id, parameters: $parameters, old_values: $old_values) {\n        id\n        parameters\n        old_values\n        action {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n        service {\n            id\n            name\n            out_url\n            in_url\n            icon\n            refresh_token_url\n        }\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Unique Action",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query getUniqueActionById($id: String!) {\n    GetUniqueActionById(id: $id) {\n        id\n        parameters\n        old_values\n        action {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n        service {\n            id\n            name\n            out_url\n            in_url\n            icon\n            refresh_token_url\n        }\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Base Action",
+					"item": [
+						{
+							"name": "Create Base Action",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createBaseAction($name: String, $options: String) {\n    CreateBaseAction(name: $name, options: $options) {\n        id\n        name\n        options\n        auth_url\n        type\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Attach Base Action",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation attachBaseAction($service_id: String!, $baseaction_id: String!) {\n    AttachBaseAction(service_id: $service_id, baseaction_id: $baseaction_id) {\n        id\n        out_url\n        in_url\n        icon\n        refresh_token_url\n        actions {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modify Option Base Action",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createOfModifyOptionBaseAction($id: String!, $options: String!) {\n    CreateOrModifyOptionsBaseAction(id: $id, options: $options) {\n        id\n        name\n        options\n        auth_url\n        type\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Base Action",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteBaseAction($id: String!) {\n    DeleteBaseAction(id: $id) {\n        id\n        name\n        options\n        auth_url\n        type\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Base Action By Id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query getBaseActionById($id: String!) {\n    GetBaseActionById(id: $id) {\n        id\n        name\n        options\n        auth_url\n        type\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Links",
+					"item": [
+						{
+							"name": "Create Link with ACtion ID",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation createLinkWithAction($action_id: ID!, $token: String!) {\n    CreateLinksWithActionId(action_id: $action_id, token: $token) {\n        action\n        token\n        refresh_token_url\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Links by ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query getActionById ($id: String! ) {\n    GetLinksById(id: $id) {\n        action\n        token\n        refresh_token_url\n    }\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Link",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation deleteLink($id: String!) {\n    DeleteLinks(id: $id)\n}",
+										"variables": ""
+									}
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Actions Bay",
+			"item": [
+				{
+					"name": "Create Bay Action",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation createBayAction($action_trigger_id: String!, $action_effect_id: String!, $name: String!, $active: Boolean!) {\n    CreateBayAction(action_trigger_id: $action_trigger_id, action_effect_id: $action_effect_id, name: $name, active: $active) {\n        id\n        name\n        active\n        action_trigger {\n            id\n            parameters\n            old_values\n        }\n        action_effect {\n            id\n            parameters\n            old_values\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bay Action",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getBayActionById($id: String!) {\n    GetBayActionById(id: $id) {\n        id\n        name\n        active\n        action_trigger {\n            id\n            parameters\n            old_values\n        }\n        action_effect {\n            id\n            parameters\n            old_values\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bay Action",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation deleteBayAction($id: String!) {\n    DeleteBayAction(id: $id) {\n        id\n        name\n        active\n        action_trigger {\n            id\n            parameters\n            old_values\n        }\n        action_effect {\n            id\n            parameters\n            old_values\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Bay Action",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation updateBayAction($id: String!, $name: String, $active: Boolean) {\n    UpdateBayAction(id: $id, name: $name, active: $active) {\n        id\n        name\n        active\n        action_trigger {\n            id\n            parameters\n            old_values\n        }\n        action_effect {\n            id\n            parameters\n            old_values\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "Create Services",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation createService($name: String!, $in_url: String!, $out_url: String! ) {\n    CreateService(name: $name, in_url: $in_url, out_url: $out_url) {\n        id\n        name\n        out_url\n        in_url\n        icon\n        refresh_token_url\n        actions {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Services",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getAllServices {\n    GetAllServices {\n        id\n        name\n        out_url\n        in_url\n        icon\n        refresh_token_url\n        actions {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Service Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getServiceById($id: String!) {\n    GetServiceById(id: $id) {\n        id\n        name\n        out_url\n        in_url\n        icon\n        refresh_token_url\n        actions {\n            id\n            name\n            options\n            auth_url\n            type\n        }\n    }\n}",
+								"variables": ""
+							}
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Service",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:",
+			"type": "string"
+		}
+	]
+}
