@@ -20,6 +20,7 @@ class _LogginPageState extends State<LogginPage> {
 
   GoogleSignInAccount? _currentUser;
 
+  @override
   void initState() {
     super.initState();
     // _googleSignIn.signInSilently();
@@ -28,7 +29,7 @@ class _LogginPageState extends State<LogginPage> {
   Future<void> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
-      _currentUser = await _googleSignIn.currentUser;
+      _currentUser = _googleSignIn.currentUser;
       print("TAG ${_currentUser?.email}");
       print("TAG OK");
     } catch (error) {
