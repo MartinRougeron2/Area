@@ -1,6 +1,8 @@
 import {Resolver, Arg, Query, InputType, Field, Mutation, ObjectType, Ctx} from 'type-graphql';
 import {prop as Property} from "@typegoose/typegoose/lib/prop";
 import {Ref} from "@typegoose/typegoose";
+const {OAuth2Client} = require('google-auth-library');
+const crypto = require('crypto');
 import {BaseAction, UniqueAction, BayAction, Service, User, Links} from './types';
 import {BaseActionModel, UniqueActionModel, BayActionModel, ServiceModel, UserModel, LinksModel} from './types';
 
@@ -9,6 +11,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 @InputType()
 class InputService {
@@ -32,6 +36,15 @@ class InputUser {
 
     @Field()
     password?: string
+}
+
+@InputType()
+class InputUserGoogle {
+    @Field()
+    email!: string
+
+    @Field()
+    token!: string
 }
 
 @ObjectType()
@@ -356,6 +369,31 @@ export class UserResolver {
         }
         resUser.is_new = true
         resUser.jwt_token = "account not registered"
+        return resUser
+    }
+
+    @Query((_returns) => ResultUser, {nullable: true})
+    async LoginUserWithGoogle(@Arg('data') {email, token}: InputUserGoogle) {
+        const resUser = new ResultUser()
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+
+        if (email !== payload.email) return null
+
+        let obj = await UserModel.findOne().or([{email: email}]).then((res) => {
+            if (!res) return null
+            return res
+        })
+        resUser.is_new = false
+        if (!obj) {
+            obj = new UserModel({email: email, name: email, password: bcrypt.hashSync(crypto.randomBytes(64).toString('hex'), 8)})
+            resUser.is_new = true
+        }
+        resUser.jwt_token = jwt.sign({id: obj.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
         return resUser
     }
 
