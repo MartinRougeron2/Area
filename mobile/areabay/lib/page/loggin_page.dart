@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: [
+    'email',
+  ],
+);
 
 class LogginPage extends StatefulWidget {
   const LogginPage({Key? key}) : super(key: key);
@@ -10,6 +17,24 @@ class LogginPage extends StatefulWidget {
 
 class _LogginPageState extends State<LogginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  GoogleSignInAccount? _currentUser;
+
+  void initState() {
+    super.initState();
+    // _googleSignIn.signInSilently();
+  }
+
+  Future<void> _handleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+      _currentUser = await _googleSignIn.currentUser;
+      print("TAG ${_currentUser?.email}");
+      print("TAG OK");
+    } catch (error) {
+      print(error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,10 +118,12 @@ class _LogginPageState extends State<LogginPage> {
                           // Validate will return true if the form is valid, or false if
                           // the form is invalid.
                           if (_formKey.currentState!.validate()) {
-                            print(const Text("Check with DB"));
+                            // TODO CHECK WITH DB
                             Navigator.pushNamed(context, "/homePage");
                             // Process data.
                           } else {
+                            // TODO NOT LOGGED MESSAGE
+                            // ignore: avoid_print
                             print(const Text("Is not logged"));
                           }
                         },
@@ -124,9 +151,7 @@ class _LogginPageState extends State<LogginPage> {
                 child: SignInButton(
                   Buttons.Google,
                   mini: false,
-                  onPressed: () {
-                    print("COMMAND TO GOOGLE");
-                  },
+                  onPressed: _handleSignIn,
                 )),
           ],
         )),
