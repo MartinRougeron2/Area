@@ -48,7 +48,9 @@ class _LoginServiceCardState extends State<LoginServiceCard> {
           ),
           Image(image: AssetImage(widget.serviceLogo), fit: BoxFit.fitHeight),
           ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // TODO LOGIN TO SERVICE
+              },
               style:
                   ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15)),
               child: const Text("Connect", style: TextStyle(fontSize: 30)))

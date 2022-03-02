@@ -125,10 +125,14 @@ class _SignUpPageState extends State<SignUpPage> {
                           // Validate will return true if the form is valid, or false if
                           // the form is invalid.
                           if (_formKey.currentState!.validate()) {
+                            // TODO CHECK WITH DB IF ALREADY SIGNIN
+                            // ignore: avoid_print
                             print(const Text("Check with DB"));
                             Navigator.pushNamed(context, "/homePage");
                             // Process data.
                           } else {
+                            // TODO ??
+                            // ignore: avoid_print
                             print(const Text("Is not logged"));
                           }
                         },
@@ -144,7 +148,7 @@ class _SignUpPageState extends State<SignUpPage> {
               children: [
                 const Text('Already an account ?'),
                 TextButton(
-                  child: const Text('Sign in'),
+                  child: const Text('Log in'),
                   onPressed: () {
                     Navigator.pushNamed(context, '/login');
                   },
@@ -158,7 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   mini: false,
                   text: "Sign up with Google",
                   onPressed: () {
-                    print("COMMAND TO GOOGLE");
+                    // TODO SIGN UP WITH GOOGLE
                   },
                 )),
           ],
