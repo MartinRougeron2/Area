@@ -1,8 +1,7 @@
+// ignore: unused_import
 import 'package:areabay/page/home/create/link_account.dart';
 import 'package:areabay/page/home/create/widget/service_action.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
 
 class CreateBayPage extends StatefulWidget {
   const CreateBayPage({Key? key}) : super(key: key);
@@ -67,10 +66,9 @@ class _CreateBayPageState extends State<CreateBayPage> {
                 data: reaction, callBack: callBackSetData, type: "Reaction"),
             ElevatedButton(
               onPressed: () {
-                  Navigator.pushNamed(context, "/homePage/create/linkAccount", arguments: LinkAccountArgs(data));
-                // if (data["Action"]["Service"].toString().isNotEmpty && data["Reaction"]["Service"].toString().isNotEmpty) {
-                //   Navigator.pushNamed(context, "/homePage/create/linkAccount", arguments: data);
-                // }
+
+                // TODO NAVIGATE TO NEXT PAGE IF ACTION AND REACTION ARE OK
+                //  Navigator.pushNamed(context, "/homePage/create/linkAccount", arguments: LinkAccountArgs(data));
               },
               child: const Text("Create bay"),
             )

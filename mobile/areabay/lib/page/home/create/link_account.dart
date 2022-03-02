@@ -26,6 +26,7 @@ class _LinkAccountState extends State<LinkAccount> {
         _activeStepIndex += 1;
       });
     } else {
+      // ignore: avoid_print
       print('Submitted');
     }
   }
