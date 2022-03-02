@@ -66,6 +66,11 @@ input InputUser {
   password: String!
 }
 
+input InputUserGoogle {
+  email: String!
+  token: String!
+}
+
 """Link Service & User"""
 type Links {
   action: UniqueAction!
@@ -111,6 +116,7 @@ type Query {
   GetUniqueActionById(id: String!): UniqueAction
   GetUser(id: String): User
   LoginUser(data: InputUser!): ResultUser
+  LoginUserWithGoogle(data: InputUserGoogle!): ResultUser
   RefreshToken: String
 }
 
