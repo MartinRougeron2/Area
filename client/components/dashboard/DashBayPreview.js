@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import DashServiceBox from "./DashServiceBox";
-import RoundButton from "../../components/dashboard/RoundButton";
 import Switch from "react-switch";
 import { AiFillDelete } from "react-icons/ai";
-import { EditText } from "react-edit-text";
+import InputSimple from "../../components/utils/Input";
 import {
   useMutation,
   gql
@@ -18,8 +16,8 @@ const UPDATE_BAYS = gql`
 `
 
 const DashBayPreview = ({ bay, onDelete }) => {
-  console.log(bay)
   const { active, action_effect, action_trigger, name } = bay;
+  const [bayName, setBayName] = useState(name)
   const [activated, setActive] = useState(active);
   const [updateBay] = useMutation(UPDATE_BAYS)
 
@@ -29,7 +27,8 @@ const DashBayPreview = ({ bay, onDelete }) => {
   };
 
   const changeName = (value) => {
-    updateBay({variables: {id: bay.id, name: value.value}})
+    setBayName(value)
+    updateBay({variables: {id: bay.id, name: value}})
   };
 
   return (
@@ -43,11 +42,9 @@ const DashBayPreview = ({ bay, onDelete }) => {
       </div>
       <div className="flex items-center" style={{whiteSpace: 'nowrap'}}>
         <span className="text-sm">
-          <EditText
-            defaultValue={name}
-            style={{border: "1px solid #ccc" }}
-            onSave={changeName}
-            inline
+          <InputSimple
+            value={bayName}
+            onChange={changeName}
           />
         </span>
       </div>

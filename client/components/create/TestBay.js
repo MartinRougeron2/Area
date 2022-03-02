@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import MainButton from "../../components/utils/MainButton";
-import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
+import Switch from "react-switch";
+import InputSimple from "../../components/utils/Input";
 
 import Cookies from 'universal-cookie';
 
@@ -23,26 +24,13 @@ const CREATE_BAYS = `
   }
 `
 
-const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
+const TestBay = ({BayData, slide, slideTo}) => {
   const [checkError, setError] = React.useState({
     error: true,
     message: ""
   })
-  const [duringtest, setDuring] = useState({
-    running: false,
-    success: -1,
-    message: ""
-  })
-
-  const countKeys = (obj) => {
-    var res = Object.keys(obj).length
-
-    for (var x in obj) {
-      if (obj[x] == "")
-       res -= 1;
-    }
-    return res;
-  }
+  const [name, setName] = useState("Default name")
+  const [active, setActive] = useState(false)
 
   const getActionById = (actions, id) => {
     return actions.find(elem => elem.id === id)
@@ -61,10 +49,6 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
       setError({error: true, message: <>Service {BayData.from.service.name} no trigger selectionned!<br/>You need to select one trigger before testing</>})
     } else if (BayData.to.actions.index == -1) {
       setError({error: true, message: <>Service {BayData.to.service.name} no actions selectionned!<br/>You need to select one actions before testing</>})
-    } else if (countKeys(BayData.from.actions.value) != JSON.parse(getActionById(BayData.from.service.actions, BayData.from.actions.index).options).length) {
-      setError({error: true, message: <>Service {BayData.from.service.name} no value filled!<br/>You need to fill every field before testing</>})
-    } else if (countKeys(BayData.to.actions.value) != JSON.parse(getActionById(BayData.to.service.actions, BayData.to.actions.index).options).length) {
-      setError({error: true, message: <>Service {BayData.to.service.name} no value filled!<br/>You need to fill every field before testing</>})
     } else {
       setError({
         error: false,
@@ -125,8 +109,8 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
         variables: {
           actionidfrom: id1,
           actionidto: id2,
-          name: BayData.data.description,
-          active: BayData.data.active,
+          name: name,
+          active: active,
         },
       }),
     })
@@ -134,22 +118,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
     .then((result) => {
       console.log(result)
     });
-  }
-
-  const playTest = async () => {
-    setDuring({
-      running: true,
-      success: -1,
-      message: ""
-    })
-    setTimeout(() => {
-      setTested(true)
-      setDuring({
-        running: false,
-        success: 1,
-        message: "Test success let's run this Bay"
-      })
-    }, 1000)
+    location.href = "/dashboard/bays"
   }
 
   useEffect(() => {checkData()}, [BayData])
@@ -169,7 +138,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
             <img className="w-[20%]" src={BayData.from.service.icon} />
             <div className='flex flex-col items-start'>
               <span className='font-bold text-md'>When {getActionById(BayData.from.service.actions, BayData.from.actions.index).name}</span>
-              {JSON.parse(getActionById(BayData.from.service.actions, BayData.from.actions.index).options).map((elem, key) => {
+              {getActionById(BayData.from.service.actions, BayData.from.actions.index).options !== "" &&  JSON.parse(getActionById(BayData.from.service.actions, BayData.from.actions.index).options).map((elem, key) => {
                 return (
                   <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.from.actions.value[key]}</span>
                 )
@@ -183,7 +152,7 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
             <img className="w-[20%]" src={BayData.to.service.icon} />
             <div className='flex flex-col items-start'>
               <span className='font-bold text-md'>Do {getActionById(BayData.to.service.actions, BayData.to.actions.index).name}</span>
-              {JSON.parse(getActionById(BayData.to.service.actions, BayData.to.actions.index).options).map((elem, key) => {
+              {getActionById(BayData.to.service.actions, BayData.to.actions.index).options !== "" && JSON.parse(getActionById(BayData.to.service.actions, BayData.to.actions.index).options).map((elem, key) => {
                 return (
                   <span key={key} className='text-sm ml-5'>With {elem.name} as {BayData.to.actions.value[key]}</span>
                 )
@@ -191,39 +160,28 @@ const TestBay = ({BayData, slide, slideTo, tested, setTested}) => {
             </div>
           </div>
         </div>
-        {duringtest.running &&
-          <div className='flex items-center justify-center bg-light border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10 mt-10'>
-            <Spinner/>
+        <div className="flex row items-center justify-around">
+          <div className="flex row items-center">
+            <span>Bay name: </span>
+            <InputSimple value={name} onChange={setName}/>
           </div>
-        }
-        {(duringtest.success == 0 && !tested) &&
-          <div className='flex items-center justify-center bg-red border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mb-10 mt-10'>
-            <span className='flex font-bold text-sm'>
-              {duringtest.message}
-            </span>
+          <div className="flex row items-center">
+            <span>Active: </span>
+            <Switch
+              checked={active}
+              onChange={() => setActive(!active)}
+            />
           </div>
-        }
-        {(duringtest.success == 1 && tested) &&
-          <div className='flex items-center justify-center bg-light border-4 border-dark opacity-60 h-[40%] w-[60%] m-auto mt-10 mb-10'>
-            <span className='flex font-bold text-sm'>
-              {duringtest.message}
-            </span>
-          </div>
-        }
+        </div>
       </div>
       }
       <div className="flex w-full pt-7">
         <div className="flex w-full justify-start">
           <MainButton text={"Back"} color='light' action={() => {slideTo(slide - 1)}}></MainButton>
         </div>
-        { tested ? 
         <div className="flex w-full justify-end">
           <MainButton text={"Create"} color='light' action={() => processCreation()}></MainButton>
-        </div> :
-        <div className="flex w-full justify-end">
-          <MainButton text={"Test"} disable={duringtest.running || checkError.error} color='dark' action={() => {playTest()}}></MainButton>
         </div>
-        }
       </div>
     </div>
   );

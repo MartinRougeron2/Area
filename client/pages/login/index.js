@@ -38,6 +38,10 @@ const LoginPage = () => {
     }
   }, [data])
 
+  const responseGoogle = (response) => {
+    console.log(response);
+  }
+
   return (
     <div className="flex flex-row w-screen h-screen">
       <div className="flex flex-col w-1/2 h-screen p-10">
@@ -47,7 +51,11 @@ const LoginPage = () => {
           <div className="flex flex-col h-[50%] justify-between mt-14 mb-14">
             <InputSimple name="E-mail" value={email} onChange={setEmail}/>
             <InputSimple name="Mot de passe" value={password} onChange={setPassword}/>
-            <GoogleLogin className="cursor-pointer" />
+            <GoogleLogin className="cursor-pointer"
+              clientId="683963277714-ir8gsgu1qtbpmo0sdgnrno93majs4vpb.apps.googleusercontent.com"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+            />
             <MainButton disable={isDisable()} text={"Connexion"} action={() => login({variables: {email: email, password: password}})}/>
             {
               (data && data.LoginUser.is_new === true) &&
