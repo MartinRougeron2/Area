@@ -33,6 +33,7 @@
     "express-session": "^1.17.2",
     "firebase": "^9.6.6",
     "firebase-auth-express-middleware": "^1.0.4",
+    "github-oauth": "^0.2.2",
     "googleapis": "39",
     "graphql": "^15.3.0",
     "jsonwebtoken": "^8.5.1",
