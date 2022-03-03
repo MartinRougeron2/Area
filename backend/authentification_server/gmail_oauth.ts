@@ -19,7 +19,7 @@ module.exports = (app: any) => {
     console.log(oAuth2Client)
     app.get('/auth/gmail', (req: express.Request, res: express.Response) => {
 
-        const email_to_send = req.query.email as unknown as string
+        const email_to_send = req.query.email  ?? "" as unknown as string
         const id = req.query.id as unknown as string
 
         const authUrl = oAuth2Client.generateAuthUrl({
@@ -54,7 +54,7 @@ module.exports = (app: any) => {
                     const payload = res.getPayload()
                     if (!payload)
                         return;
-                    const params = {from_email: payload.email, to_email: to_email};
+                    const params = {from_email: payload.email, to_email: to_email ?? ""};
                     create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
                 });
         });
