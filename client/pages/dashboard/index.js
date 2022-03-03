@@ -23,6 +23,7 @@ const GET_SERVICES = gql`
         name
         options
         type
+        auth_url
       }
     }
   }`;

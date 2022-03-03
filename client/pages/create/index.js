@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import DashHeader from "../../components/dashboard/DashHeader";
 import MainButton from "../../components/utils/MainButton";
+import Popup from "../../components/create/Popup";
+
 
 // Import Swiper styles
 import "swiper/css";
@@ -20,8 +22,6 @@ const DrawField = ({options, index, onChange, value}) => {
   const updateValue = (val, index) => {
     let old = {...value}
     old[index] = val;
-    if (val == "")
-      delete old[index]
     onChange(old)
   }
   return (
@@ -34,12 +34,23 @@ const DrawField = ({options, index, onChange, value}) => {
 
 const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel, connected, setConnected}) => {
   const [isConnecting, setConnecting] = useState(false)
+  const [url, setUrl] = useState(null)
 
   const handleChange = (key) => {
-    console.log(key)
     setIndex(key)
     setValueSel({[0]: "", [1]: "", [2]: "", [3]: ""})
   }
+
+  useEffect(() => {
+    if (index === -1)
+      return;
+    const url = (new URL(`https://localhost:5001${options[index].auth_url}`))
+    url.searchParams.append("id", index)
+    if (options[index].options !== "") {
+      JSON.parse(options[index].options).forEach((elem, key) => url.searchParams.append(elem.name, valueSel[key]))
+    }
+    setUrl(url)
+  }, [valueSel, index])
 
   const doConnect = () => {
     if (connected)
@@ -47,10 +58,24 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel, co
     setConnecting(true)
     setTimeout(() => {
       setConnecting(false)
-      setConnected(true)
+      setConnected(false)
     }, 1500);
   }
-  console.log(options, index)
+
+  const isArgs = () => {
+    if (index === -1) return false;
+    if (options[index].options === "") return true
+    const nbr = JSON.parse(options[index].options).length;
+    var res = true;
+    for (var i = 0; i != nbr; i++) {
+      if (valueSel[i] === "") {
+        res = false
+        break;
+      }
+    }
+    return res
+  }
+
   return (
     <div className="flex flex-col items-start">
       <span className="text-sm italic font-bold">{first ? "When this happen..." : "Do this..."}</span>
@@ -58,7 +83,12 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel, co
         <DropDown actionlist={options} value={index} onChange={handleChange}/>
         {index !== -1 && (
           <div className="flex">
-            <MainButton text={connected ? "Connected" : "Connection"} disable={isConnecting} color='dark' action={() => {doConnect()}}></MainButton>
+              <Popup
+                url={url}
+                onClick={(e) => console.log(e)}
+              >
+              <MainButton text={connected ? "Connected" : "Connection"} disable={isConnecting || !isArgs()} color='dark' action={() => {doConnect()}}></MainButton>
+            </Popup>
           </div>
         )}
       </div>

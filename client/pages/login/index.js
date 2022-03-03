@@ -52,7 +52,7 @@ const LoginPage = () => {
             <InputSimple name="E-mail" value={email} onChange={setEmail}/>
             <InputSimple name="Mot de passe" value={password} onChange={setPassword}/>
             <GoogleLogin className="cursor-pointer"
-              clientId="683963277714-ir8gsgu1qtbpmo0sdgnrno93majs4vpb.apps.googleusercontent.com"
+              clientId="528023430126-8jm94ashkrfm42maqe7jak3hu1v4ogll.apps.googleusercontent.com"
               onSuccess={responseGoogle}
               onFailure={responseGoogle}
             />
