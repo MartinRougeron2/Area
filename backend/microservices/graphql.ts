@@ -16,7 +16,7 @@ import {
 import {SlackOutResolver} from "./services/slack_out";
 import {GmailOutResolver} from "./services/gmail_out";
 import {GCalendarOutResolver} from "./services/gcalendar_out";
-import { UserModel } from "./types";
+import { UserModel, ServiceModel } from "./types";
 import {DiscordOutResolver} from "./services/discord_out"
 
 const jwt = require('jsonwebtoken');
@@ -75,4 +75,9 @@ module.exports = async function (app: Application) {
     await server.start();
 
     server.applyMiddleware({app});
+
+    app.get('/about.json', async (__req: Request, res: any) => {
+        res.send(JSON.stringify(await ServiceModel.find({}).populate('actions').then((res) => res)))
+    })
+    
 }
