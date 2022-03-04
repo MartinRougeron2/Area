@@ -8,7 +8,7 @@ import {trigger_effects} from "../common";
 const cron = require('node-cron');
 const fetch = require("node-fetch");
 
-async function getNumberRepo(token_access: string) : Promise<string> {
+async function getNumberRepo(token_access: string) : Promise<any> {
     const response = await fetch("https://api.github.com/user/repos?type=owner", {
         headers: {
             Authorization: `token ${token_access}`
@@ -35,9 +35,12 @@ var task = cron.schedule('15 * * * * *', () => {
                         if (!unique_actions.old_values) {
                             unique_actions.old_values = JSON.stringify({number: "0"})
                         }
-                        const params = {number: await getNumberRepo(obj.access_token).toString()}
+                        const num = await getNumberRepo(obj.access_token)
+                        const params = {number: num.toString()}
+                        console.log(unique_actions.old_values)
+                        console.log(JSON.stringify(params))
                         if (unique_actions.old_values != JSON.stringify(params)) {
-                            if (parseInt(params.number) > parseInt(JSON.parse(unique_actions.old_values).number)) {
+                            if (parseInt(params.number, 10) > parseInt(JSON.parse(unique_actions.old_values).number), 10) {
                                 await trigger_effects(unique_actions, `New repository github have been created`)
                             }
                             unique_actions.old_values = JSON.stringify(params)
