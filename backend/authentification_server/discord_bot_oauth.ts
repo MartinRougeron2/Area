@@ -30,13 +30,13 @@ module.exports = (app: any) => {
             oauth.tokenRequest({
                 code: req.query.code,
                 grantType: "authorization_code",
-            }).then((d: DResponse) => {
+            }).then(async (d: DResponse) => {
                 const token = d?.access_token + "|" + d?.refresh_token
                 const paramaters = {channel_id: d.webhook.channel_id}
                 const action_id = (req.query.state ?? "") as unknown as string
 
-                const newId = create_unique_action(action_id, JSON.stringify(paramaters), token);
-                res.redirect("/auth/finish?id=" + newId)
+                const newId = await create_unique_action(action_id, JSON.stringify(paramaters), token);
+                res.redirect("http://localhost:3000/auth/win?id=" + newId)
             })
         } catch (error) {
             console.log(error)

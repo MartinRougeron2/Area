@@ -22,7 +22,7 @@ module.exports = (app: any) => {
         authVersion: 'v2',
         stateSecret: 'putain-je-suis-un-lover-reno-2022',
         installationStore: {
-            storeInstallation: async (installation: Installation) => {
+            storeInstallation: async (installation: Installation, ) => {
                 const action_id = installation.metadata ?? ""
                 const parameters = {channel_id: installation?.incomingWebhook?.channelId}
                 const parameters_json = JSON.stringify(parameters)
