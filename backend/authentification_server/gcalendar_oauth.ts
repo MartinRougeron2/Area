@@ -43,7 +43,7 @@ module.exports = (app: any) => {
             console.log(token);
             oAuth2Client.verifyIdToken({idToken: token.id_token, audience: process.env.GOOGLE_CLIENT_ID ?? ""})
                 .catch((err) => console.log(err))
-                .then((res: LoginTicket | void) => {
+                .then(async (res: LoginTicket | void) => {
                     console.log(res);
                     if (!res)
                         return;
@@ -53,8 +53,8 @@ module.exports = (app: any) => {
                     const params = {date: ""};
                     const id = req.query.state as unknown as string
 
-                    const newId = create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
-                    _res.redirect('/auth/google/win?id=' + newId)
+                    const newId = await create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    _res.redirect('http://localhost:3000/auth/win?id=' + newId)
                 });
 
         });

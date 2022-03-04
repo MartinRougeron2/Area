@@ -57,7 +57,7 @@ module.exports = (app: any) => {
                         return;
                     const params = {from_email: payload.email, to_email: to_email ?? ""};
                     unique_id = await create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
-                    _res.redirect('/auth/google/win?id=' + unique_id)
+                    _res.redirect('http://localhost:3000/auth/win?id=' + unique_id)
                 });
         });
     })
