@@ -85,7 +85,8 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel, co
           <div className="flex">
               <Popup
                 url={url}
-                onClick={(e) => console.log(e)}
+                onCode={(e, params) => console.log(e, params)}
+                onClose={(a) => {console.log(a)}}
               >
               <MainButton text={connected ? "Connected" : "Connection"} disable={isConnecting || !isArgs()} color='dark' action={() => {doConnect()}}></MainButton>
             </Popup>

@@ -1,63 +1,79 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState, useRef } from 'react';
 
-let windowObjectReference = null;
-let previousUrl = null;
-
-const receiveMessage = event => {
- const { data } = event;
- // if we trust the sender and the source is our popup
- if (data.source === 'lma-login-redirect') {
-   // get the URL params and redirect to our server to use Passport to auth/login
-   const { payload } = data;
-   const redirectUrl = `/auth/google/login${payload}`;
-   window.location.pathname = redirectUrl;
- }
+const createPopup = ({
+  url, title, height, width,
+}) => {
+  const left = window.screenX + (window.outerWidth - width) / 2;
+  const top = window.screenY + (window.outerHeight - height) / 2.5;
+  const externalPopup = window.open(
+    url,
+    title,
+    `width=${width},height=${height},left=${left},top=${top}`,
+  );
+  return externalPopup;
 };
 
-const openSignInWindow = (url, name) => {
-  // remove any existing event listeners
-  window.removeEventListener('message', receiveMessage);
-  // window features
-  const strWindowFeatures =
-    'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
+const Popup = ({
+  title = '',
+  width = 500,
+  height = 500,
+  url,
+  children,
+  onCode,
+  onClose,
+  }) => {
+  const [externalWindow, setExternalWindow] = useState(null);
+  const intervalRef = useRef(null);
 
-  if (windowObjectReference === null || windowObjectReference.closed) {
-    /* if the pointer to the window object in memory does not exist
-    or if such pointer exists but the window was closed */
-    windowObjectReference = window.open(url, name, strWindowFeatures);
-  } else if (previousUrl !== url) {
-    /* if the resource to load is different,
-    then we load it in the already opened secondary window and then
-    we bring such window back on top/in front of its parent window. */
-    windowObjectReference = window.open(url, name, strWindowFeatures);
-    windowObjectReference.focus();
-  } else {
-    /* else the window reference must exist and the window
-    is not closed; therefore, we can bring it back on top of any other
-    window with the focus() method. There would be no need to re-create
-    the window or to reload the referenced resource. */
-    windowObjectReference.focus();
-  }
+  const clearTimer = () => {
+    window.clearInterval(intervalRef.current);
+  };
 
-  // add the listener for receiving a message from the popup
-  window.addEventListener('message', event => receiveMessage(event), false);
-  // assign the previous URL
-  previousUrl = url;
-};
+  const onContainerClick = () => {
+    setExternalWindow(createPopup({
+      url, title, width, height,
+    }));
+  };
 
-const Popup = ({url, children, onClick}) => {
   useEffect(() => {
-    // get the URL parameters which will include the auth token
-     const params = window.location.search;
-     if (window.opener) {
-       // send them to the opening window
-       window.opener.postMessage(params);
-       // close the popup
-       window.close();
-     }
-   });
+    if (externalWindow) {
+      intervalRef.current = window.setInterval(() => {
+        try {
+          const currentUrl = externalWindow.location.href;
+          const params = new URL(currentUrl).searchParams;
+          const code = params.get('code');
+          if (!code) {
+            return;
+          }
+          onCode(code, params);
+          clearTimer();
+          externalWindow.close();
+        } catch (error) {
+          console.log(error)
+        } finally {
+          if (!externalWindow || externalWindow.closed) {
+            onClose("a");
+            clearTimer();
+          }
+        }
+      }, 700);
+    }
+    return () => {
+      if (externalWindow) externalWindow.close();
+      if (intervalRef) clearTimer();
+    };
+  }, [externalWindow]);
 
-  return <div onClick={() => openSignInWindow(url, "OAuth popup")}>{children}</div>
+  return (
+    // eslint-disable-next-line
+    <div
+      onClick={() => {
+        onContainerClick();
+      }}
+    >
+      { children }
+    </div>
+  );
 };
 
 export default Popup;
