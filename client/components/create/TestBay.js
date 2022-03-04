@@ -58,46 +58,6 @@ const TestBay = ({BayData, slide, slideTo}) => {
   }
 
   const processCreation = async () => {
-    let id1, id2;
-    await fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-token': cookies.get('x-token')
-      },
-      body: JSON.stringify({
-        query: CREATE_UNIQUE_ACTION,
-        variables: {
-          actionid: getActionById(BayData.from.service.actions, BayData.from.actions.index).id,
-          param: JSON.stringify(BayData.from.actions.value)
-        },
-      }),
-    })
-    .then((res) => res.json())
-    .then((result) => {
-      id1 = result.data.CreateUniqueActionByBaseActionId.id
-    });
-
-    await fetch('http://localhost:5000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-token': cookies.get('x-token')
-      },
-      body: JSON.stringify({
-        query: CREATE_UNIQUE_ACTION,
-        variables: {
-          actionid: getActionById(BayData.to.service.actions, BayData.to.actions.index).id,
-          param: JSON.stringify(BayData.to.actions.value)
-        },
-      }),
-    })
-    .then((res) => res.json())
-    .then((result) => {
-      console.log(result)
-      id2 = result.data.CreateUniqueActionByBaseActionId.id
-    });
-
     await fetch('http://localhost:5000/graphql', {
       method: 'POST',
       headers: {
@@ -107,8 +67,8 @@ const TestBay = ({BayData, slide, slideTo}) => {
       body: JSON.stringify({
         query: CREATE_BAYS,
         variables: {
-          actionidfrom: id1,
-          actionidto: id2,
+          actionidfrom: BayData.from.connected,
+          actionidto: BayData.to.connected,
           name: name,
           active: active,
         },

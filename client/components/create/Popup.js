@@ -40,12 +40,10 @@ const Popup = ({
       intervalRef.current = window.setInterval(() => {
         try {
           const currentUrl = externalWindow.location.href;
-          const params = new URL(currentUrl).searchParams;
-          const code = params.get('code');
-          if (!code) {
+          if (currentUrl === "about:blank")
             return;
-          }
-          onCode(code, params);
+          const id = currentUrl.substring(currentUrl.indexOf('=') + 1);
+          onCode(id);
           clearTimer();
           externalWindow.close();
         } catch (error) {

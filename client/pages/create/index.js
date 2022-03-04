@@ -55,11 +55,9 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel, co
   const doConnect = () => {
     if (connected)
       return;
-    setConnecting(true)
     setTimeout(() => {
       setConnecting(false)
-      setConnected(false)
-    }, 1500);
+    }, 1000);
   }
 
   const isArgs = () => {
@@ -85,10 +83,10 @@ const DrawOptions = ({options, index, setIndex, first, valueSel, setValueSel, co
           <div className="flex">
               <Popup
                 url={url}
-                onCode={(e, params) => console.log(e, params)}
-                onClose={(a) => {console.log(a)}}
+                onCode={(params) => setConnected(params)}
+                onClose={(a) => {}}
               >
-              <MainButton text={connected ? "Connected" : "Connection"} disable={isConnecting || !isArgs()} color='dark' action={() => {doConnect()}}></MainButton>
+              <MainButton text={connected ? "Connected" : "Connection"} disable={isConnecting || !isArgs() || connected} color='dark' action={() => {doConnect()}}></MainButton>
             </Popup>
           </div>
         )}
