@@ -34,9 +34,8 @@ module.exports = (app: any) => {
                 const paramaters = {url: d.webhook.url, channel_id : d.webhook.channel_id}
                 const action_id = (req.query.state ?? "") as unknown as string
 
-                create_unique_action(action_id, JSON.stringify(paramaters), "");
-            }).then(() => {
-                res.redirect("/auth/finish")
+                const newId = create_unique_action(action_id, JSON.stringify(paramaters), "");
+                res.redirect("/auth/finish?id=" + newId)
             })
 
         } catch (error) {

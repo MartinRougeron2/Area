@@ -37,9 +37,10 @@ module.exports = (app: any) => {
     //         res.redirect('/auth/google/win');
     //     });
 
-    app.get('/auth/gmail/callback', async (req: express.Request, res: express.Response) => {
+    app.get('/auth/gmail/callback', async (req: express.Request, _res: express.Response) => {
         const {code, state} = req.query as unknown as Query;
         const [to_email, id] = state.split("|")
+        let unique_id = ""
 
         oAuth2Client.getToken(code, (err: any, token: any | string, __res: any) => {
             if (err)
@@ -47,7 +48,7 @@ module.exports = (app: any) => {
             console.log(token);
             oAuth2Client.verifyIdToken({idToken: token.id_token, audience: process.env.GOOGLE_CLIENT_ID ?? ""})
                 .catch((err) => console.log(err))
-                .then((res: LoginTicket | void) => {
+                .then(async (res: LoginTicket | void) => {
                     console.log(res);
                     if (!res)
                         return;
@@ -55,10 +56,10 @@ module.exports = (app: any) => {
                     if (!payload)
                         return;
                     const params = {from_email: payload.email, to_email: to_email ?? ""};
-                    create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    unique_id = await create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    _res.redirect('/auth/google/win?id=' + unique_id)
                 });
         });
-        res.redirect('/auth/google/win')
     })
 
     app.get('/auth/google/win', (__req: express.Request, res: express.Response) => {

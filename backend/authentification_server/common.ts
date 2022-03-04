@@ -102,9 +102,12 @@ const CREATE_LINK = gql`
     }
 `;
 
-function create_unique_action(action_id: string, parameters_json: string, token: string) {
+async function create_unique_action(action_id: string, parameters_json: string, token: string) : Promise<string> {
+
+    let newId = "";
+
     console.log(action_id);
-    client.mutate({
+    return await client.mutate({
         mutation: CREATE_UNIQUE_ACTION,
         variables: {
             action_id: action_id,
@@ -113,9 +116,9 @@ function create_unique_action(action_id: string, parameters_json: string, token:
         }
     }).catch((err: any) => {
         console.log(err)
-    }).then((result: any) => {
-        console.log(result.data.CreateUniqueActionByBaseActionId.id)
-        client.mutate({
+    }).then(async (result: any) => {
+        newId = result.data.CreateUniqueActionByBaseActionId.id
+        return await client.mutate({
             mutation: CREATE_LINK,
             variables: {
                 action_id: result.data.CreateUniqueActionByBaseActionId.id,
@@ -123,7 +126,7 @@ function create_unique_action(action_id: string, parameters_json: string, token:
             }
         }).catch((err: any) => {
             console.log(err)
-        }).then((result: any) => console.log(result));
+        }).then(() => newId);
     });
 }
 export {CREATE_UNIQUE_ACTION, CREATE_LINK, create_unique_action, DResponse, IResponse}

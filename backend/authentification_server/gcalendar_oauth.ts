@@ -34,7 +34,7 @@ module.exports = (app: any) => {
     //         res.redirect('/auth/google/win');
     //     });
 
-    app.get('/auth/gcalendar/callback', async (req: express.Request, res: express.Response) => {
+    app.get('/auth/gcalendar/callback', async (req: express.Request, _res: express.Response) => {
         const {code} = req.query as unknown as Query;
 
         oAuth2Client.getToken(code, (err: any, token: any | string, __res: any) => {
@@ -53,12 +53,12 @@ module.exports = (app: any) => {
                     const params = {date: ""};
                     const id = req.query.state as unknown as string
 
-                    create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    const newId = create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
+                    _res.redirect('/auth/google/win?id=' + newId)
                 });
 
         });
 
-        res.redirect('/auth/google/win')
     })
 
     app.get('/auth/google/win', (__req: express.Request, res: express.Response) => {
