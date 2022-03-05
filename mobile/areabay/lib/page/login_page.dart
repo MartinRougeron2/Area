@@ -34,7 +34,8 @@ class _LoginPageState extends State<LoginPage> {
         "variables": {"email": _currentUser?.email, "token": _currentUser?.id}
       };
       Map response = await GraphQLConfig.postRequest(data);
-      return response["data"]?["LoginUser"]?["jwt_token"] == "account not registered";
+      return response["data"]?["LoginUser"]?["jwt_token"] ==
+          "account not registered";
     } catch (error) {
       print(error);
     }
@@ -50,7 +51,8 @@ class _LoginPageState extends State<LoginPage> {
     Map response = await GraphQLConfig.postRequest(data);
 
     print(response["data"]?["LoginUser"]);
-    return response["data"]?["LoginUser"]?["jwt_token"] != "account not registered";
+    return response["data"]?["LoginUser"]?["jwt_token"] !=
+        "account not registered";
   }
 
   @override
@@ -113,7 +115,6 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                         onChanged: (text) => _email = text,
-
                       ),
                       TextFormField(
                         decoration: const InputDecoration(

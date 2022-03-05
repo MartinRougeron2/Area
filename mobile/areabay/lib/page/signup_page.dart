@@ -45,6 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     return false;
   }
+
 // username: aaaa
 // mail: aaaa@gmail.com
 // password: aaaa
@@ -131,7 +132,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         keyboardType: TextInputType.emailAddress,
                         autocorrect: false,
                         validator: (String? value) {
-                          if (value == null || value.isEmpty || !RegExp("^(.+)@(.+)\$").hasMatch(value)) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              !RegExp("^(.+)@(.+)\$").hasMatch(value)) {
                             return 'Please enter your email';
                           }
                           return null;
@@ -193,7 +196,10 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: const Text('SIGN UP', style: TextStyle()),
                       ),
                       if (_alreadyInDb)
-                        const Text("Account already create", style: TextStyle(color: Colors.red, fontSize: 12),)
+                        const Text(
+                          "Account already create",
+                          style: TextStyle(color: Colors.red, fontSize: 12),
+                        )
                     ],
                   ),
                 ),
