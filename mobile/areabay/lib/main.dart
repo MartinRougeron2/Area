@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'page/home_page.dart';
-import 'page/loggin_page.dart';
+import 'page/login_page.dart';
 import 'page/signup_page.dart';
 
 void main() => runApp(const MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         body: StartApp(),
       ),
       routes: <String, WidgetBuilder>{
-        "/login": (BuildContext context) => const LogginPage(),
+        "/login": (BuildContext context) => const LoginPage(),
         "/signup": (BuildContext context) => const SignUpPage(),
         "/homePage": (BuildContext context) => const HomePage(),
       },
