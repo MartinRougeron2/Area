@@ -41,7 +41,7 @@ class StartAppState extends State<StartApp> {
 
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
-        Navigator.pushNamed(context, '/login');
+        Navigator.popAndPushNamed(context, '/login');
       });
     });
   }

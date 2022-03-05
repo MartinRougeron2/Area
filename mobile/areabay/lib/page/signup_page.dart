@@ -1,5 +1,15 @@
+import 'package:areabay/api/graphql_config.dart';
+import 'package:areabay/api/mutation.dart';
+import 'package:areabay/api/query.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: [
+    'email',
+  ],
+);
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -10,6 +20,44 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  String _username = "";
+  String _email = "";
+  String _password = "";
+  bool _alreadyInDb = false;
+
+  GoogleSignInAccount? _currentUser;
+
+  Future<bool> _handleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+      _currentUser = _googleSignIn.currentUser;
+
+      Map data = {
+        "query": userGoogle,
+        "variables": {"email": _currentUser?.email, "token": _currentUser?.id}
+      };
+      Map response = await GraphQLConfig.postRequest(data);
+      return response["data"]?["LoginUser"]?["jwt_token"] ==
+          "account not registered";
+    } catch (error) {
+      print(error);
+    }
+    return false;
+  }
+// username: aaaa
+// mail: aaaa@gmail.com
+// password: aaaa
+  Future<bool> createAccount() async {
+    Map data = {
+      "query": createUserMutation,
+      "variables": {"name": _username, "email": _email, "password": _password}
+    };
+
+    Map response = await GraphQLConfig.postRequest(data);
+
+    return response["data"]?["CreateUser"]?["is_new"];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +110,16 @@ class _SignUpPageState extends State<SignUpPage> {
                           icon: Icon(Icons.person),
                           labelText: 'Username',
                         ),
-                        keyboardType: TextInputType.name,
+                        // keyboardType: TextInputType.name,
                         autocorrect: false,
-                        validator: (String? value) {
+                        validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your username';
                           }
                           return null;
+                        },
+                        onChanged: (text) {
+                          _username = text;
                         },
                       ),
                       TextFormField(
@@ -80,10 +131,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         keyboardType: TextInputType.emailAddress,
                         autocorrect: false,
                         validator: (String? value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty || !RegExp("^(.+)@(.+)\$").hasMatch(value)) {
                             return 'Please enter your email';
                           }
                           return null;
+                        },
+                        onChanged: (text) {
+                          _email = text;
                         },
                       ),
                       TextFormField(
@@ -102,6 +156,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           }
                           return null;
                         },
+                        onChanged: (text) {
+                          _password = text;
+                        },
                       ),
                       TextFormField(
                         decoration: const InputDecoration(
@@ -117,27 +174,26 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
                           }
+                          if (value != _password) {
+                            return "Passwords doesn't match";
+                          }
                           return null;
                         },
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          // Validate will return true if the form is valid, or false if
-                          // the form is invalid.
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // TODO CHECK WITH DB IF ALREADY SIGNIN
-                            // ignore: avoid_print
-                            print(const Text("Check with DB"));
-                            Navigator.pushNamed(context, "/homePage");
-                            // Process data.
-                          } else {
-                            // TODO ??
-                            // ignore: avoid_print
-                            print(const Text("Is not logged"));
+                            if (await createAccount()) {
+                              Navigator.popAndPushNamed(context, "/homePage");
+                            } else {
+                              _alreadyInDb = true;
+                            }
                           }
                         },
                         child: const Text('SIGN UP', style: TextStyle()),
                       ),
+                      if (_alreadyInDb)
+                        const Text("Account already create", style: TextStyle(color: Colors.red, fontSize: 12),)
                     ],
                   ),
                 ),
@@ -161,8 +217,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   Buttons.Google,
                   mini: false,
                   text: "Sign up with Google",
-                  onPressed: () {
-                    // TODO SIGN UP WITH GOOGLE
+                  onPressed: () async {
+                    if (await _handleSignIn()) {
+                      Navigator.popAndPushNamed(context, "/homePage");
+                    }
                   },
                 )),
           ],
