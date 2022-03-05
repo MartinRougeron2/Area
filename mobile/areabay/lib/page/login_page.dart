@@ -1,3 +1,5 @@
+import 'package:areabay/api/graphql_config.dart';
+import 'package:areabay/api/query.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -8,33 +10,47 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 
-class LogginPage extends StatefulWidget {
-  const LogginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LogginPage> createState() => _LogginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LogginPageState extends State<LogginPage> {
+class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  String _email = "";
+  String _password = "";
   GoogleSignInAccount? _currentUser;
 
-  @override
-  void initState() {
-    super.initState();
-    // _googleSignIn.signInSilently();
-  }
-
-  Future<void> _handleSignIn() async {
+  Future<bool> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
       _currentUser = _googleSignIn.currentUser;
-      print("TAG ${_currentUser?.email}");
-      print("TAG OK");
+
+      Map data = {
+        "query": userGoogle,
+        "variables": {"email": _currentUser?.email, "token": _currentUser?.id}
+      };
+      Map response = await GraphQLConfig.postRequest(data);
+      return response["data"]?["LoginUser"]?["jwt_token"] == "account not registered";
     } catch (error) {
       print(error);
     }
+    return false;
+  }
+
+  Future<bool> _handleLogIn() async {
+    Map data = {
+      "query": loginUserQuery,
+      "variables": {"email": _email, "password": _password}
+    };
+
+    Map response = await GraphQLConfig.postRequest(data);
+
+    print(response["data"]?["LoginUser"]);
+    return response["data"]?["LoginUser"]?["jwt_token"] != "account not registered";
   }
 
   @override
@@ -84,18 +100,20 @@ class _LogginPageState extends State<LogginPage> {
                       ),
                       TextFormField(
                         decoration: const InputDecoration(
-                          hintText: 'Enter your username',
-                          icon: Icon(Icons.person),
-                          labelText: 'Username',
+                          hintText: 'Enter your email',
+                          icon: Icon(Icons.email),
+                          labelText: 'Email',
                         ),
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.emailAddress,
                         autocorrect: false,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your username';
+                            return 'Please enter your email';
                           }
                           return null;
                         },
+                        onChanged: (text) => _email = text,
+
                       ),
                       TextFormField(
                         decoration: const InputDecoration(
@@ -113,19 +131,15 @@ class _LogginPageState extends State<LogginPage> {
                           }
                           return null;
                         },
+                        onChanged: (text) => _password = text,
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          // Validate will return true if the form is valid, or false if
-                          // the form is invalid.
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // TODO CHECK WITH DB
-                            Navigator.pushNamed(context, "/homePage");
-                            // Process data.
-                          } else {
-                            // TODO NOT LOGGED MESSAGE
-                            // ignore: avoid_print
-                            print(const Text("Is not logged"));
+                            if (await _handleLogIn()) {
+                              Navigator.popAndPushNamed(context, "/homePage");
+                            }
+                            // TODO else bad account
                           }
                         },
                         child: const Text('SIGN IN', style: TextStyle()),
@@ -142,7 +156,7 @@ class _LogginPageState extends State<LogginPage> {
                 TextButton(
                   child: const Text('Sign Up'),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
+                    Navigator.popAndPushNamed(context, '/signup');
                   },
                 )
               ],
@@ -152,7 +166,11 @@ class _LogginPageState extends State<LogginPage> {
                 child: SignInButton(
                   Buttons.Google,
                   mini: false,
-                  onPressed: _handleSignIn,
+                  onPressed: () async {
+                    if (await _handleSignIn()) {
+                      Navigator.popAndPushNamed(context, "/homePage");
+                    }
+                  },
                 )),
           ],
         )),
