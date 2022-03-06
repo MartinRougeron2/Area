@@ -1,6 +1,7 @@
 import 'package:areabay/api/graphql_config.dart';
 import 'package:areabay/api/mutation.dart';
 import 'package:areabay/api/query.dart';
+import 'package:areabay/globals.dart' as global;
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -184,10 +185,16 @@ class _SignUpPageState extends State<SignUpPage> {
                             Map response = await createAccount();
 
                             if (!response["data"]?["CreateUser"]?["is_new"]) {
-                              GraphQLConfig.header["x-token"] = response["data"]?["CreateUser"]?["jwt_token"];
+                              GraphQLConfig.header["x-token"] =
+                                  response["data"]?["CreateUser"]?["jwt_token"];
+
+                              global.idUser = response["data"]?["LoginUser"]
+                                  ?["user"]?["id"];
+
                               Navigator.popAndPushNamed(context, "/homePage");
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
                                 content: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: const [
@@ -227,8 +234,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   text: "Sign up with Google",
                   onPressed: () async {
                     Map response = await _handleSignIn();
-                    GraphQLConfig.header["x-token"] = response["data"]?["CreateUser"]?["jwt_token"];
-                    Navigator.popAndPushNamed(context, "/homePage");
+
+                    if (response["data"]?["LoginUser"]?["jwt_token"] != "bad") {
+                      global.idUser =
+                          response["data"]?["LoginUser"]?["user"]?["id"];
+
+                      GraphQLConfig.header["x-token"] =
+                          response["data"]?["CreateUser"]?["jwt_token"];
+                      Navigator.popAndPushNamed(context, "/homePage");
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text("Cannot signup"),
+                          ],
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                      ));
+                    }
                   },
                 )),
           ],

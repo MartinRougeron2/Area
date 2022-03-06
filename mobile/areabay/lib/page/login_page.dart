@@ -1,5 +1,6 @@
 import 'package:areabay/api/graphql_config.dart';
 import 'package:areabay/api/query.dart';
+import 'package:areabay/globals.dart' as global;
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -131,8 +132,13 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             Map response = await _handleLogIn();
-                            if (response["data"]?["LoginUser"]?["jwt_token"] != "account not registered") {
-                              GraphQLConfig.header["x-token"] = response["data"]?["LoginUser"]?["jwt_token"];
+                            if (response["data"]?["LoginUser"]?["jwt_token"] !=
+                                "account not registered") {
+                              global.idUser = response["data"]?["LoginUser"]
+                                  ?["user"]?["id"];
+
+                              GraphQLConfig.header["x-token"] =
+                                  response["data"]?["LoginUser"]?["jwt_token"];
                               Navigator.popAndPushNamed(context, "/homePage");
                             } else {
                               ScaffoldMessenger.of(context)
@@ -176,11 +182,23 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {
                     Map response = await _handleSignIn();
 
-                    if (response["data"]?["LoginUser"]?["jwt_token"] !=
-                        "account not registered") {
+                    if (response["data"]?["LoginUser"]?["jwt_token"] != "bad") {
+                      global.idUser =
+                          response["data"]?["LoginUser"]?["user"]?["id"];
+
                       GraphQLConfig.header["x-token"] =
                           response["data"]?["LoginUser"]?["jwt_token"];
                       Navigator.popAndPushNamed(context, "/homePage");
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text("Cannot login"),
+                          ],
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                      ));
                     }
                   },
                 )),
