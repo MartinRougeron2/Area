@@ -58,7 +58,7 @@ const TestBay = ({BayData, slide, slideTo}) => {
   }
 
   const processCreation = async () => {
-    await fetch('http://localhost:5000/graphql', {
+    await fetch('http://localhost:8080/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

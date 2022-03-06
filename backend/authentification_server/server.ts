@@ -33,4 +33,4 @@ auth_server.get('/auth/finish', ((__req: express.Request, res: any) => {
 
 let httpsServer = https.createServer(credentials, auth_server);
 
-httpsServer.listen(5001);
+httpsServer.listen( process.env.PORT_AUTH || 5001);

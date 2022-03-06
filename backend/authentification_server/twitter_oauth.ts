@@ -12,7 +12,7 @@ function getToken(token: string, tokenSecret: string, __profile: any): void {
 passport.use(new TwitterStrategy({
         consumerKey: process.env.TWITTER_API ?? "",
         consumerSecret: process.env.TWITTER_API_SECRET ?? "",
-        callbackURL: "https://localhost:3000" + "/auth/twitter/callback",
+        callbackURL: "https://localhost:8081" + "/auth/twitter/callback",
     }, (accessToken, refreshToken, profile) => getToken(accessToken, refreshToken, profile)
 ));
 

@@ -36,7 +36,7 @@ module.exports = (app: any) => {
                 const action_id = (req.query.state ?? "") as unknown as string
 
                 const newId = await create_unique_action(action_id, JSON.stringify(paramaters), token);
-                res.redirect("http://localhost:3000/auth/win?id=" + newId)
+                res.redirect("http://localhost:8081/auth/win?id=" + newId)
             })
         } catch (error) {
             console.log(error)

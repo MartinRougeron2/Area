@@ -33,7 +33,7 @@ const REFRESH_TOKEN = gql`
 `
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:5000/graphql',
+  uri: 'http://localhost:8080/graphql',
 });
 
 const authLink = setContext((_, {headers}) => {

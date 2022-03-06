@@ -54,7 +54,7 @@ module.exports = (app: any) => {
                     const id = req.query.state as unknown as string
 
                     const newId = await create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
-                    _res.redirect('http://localhost:3000/auth/win?id=' + newId)
+                    _res.redirect('http://localhost:8081/auth/win?id=' + newId)
                 });
 
         });

@@ -1,0 +1,9 @@
+FROM node:16.6.0
+WORKDIR /app_graphql
+COPY package.json /app_graphql
+COPY yarn.lock /app_graphql
+RUN yarn
+
+COPY . /app_graphql
+EXPOSE 8080
+CMD ["yarn", "run_graphql"]

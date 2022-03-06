@@ -2,7 +2,7 @@ import express from 'express';
 const dotenv = require('dotenv');
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT_GQL || 8080;
 
 dotenv.config()
 app.listen(port, () => {
