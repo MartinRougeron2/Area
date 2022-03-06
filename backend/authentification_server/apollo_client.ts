@@ -2,7 +2,7 @@ import ApolloClient from "apollo-boost";
 import 'cross-fetch/polyfill';
 
 const client = new ApolloClient({
-    uri: "http://localhost:8080/graphql",
+    uri: "http://server:8080/graphql",
     headers: {
         "x-token": process.env.ADMIN_JWT
     }

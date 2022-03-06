@@ -1,7 +1,8 @@
-version: "3"
+version: "3.7"
 
 services:
   server:
+    container_name: server
     build:
       context: "./backend"
       dockerfile: "./Dockerfile.graph"
@@ -10,6 +11,8 @@ services:
       - ./backend/.env
     ports:
       - "8080:8080"
+    networks:
+      - webnet
     volumes:
       - ${PWD}/backend:/app_graphql
   auth:
@@ -21,6 +24,8 @@ services:
     image: "area/auth"
     ports:
       - "5001:5001"
+    networks:
+      - webnet
     depends_on:
       - server
     volumes:
@@ -36,6 +41,6 @@ services:
       - ${PWD}/client:/app
     ports:
       - "8081:8081"
-    depends_on:
-      - server
-      - auth
+
+networks:
+  webnet:
