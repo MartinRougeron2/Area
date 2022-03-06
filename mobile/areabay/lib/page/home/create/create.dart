@@ -59,9 +59,10 @@ class _CreateBayPageState extends State<CreateBayPage> {
     }
   }
 
-  callBackSetData(String type, String service, String action) => setState(() {
+  callBackSetData(String type, String service, String action, String id) => setState(() {
         data[type]!["Service"] = service;
         data[type]!["Action"] = action;
+        data[type]!["id"] = id;
       });
 
   @override
@@ -117,7 +118,7 @@ class _CreateBayPageState extends State<CreateBayPage> {
                     ));
                     return;
                   }
-
+                  print("before push $data");
                   Navigator.pushNamed(context, "/homePage/create/linkAccount",
                       arguments: LinkAccountArgs(data));
                 },
