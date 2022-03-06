@@ -25,10 +25,10 @@ module.exports = {
     extend: {},
   },
   purge: {
-    content: [
-      "./pages/**/*.{js,ts,jsx,tsx}",
-      "./components/**/*.{js,ts,jsx,tsx}",
-    ],
+    // content: [
+    //   "./pages/**/*.{js,ts,jsx,tsx}",
+    //   "./components/**/*.{js,ts,jsx,tsx}",
+    // ],
     // These options are passed through directly to PurgeCSS
     options: {
       // List your classes here, or you can even use RegExp
