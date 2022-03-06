@@ -1,12 +1,35 @@
 import 'dart:async';
 
+import 'package:areabay/api/graphql_config.dart';
 import 'package:flutter/material.dart';
+import 'globals.dart' as global;
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'page/home_page.dart';
 import 'page/login_page.dart';
 import 'page/signup_page.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  await initHiveForFlutter();
+
+  final HttpLink httpLink =
+      HttpLink(GraphQLConfig.urlGraphQL, defaultHeaders: GraphQLConfig.header);
+
+  final AuthLink authLink = AuthLink(
+    getToken: () async => '',
+  );
+
+  final Link link = authLink.concat(httpLink);
+
+  global.client = ValueNotifier(
+    GraphQLClient(
+      link: link,
+      cache: GraphQLCache(store: HiveStore()),
+    ),
+  );
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
