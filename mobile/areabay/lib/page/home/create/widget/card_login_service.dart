@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:areabay/api/oauth.dart';
+import 'package:areabay/api/graphql_config.dart';
+import 'package:areabay/api/mutation.dart';
+
+typedef SetDataCallBack = void Function(String key, String value);
 
 class LoginServiceCard extends StatefulWidget {
   final String serviceName;
-  final String serviceLogo;
-  final String serviceLogin;
+  final String actionId;
+  final String actionName;
+  final SetDataCallBack setId;
+  final String idKey;
 
   const LoginServiceCard(
-      {Key? key,
-      required this.serviceName,
-      required this.serviceLogin,
-      required this.serviceLogo})
+      {Key? key, required this.serviceName, required this.actionId, required this.actionName, required this.setId, required this.idKey})
       : super(key: key);
 
   @override
@@ -17,6 +21,21 @@ class LoginServiceCard extends StatefulWidget {
 }
 
 class _LoginServiceCardState extends State<LoginServiceCard> {
+
+  getData(BuildContext context) async {
+    Map data = {
+      "query": createUniqueActionMutation,
+      "variables": {
+        "action_id": widget.actionId,
+        "parameters": "",
+        "old_values": "",
+      }
+    };
+    Map result = await GraphQLConfig.postRequest(data);
+    widget.setId(widget.idKey, result["data"]?["CreateUniqueActionByBaseActionId"]?["id"]);
+    loginToService(result["data"]?["CreateUniqueActionByBaseActionId"]?["action"]?["auth_url"], context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,16 +65,23 @@ class _LoginServiceCardState extends State<LoginServiceCard> {
             widget.serviceName,
             style: const TextStyle(fontSize: 40),
           ),
-          Image(image: AssetImage(widget.serviceLogo), fit: BoxFit.fitHeight),
+          Text(
+            widget.actionName,
+            style: const TextStyle(fontSize: 20),
+          ),
+          // Image(image: AssetImage(widget.serviceLogo), fit: BoxFit.fitHeight),
           ElevatedButton(
               onPressed: () {
+                getData(context);
                 // TODO LOGIN TO SERVICE
               },
-              style:
-                  ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15)),
+              style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15)),
               child: const Text("Connect", style: TextStyle(fontSize: 30)))
         ],
       ),
     );
   }
+
 }
