@@ -62,7 +62,6 @@ class _ServiceActionState extends State<ServiceAction> {
                   items: List.from(
                           (widget.data[value['Service']]?["action"] ?? []))
                       .map((items) {
-                    print("TAG $items");
                     return DropdownMenuItem(
                       value: items["actionName"],
                       child: Text(items["actionName"]),
@@ -74,10 +73,8 @@ class _ServiceActionState extends State<ServiceAction> {
                       value['Action'] = newValue!;
                       String id = "";
                       widget.data[value['Service']]?['action'].forEach((value) {
-                        print("DATA: ${value['actionName'] == newValue}");
                         if (value["actionName"] == newValue) {
                           id = value["actionId"];
-                          print("ID: $id");
                           return;
                         }
                       });

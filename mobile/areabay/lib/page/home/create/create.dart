@@ -118,7 +118,6 @@ class _CreateBayPageState extends State<CreateBayPage> {
                     ));
                     return;
                   }
-                  print("before push $data");
                   Navigator.pushNamed(context, "/homePage/create/linkAccount",
                       arguments: LinkAccountArgs(data));
                 },
