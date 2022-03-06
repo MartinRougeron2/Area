@@ -44,7 +44,7 @@ var task = cron.schedule('15 * * * * *', () => {
                         }
                         const token = await LinksModel.findOne({action: unique_actions}).then(res => res)
                         // @ts-ignore
-                        const num = await getNumberRepo(token)
+                        const num = await getNumberRepo(token.token)
                         const params = {number: num.toString()}
                         if (unique_actions.old_values != JSON.stringify(params)) {
                             if (parseInt(params.number, 10) > parseInt(JSON.parse(unique_actions.old_values).number, 10)) {

@@ -26,13 +26,10 @@ export class GithubOutResolver {
     async CreateGithubRepo(@Arg('data') {action_effect_id, message}: CommunicationInput) {
         return await UniqueActionModel.findById(action_effect_id).then(async (action_effect_res) => {
             if (!action_effect_res) return false
-            if (!action_effect_res.parameters) return false
 
-            let parameters = JSON.parse(action_effect_res.parameters)
-            if (!parameters.access_token) return false
             const token = await LinksModel.findOne({action: action_effect_res}).then(res => res)
             // @ts-ignore
-            const result_post = await createRepository(token, message)
+            const result_post = await createRepository(token.token, message)
             return true
         })
     }
