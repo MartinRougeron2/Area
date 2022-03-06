@@ -1,6 +1,8 @@
 import express from 'express';
-const dotenv = require('dotenv');
+import cors from 'cors'
 
+
+const dotenv = require('dotenv');
 const app = express();
 const port = process.env.PORT_GQL || 8080;
 
@@ -16,6 +18,8 @@ client.login(process.env.BOT_DISCORD_TOKEN)
 client.once('ready', () => {
     console.log("Discord bot online")
 });
+
+app.use(cors())
 module.exports = client
 
 require('./graphql')(app);
