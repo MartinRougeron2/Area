@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 typedef SetDataCallBack = void Function(
-    String type, String service, String action);
+    String type, String service, String action, String id);
 
 class ServiceAction extends StatefulWidget {
   final Map data;
@@ -54,7 +54,7 @@ class _ServiceActionState extends State<ServiceAction> {
                     setState(() {
                       value['Service'] = newValue!;
                       value['Action'] = '';
-                      widget.callBack(widget.type, '', '');
+                      widget.callBack(widget.type, '', '', '');
                     });
                   },
                 ),
@@ -72,8 +72,17 @@ class _ServiceActionState extends State<ServiceAction> {
                   onChanged: (newValue) {
                     setState(() {
                       value['Action'] = newValue!;
+                      String id = "";
+                      widget.data[value['Service']]?['action'].forEach((value) {
+                        print("DATA: ${value['actionName'] == newValue}");
+                        if (value["actionName"] == newValue) {
+                          id = value["actionId"];
+                          print("ID: $id");
+                          return;
+                        }
+                      });
                       widget.callBack(
-                          widget.type, value['Service'], value['Action']);
+                          widget.type, value['Service'], value['Action'], id);
                     });
                   },
                 ),
