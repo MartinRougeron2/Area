@@ -28,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   GoogleSignInAccount? _currentUser;
 
-  Future<bool> _handleSignIn() async {
+  Future<Map> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
       _currentUser = _googleSignIn.currentUser;
@@ -37,19 +37,14 @@ class _SignUpPageState extends State<SignUpPage> {
         "query": userGoogle,
         "variables": {"email": _currentUser?.email, "token": _currentUser?.id}
       };
-      Map response = await GraphQLConfig.postRequest(data);
-      return response["data"]?["LoginUser"]?["jwt_token"] ==
-          "account not registered";
+      return await GraphQLConfig.postRequest(data);
     } catch (error) {
       print(error);
     }
-    return false;
+    return {};
   }
 
-// username: aaaa
-// mail: aaaa@gmail.com
-// password: aaaa
-  Future<bool> createAccount() async {
+  Future<Map> createAccount() async {
     Map data = {
       "query": createUserMutation,
       "variables": {"name": _username, "email": _email, "password": _password}
@@ -57,7 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     Map response = await GraphQLConfig.postRequest(data);
 
-    return response["data"]?["CreateUser"]?["is_new"];
+    return response;
   }
 
   @override
@@ -186,20 +181,27 @@ class _SignUpPageState extends State<SignUpPage> {
                       ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            if (await createAccount()) {
+                            Map response = await createAccount();
+
+                            if (!response["data"]?["CreateUser"]?["is_new"]) {
+                              GraphQLConfig.header["x-token"] = response["data"]?["CreateUser"]?["jwt_token"];
                               Navigator.popAndPushNamed(context, "/homePage");
                             } else {
-                              _alreadyInDb = true;
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Text("Username or email already used."),
+                                  ],
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.red,
+                              ));
                             }
                           }
                         },
                         child: const Text('SIGN UP', style: TextStyle()),
                       ),
-                      if (_alreadyInDb)
-                        const Text(
-                          "Account already create",
-                          style: TextStyle(color: Colors.red, fontSize: 12),
-                        )
                     ],
                   ),
                 ),
@@ -212,7 +214,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextButton(
                   child: const Text('Log in'),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/login');
+                    Navigator.popAndPushNamed(context, '/login');
                   },
                 )
               ],
@@ -224,9 +226,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   mini: false,
                   text: "Sign up with Google",
                   onPressed: () async {
-                    if (await _handleSignIn()) {
-                      Navigator.popAndPushNamed(context, "/homePage");
-                    }
+                    Map response = await _handleSignIn();
+                    GraphQLConfig.header["x-token"] = response["data"]?["CreateUser"]?["jwt_token"];
+                    Navigator.popAndPushNamed(context, "/homePage");
                   },
                 )),
           ],

@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   String _password = "";
   GoogleSignInAccount? _currentUser;
 
-  Future<bool> _handleSignIn() async {
+  Future<Map> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
       _currentUser = _googleSignIn.currentUser;
@@ -33,26 +33,20 @@ class _LoginPageState extends State<LoginPage> {
         "query": userGoogle,
         "variables": {"email": _currentUser?.email, "token": _currentUser?.id}
       };
-      Map response = await GraphQLConfig.postRequest(data);
-      return response["data"]?["LoginUser"]?["jwt_token"] ==
-          "account not registered";
+      return await GraphQLConfig.postRequest(data);
     } catch (error) {
       print(error);
     }
-    return false;
+    return {};
   }
 
-  Future<bool> _handleLogIn() async {
+  Future<Map> _handleLogIn() async {
     Map data = {
       "query": loginUserQuery,
       "variables": {"email": _email, "password": _password}
     };
 
-    Map response = await GraphQLConfig.postRequest(data);
-
-    print(response["data"]?["LoginUser"]);
-    return response["data"]?["LoginUser"]?["jwt_token"] !=
-        "account not registered";
+    return await GraphQLConfig.postRequest(data);
   }
 
   @override
@@ -137,10 +131,21 @@ class _LoginPageState extends State<LoginPage> {
                       ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            if (await _handleLogIn()) {
+                            Map response = await _handleLogIn();
+                            if (response["data"]?["LoginUser"]?["jwt_token"] != "account not registered") {
+                              GraphQLConfig.header["x-token"] = response["data"]?["LoginUser"]?["jwt_token"];
                               Navigator.popAndPushNamed(context, "/homePage");
                             }
-                            // TODO else bad account
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text("This account doesn't exist."),
+                                ],
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                              backgroundColor: Colors.red,
+                            ));
                           }
                         },
                         child: const Text('SIGN IN', style: TextStyle()),
@@ -168,7 +173,10 @@ class _LoginPageState extends State<LoginPage> {
                   Buttons.Google,
                   mini: false,
                   onPressed: () async {
-                    if (await _handleSignIn()) {
+                    Map response = await _handleSignIn();
+
+                    if (response["data"]?["LoginUser"]?["jwt_token"] != "account not registered") {
+                      GraphQLConfig.header["x-token"] = response["data"]?["LoginUser"]?["jwt_token"];
                       Navigator.popAndPushNamed(context, "/homePage");
                     }
                   },
