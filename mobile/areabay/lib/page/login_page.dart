@@ -35,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
       };
       return await GraphQLConfig.postRequest(data);
     } catch (error) {
+      // ignore: avoid_print
       print(error);
     }
     return {};
@@ -52,8 +53,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(),
       home: Scaffold(
         body: Center(
             child: ListView(
@@ -135,17 +134,19 @@ class _LoginPageState extends State<LoginPage> {
                             if (response["data"]?["LoginUser"]?["jwt_token"] != "account not registered") {
                               GraphQLConfig.header["x-token"] = response["data"]?["LoginUser"]?["jwt_token"];
                               Navigator.popAndPushNamed(context, "/homePage");
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Text("This account doesn't exist."),
+                                  ],
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                                backgroundColor: Colors.red,
+                              ));
                             }
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text("This account doesn't exist."),
-                                ],
-                              ),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.red,
-                            ));
                           }
                         },
                         child: const Text('SIGN IN', style: TextStyle()),
@@ -175,8 +176,10 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {
                     Map response = await _handleSignIn();
 
-                    if (response["data"]?["LoginUser"]?["jwt_token"] != "account not registered") {
-                      GraphQLConfig.header["x-token"] = response["data"]?["LoginUser"]?["jwt_token"];
+                    if (response["data"]?["LoginUser"]?["jwt_token"] !=
+                        "account not registered") {
+                      GraphQLConfig.header["x-token"] =
+                          response["data"]?["LoginUser"]?["jwt_token"];
                       Navigator.popAndPushNamed(context, "/homePage");
                     }
                   },

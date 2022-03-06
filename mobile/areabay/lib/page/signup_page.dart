@@ -24,7 +24,6 @@ class _SignUpPageState extends State<SignUpPage> {
   String _username = "";
   String _email = "";
   String _password = "";
-  bool _alreadyInDb = false;
 
   GoogleSignInAccount? _currentUser;
 
@@ -39,6 +38,7 @@ class _SignUpPageState extends State<SignUpPage> {
       };
       return await GraphQLConfig.postRequest(data);
     } catch (error) {
+      // ignore: avoid_print
       print(error);
     }
     return {};
