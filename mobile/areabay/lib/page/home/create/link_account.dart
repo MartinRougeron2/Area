@@ -1,9 +1,11 @@
+import 'package:areabay/api/graphql_config.dart';
+import 'package:areabay/api/mutation.dart';
 import 'package:flutter/material.dart';
 
 import 'widget/card_login_service.dart';
 
 class LinkAccountArgs {
-  final Map<String, Map<String, String>> data;
+  final Map data;
 
   LinkAccountArgs(this.data);
 }
@@ -19,6 +21,7 @@ class LinkAccount extends StatefulWidget {
 
 class _LinkAccountState extends State<LinkAccount> {
   int _activeStepIndex = 0;
+  String _name = "";
 
   onStepContinue() {
     if (_activeStepIndex < 2) {
@@ -26,7 +29,6 @@ class _LinkAccountState extends State<LinkAccount> {
         _activeStepIndex += 1;
       });
     } else {
-      // ignore: avoid_print
       print('Submitted');
     }
   }
@@ -38,6 +40,53 @@ class _LinkAccountState extends State<LinkAccount> {
     setState(() {
       _activeStepIndex -= 1;
     });
+  }
+
+  Map idBay = {
+    "action": "",
+    "reaction": "",
+  };
+
+  callBack(String key, String value) {
+    idBay[key] = value;
+  }
+
+  createBay(BuildContext context) async {
+    Map data = {
+      "query": createBayAction,
+      "variables": {
+        "trigger_id": idBay["action"],
+        "effect_id": idBay["reaction"],
+        "name": _name,
+        "active": true,
+      }
+    };
+    Map result = await GraphQLConfig.postRequest(data);
+    if (result["data"]?["CreateBayAction"]?["name"] != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("$_name created"),
+          ],
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.green,
+      ));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("$_name cannot be created"),
+              ],
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -94,65 +143,103 @@ class _LinkAccountState extends State<LinkAccount> {
         onStepCancel: onStepCancel,
         steps: [
           Step(
-              state: _activeStepIndex <= 0
-                  ? StepState.editing
-                  : StepState.complete,
-              isActive: _activeStepIndex >= 0,
-              title: const Text("Action"),
-              content: const Center(
-                child: LoginServiceCard(
-                    serviceName: "Instagram",
-                    serviceLogin: "/path/to/login",
-                    serviceLogo: "assets\\instagram.png"),
-              )),
+            state:
+                _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
+            isActive: _activeStepIndex >= 0,
+            title: const Text("Action"),
+            content: Center(
+              child: LoginServiceCard(
+                serviceName: args.data["Action"]["Service"],
+                actionName: args.data["Action"]["Action"],
+                actionId: args.data["Action"]["id"],
+                setId: callBack,
+                idKey: "action",
+              ),
+            ),
+          ),
           Step(
-              state: _activeStepIndex <= 1
-                  ? StepState.editing
-                  : StepState.complete,
-              isActive: _activeStepIndex >= 1,
-              title: const Text("Reaction"),
-              content: const Center(
-                  child: LoginServiceCard(
-                      serviceName: "Facebook",
-                      serviceLogin: "/path/to/login",
-                      serviceLogo: "assets\\instagram.png"))),
+            state:
+                _activeStepIndex <= 1 ? StepState.editing : StepState.complete,
+            isActive: _activeStepIndex >= 1,
+            title: const Text("Reaction"),
+            content: Center(
+              child: LoginServiceCard(
+                serviceName: args.data["Reaction"]["Service"],
+                actionName: args.data["Reaction"]["Action"],
+                actionId: args.data["Reaction"]["id"],
+                setId: callBack,
+                idKey: "reaction",
+              ),
+            ),
+          ),
           Step(
-              state: _activeStepIndex <= 2
-                  ? StepState.editing
-                  : StepState.complete,
-              isActive: _activeStepIndex >= 2,
-              title: const Text("Submit"),
-              content: Container(
-                width: MediaQuery.of(context).size.width * 0.85,
-                height: MediaQuery.of(context).size.height * 0.3,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3), // changes position of shadow
+            state:
+                _activeStepIndex <= 2 ? StepState.editing : StepState.complete,
+            isActive: _activeStepIndex >= 2,
+            title: const Text("Submit"),
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: MediaQuery.of(context).size.height * 0.3,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+                color: Colors.white,
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Enter bay name',
+                        labelText: 'Name',
+                      ),
+                      autofocus: true,
+                      onChanged: (newValue) => _name = newValue,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
+                      ),
+                      onPressed: () {
+                        if (_name.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text("Doesn't work"),
+                              ],
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: Colors.red,
+                          ));
+                        } else {
+                          createBay(context);
+                        }
+                      },
+                      child: const Text(
+                        "Submit bay",
+                        style: TextStyle(fontSize: 30),
+                      ),
                     ),
                   ],
-                  color: Colors.white,
                 ),
-                child: Center(
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 15)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Submit bay",
-                            style: TextStyle(fontSize: 30)))),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );

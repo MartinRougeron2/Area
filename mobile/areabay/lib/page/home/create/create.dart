@@ -19,10 +19,12 @@ class _CreateBayPageState extends State<CreateBayPage> {
     "Action": {
       "Service": "",
       "Action": "",
+      "id": "",
     },
     "Reaction": {
       "Service": "",
       "Action": "",
+      "id": "",
     }
   };
 
@@ -59,7 +61,8 @@ class _CreateBayPageState extends State<CreateBayPage> {
     }
   }
 
-  callBackSetData(String type, String service, String action, String id) => setState(() {
+  callBackSetData(String type, String service, String action, String id) =>
+      setState(() {
         data[type]!["Service"] = service;
         data[type]!["Action"] = action;
         data[type]!["id"] = id;
@@ -104,8 +107,8 @@ class _CreateBayPageState extends State<CreateBayPage> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  if (data["Action"]!["Service"] == "" ||
-                      data["Reaction"]!["Service"] == "") {
+                  if (data["Action"]!["Service"]!.isEmpty ||
+                      data["Reaction"]!["Service"]!.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
