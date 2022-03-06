@@ -30,7 +30,6 @@ var task = cron.schedule('15 * * * * *', () => {
                     if (unique_actions.action.type == 1) continue;
                     if (unique_actions.action == null) continue;
                     console.log(unique_actions)
-                    const obj = JSON.parse(unique_actions.parameters)
                     // @ts-ignore
                     if (unique_actions.action.name == "fetchNewRepositories") {
                         if (!unique_actions.old_values) {

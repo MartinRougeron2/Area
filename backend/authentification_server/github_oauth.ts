@@ -29,9 +29,6 @@ module.exports = (app: any) => {
         }, async function(__error: any, __response: any, body: any) {
             const acces = JSON.parse(body)
             const action_id = (req.query.state ?? "") as unknown as string
-            const parameters = {
-                access_token: acces.access_token,
-            }
             const newId = await create_unique_action(action_id, "", acces.access_token);
             res.redirect("http://localhost:3000/auth/win?id=" + newId)
         })
