@@ -19,6 +19,7 @@ client.once('ready', () => {
 module.exports = client
 
 require('./graphql')(app);
+require('./about')(app);
 
 require('./services/slack_in')
 require('./services/gcalendar_in')

@@ -16,7 +16,7 @@ import {
 import {SlackOutResolver} from "./services/slack_out";
 import {GmailOutResolver} from "./services/gmail_out";
 import {GCalendarOutResolver} from "./services/gcalendar_out";
-import { UserModel, ServiceModel } from "./types";
+import { UserModel } from "./types";
 import {DiscordOutResolver} from "./services/discord_out"
 import {GithubOutResolver} from "./services/github_out"
 import {GDriveOutResolver} from "./services/gdrive_out"
@@ -80,9 +80,4 @@ module.exports = async function (app: Application) {
     await server.start();
 
     server.applyMiddleware({app});
-
-    app.get('/about.json', async (__req: Request, res: any) => {
-        res.send(JSON.stringify(await ServiceModel.find({}).populate('actions').then((res) => res)))
-    })
-    
 }
