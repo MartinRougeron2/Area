@@ -34,7 +34,7 @@ async function getMessages(channel_id: string, token: string) {
     });
 }
 
-var task = cron.schedule('15 * * * * *', () => {
+cron.schedule('15 * * * * *', () => {
     ServiceModel.findOne({name: "slack"}).populate('actions').then((res) => {
         if (!res?.actions) return // null verif
 
@@ -65,4 +65,3 @@ var task = cron.schedule('15 * * * * *', () => {
 })
 
 
-export {task}

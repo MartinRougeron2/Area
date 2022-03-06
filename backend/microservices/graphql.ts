@@ -36,7 +36,8 @@ module.exports = async function (app: Application) {
             SlackOutResolver,
             GmailOutResolver,
             GCalendarOutResolver,
-            DiscordOutResolver
+            DiscordOutResolver,
+
         ],
         emitSchemaFile: true,
         validate: true,

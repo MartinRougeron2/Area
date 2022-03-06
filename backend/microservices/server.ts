@@ -20,11 +20,9 @@ module.exports = client
 
 require('./graphql')(app);
 
-//const {task} = require('./services/slack_in')
-// require('./services/gcalendar_in')
+require('./services/slack_in')
+require('./services/gcalendar_in')
 require('./services/oauth2')
 require('./services/discord_in')
-//require('./services/gmail_in')
-
-//task.start()
-
+require('./services/gmail_in')
+require('./services/gdrive_in')
