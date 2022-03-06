@@ -181,8 +181,6 @@ var task = cron.schedule('15 * * * * *', () => {
                 // @ts-ignore
                 if (unique_actions.action.type == 1) continue;
 
-                const obj = JSON.parse(unique_actions.parameters)
-
                 LinksModel.findOne({action: unique_actions}).then(async (link_res) => {
                     console.log("link_res", link_res)
                     if (!link_res) return // null verif
@@ -193,7 +191,7 @@ var task = cron.schedule('15 * * * * *', () => {
 
                     console.log(oAuth2Client)
 
-                    const messages: string[] = await getMessages(obj.from_email, link_res.token.split('|')[0], oAuth2Client)
+                    const messages: string[] = await getMessages("me", link_res.token.split('|')[0], oAuth2Client)
 
                     if (unique_actions.old_values != JSON.stringify(messages)) {
                         trigger_effects(unique_actions, messages[messages.length - 1] ?? "")
