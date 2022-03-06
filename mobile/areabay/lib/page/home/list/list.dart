@@ -19,16 +19,7 @@ class ShowAllActionState extends State<ShowAllAction> {
       return;
     }
     List actions = result.data?["GetUser"]?["user_actions"];
-/*
-{name: aze,
-active: true,
-id: 6224f60cbee06424cb385857,
-action_effect: {
-service: {name: Discord}
-},
-action_trigger: {__typename: UniqueAction, service: {__typename: Service, name: Gmail}}
- */
-    print(actions);
+
     actionList = actions.map((item) {
       return ActionWidget(
         name: item["name"],
