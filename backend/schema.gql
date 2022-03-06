@@ -99,9 +99,9 @@ type Mutation {
   DeleteUser(id: String!): Boolean!
   SendDiscordMessage(data: CommunicationInput!): Boolean!
   SendDiscordReaction(data: CommunicationInput!): Boolean!
-  SendGmailMail(data: CommunicationInput!): Boolean!
   SendSlackMessage(data: CommunicationInput!): Boolean!
   UpdateBayAction(data: UpdateBayAction, id: String!): BayAction!
+  sendGmailMail(data: CommunicationInput!): Boolean!
 }
 
 input OptionsInputType {

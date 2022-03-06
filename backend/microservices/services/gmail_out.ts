@@ -36,7 +36,7 @@ function publishMessage(from: string, to: string, text: string, token: string) {
 @Resolver()
 export class GmailOutResolver {
     @Mutation(() => Boolean)
-    async SendGmailMail(@Arg('data') {action_effect_id, message}: CommunicationInput) {
+    async sendGmailMail(@Arg('data') {action_effect_id, message}: CommunicationInput) {
         return await UniqueActionModel.findById(action_effect_id).populate('action').then(async (action_effect_res) => {
             if (!action_effect_res) return false
             if (!action_effect_res.parameters) return false
