@@ -10,12 +10,12 @@ const Event = (title: string, __date: string) => {
         'summary': title,
         'start':
             {
-                'dateTime': "2015-05-28T09:00:00-07:00",
+                'dateTime': "2022-03-15T11:00:00-07:00",
             }
         ,
         'end':
             {
-                'dateTime': "2015-05-28T09:00:00-08:00",
+                'dateTime': "2022-03-15T11:00:00-08:00",
             }
         ,
     }
@@ -23,10 +23,10 @@ const Event = (title: string, __date: string) => {
 ;
 
 // @ts-ignore
-async function createEvent(event: any, auth: OAuth2Client) {
+async function createEvent(event: any, auth: OAuth2Client, email: string) {
 
     const calendar = google.calendar({version: 'v3', auth: auth});
-    return await calendar.events.insert({calendarId: "martin.rougeron@gmail.com", requestBody: {summary: event.summary, start: event.start, end: event.end}, });
+    return await calendar.events.insert({calendarId: email, requestBody: {summary: event.summary, start: event.start, end: event.end}});
 }
 
 
@@ -57,7 +57,7 @@ export class GCalendarOutResolver {
 
                     console.log(oAuth2Client)
 
-                    return (await createEvent(Event(message, parameters.date), oAuth2Client)).status === 200
+                    return (await createEvent(Event(message, parameters.date), oAuth2Client, parameters.from_email)).status === 200
 
                 })
         })

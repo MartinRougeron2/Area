@@ -28,6 +28,8 @@ cron.schedule('0 0 0 * * *', () => {
             const refresh_token = link.token.split("|")[1]
             const url = link.refresh_token_url
 
+            if (!url) return
+
             const refresh_url = fillTemplate(url, {
                 refresh_token: refresh_token,
                 process: process

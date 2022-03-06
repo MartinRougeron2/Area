@@ -157,10 +157,10 @@ interface Events {
 
 const cron = require('node-cron');
 
-async function getMessages(__email: string, __token: string, auth: OAuth2Client): Promise<string[]> {
+async function getMessages(email: string, __token: string, auth: OAuth2Client): Promise<string[]> {
 
     const calendar = google.calendar({version: 'v3', auth: auth});
-    const res = await calendar.events.list({calendarId: "martin.rougeron@gmail.com"});
+    const res = await calendar.events.list({calendarId: email});
     console.log(res.data.items)
     // @ts-ignore
     const items = res.data.items as any as [Events]
