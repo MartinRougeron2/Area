@@ -22,14 +22,7 @@ module.exports = (app: any) => {
         authVersion: 'v2',
         stateSecret: 'putain-je-suis-un-lover-reno-2022',
         installationStore: {
-            storeInstallation: async (installation: Installation, ) => {
-                const action_id = installation.metadata ?? ""
-                const parameters = {channel_id: installation?.incomingWebhook?.channelId}
-                const parameters_json = JSON.stringify(parameters)
-                const token = installation.bot?.token + "|" + installation.bot?.refreshToken
-
-                create_unique_action(action_id, parameters_json, token)
-
+            storeInstallation: async (_installation: Installation,) => {
 
             },
             fetchInstallation: async (installQuery: InstallationQuery<boolean>) => {
@@ -59,8 +52,24 @@ module.exports = (app: any) => {
         }
     });
 
+    const callbackOptions = {
+        success: async (installation: any, _metadata: any, _req: any, res: any) => {
+            const action_id = installation.metadata ?? ""
+            const parameters = {channel_id: installation?.incomingWebhook?.channelId}
+            const parameters_json = JSON.stringify(parameters)
+            const token = installation.bot?.token + "|" + installation.bot?.refreshToken
+
+            const id = await create_unique_action(action_id, parameters_json, token)
+            res.redirect('http://localhost:8081/auth/win?id=' + id)
+        },
+        failure: (_error: any, _installOptions: any, _req: any, res: any) => {
+            res.writeHead(500, {'Content-Type': 'text/html; charset=utf-8'});
+            res.end('<html><body><h1>Oops, Something Went Wrong! Please Try Again or Contact the App Owner</h1></body></html>');
+        }
+    }
+
     app.get('/auth/slack-redirect', async (req: express.Request, res: any) => {
-        await installer.handleCallback(req, res);
+        installer.handleCallback(req, res, callbackOptions)
     });
 
 }

@@ -22,6 +22,7 @@ auth_server.get('/fail', (__req, res) => {
 require("./slack_oauth")(auth_server)
 require("./gcalendar_oauth")(auth_server)
 require("./gmail_oauth")(auth_server)
+require("./gdrive_oauth")(auth_server)
 require("./discord_oauth")(auth_server)
 require("./discord_bot_oauth")(auth_server)
 require("./github_oauth")(auth_server)
