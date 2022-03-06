@@ -5,7 +5,7 @@ class GraphQLConfig {
 
   static const String urlGraphQL = 'http://10.0.2.2:5000/graphql';
 
-  static const Map<String, String> header = {
+  static Map<String, String> header = {
     "Content-Type": "application/json",
     "x-token": ""
   };
