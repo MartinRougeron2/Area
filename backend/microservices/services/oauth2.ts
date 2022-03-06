@@ -29,6 +29,8 @@ cron.schedule('0 0 0 * * *', () => {
             const url = link.refresh_token_url
             if (!refresh_token || !url) return
 
+            if (!url) return
+
             const refresh_url = fillTemplate(url, {
                 refresh_token: refresh_token,
                 process: process

@@ -39,6 +39,7 @@ module.exports = async function (app: Application) {
             GCalendarOutResolver,
             DiscordOutResolver,
             GithubOutResolver
+
         ],
         emitSchemaFile: true,
         validate: true,

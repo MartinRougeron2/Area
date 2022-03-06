@@ -3,7 +3,7 @@ import {google} from "googleapis";
 import {create_unique_action} from "./common";
 import {LoginTicket} from "google-auth-library/build/src/auth/loginticket";
 
-const SCOPES = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events', 'https://www.googleapis.com/auth/calendar.events.readonly', 'https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'];
+const SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.appdata', 'https://www.googleapis.com/auth/drive.file'];
 
 interface Query {
    code:string;
@@ -17,7 +17,7 @@ module.exports = (app: any) => {
     // app.use(authMiddleWare.authn());
 
     console.log(oAuth2Client)
-    app.get('/auth/gcalendar', (req: express.Request, res: express.Response) => {
+    app.get('/auth/gdrive', (req: express.Request, res: express.Response) => {
 
         const authUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
@@ -34,7 +34,7 @@ module.exports = (app: any) => {
     //         res.redirect('/auth/google/win');
     //     });
 
-    app.get('/auth/gcalendar/callback', async (req: express.Request, _res: express.Response) => {
+    app.get('/auth/gdrive/callback', async (req: express.Request, _res: express.Response) => {
         const {code} = req.query as unknown as Query;
 
         oAuth2Client.getToken(code, (err: any, token: any | string, __res: any) => {
@@ -50,7 +50,7 @@ module.exports = (app: any) => {
                     const payload = res.getPayload()
                     if (!payload)
                         return;
-                    const params = {date: "", from_email: payload.email};
+                    const params = {};
                     const id = req.query.state as unknown as string
 
                     const newId = await create_unique_action(id, JSON.stringify(params), token.access_token + "|" + token.refresh_token);
