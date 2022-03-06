@@ -32,8 +32,8 @@ module.exports = (app: any) => {
             const parameters = {
                 access_token: acces.access_token,
             }
-            create_unique_action(action_id, JSON.stringify(parameters), "");
+            const newId = await create_unique_action(action_id, JSON.stringify(parameters), "");
+            res.redirect("http://localhost:3000/auth/win?id=" + newId)
         })
-        res.redirect("/auth/finish");
     });
 }

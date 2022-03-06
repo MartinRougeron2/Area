@@ -38,11 +38,12 @@ var task = cron.schedule('1 * * * * *', () => {
                     // @ts-ignore
                     if (unique_actions.action.type == 1) continue;
                     if (unique_actions.action == null) continue;
+                    if (!unique_actions.parameters) continue;
                     const obj = JSON.parse(unique_actions.parameters)
                     if (!obj) return // null verif
                     console.log(unique_actions)
                     if (!obj.channel_id) return // null verif
-                    if (unique_actions.old_values == "") {
+                    if (!unique_actions.old_values) {
                         unique_actions.old_values = JSON.stringify({id: "", username: ""})
                     }
                     if (!unique_actions.old_values) return // null verif
@@ -52,10 +53,12 @@ var task = cron.schedule('1 * * * * *', () => {
                     if (unique_actions.action.name == "fetchDiscordMessage") {
                         let msgs = await getMessages(obj.channel_id)
                         msgs = JSON.parse(JSON.stringify(msgs))
-                        const {id, content, authorId, guildId} = msgs[0]
-                        if (get_old_values["id"] != id) {
-                            await trigger_effects(unique_actions, `**${client.users.cache.get(authorId).username}** send : **${content}** | server : **${client.guilds.cache.get(guildId).name}** | channel : **${client.channels.cache.get(obj.channel_id).name}**`)
-                            get_old_values["id"] = id
+                        const {id, content} = msgs[0]
+                        if (get_old_values.id != id) {
+                            await trigger_effects(unique_actions, `${content}`)
+                            console.log("test")
+                            console.log(unique_actions.old_values)
+                            get_old_values.id = id
                             unique_actions.old_values = JSON.stringify(get_old_values)
                             await unique_actions.save()
                         }

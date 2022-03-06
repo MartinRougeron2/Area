@@ -37,10 +37,8 @@ var task = cron.schedule('15 * * * * *', () => {
                         }
                         const num = await getNumberRepo(obj.access_token)
                         const params = {number: num.toString()}
-                        console.log(unique_actions.old_values)
-                        console.log(JSON.stringify(params))
                         if (unique_actions.old_values != JSON.stringify(params)) {
-                            if (parseInt(params.number, 10) > parseInt(JSON.parse(unique_actions.old_values).number), 10) {
+                            if (parseInt(params.number, 10) > parseInt(JSON.parse(unique_actions.old_values).number, 10)) {
                                 await trigger_effects(unique_actions, `New repository github have been created`)
                             }
                             unique_actions.old_values = JSON.stringify(params)
