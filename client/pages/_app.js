@@ -55,7 +55,7 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (!cookies.get('x-token')) return;
     client.query({query: GET_USER})
-      .then(async res => {const token = await client.query({query: REFRESH_TOKEN}).catch(error=>console.log(error)); cookies.set('x-token', token.data.RefreshToken)})
+      .then(async res => {const token = await client.query({query: REFRESH_TOKEN}).catch(error=>console.log("aaaaaa", error)); cookies.set('x-token', token.data.RefreshToken)})
       .catch(error => {cookies.remove('x-token'); location.reload()})
   }, [])
 

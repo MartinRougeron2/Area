@@ -390,8 +390,9 @@ export class UserResolver {
         })
         resUser.is_new = false
         if (!obj) {
-            obj = new UserModel({email: email, name: email, password: bcrypt.hashSync(crypto.randomBytes(64).toString('hex'), 8)})
+            obj = await UserModel.create({email: email, name: email, password: bcrypt.hashSync(crypto.randomBytes(64).toString('hex'), 8)})
             resUser.is_new = true
+            resUser.user = obj as User
         }
         resUser.jwt_token = jwt.sign({id: obj.id}, process.env.TOKEN_JWT, {expiresIn: "7d"})
         return resUser

@@ -18,10 +18,20 @@ const LOGGING_CREATE = gql`
   }
 `;
 
+const LOGGIN_GOOGLE = gql`
+query Login(\$token: String!, \$email: String!) {
+  LoginUserWithGoogle(data: {email: \$email, token: \$token}) {
+    jwt_token
+    is_new
+  }
+}`;
+
 const LoginPage = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [login, {data}] = useLazyQuery(LOGGING_CREATE)
+  const [loginGoogle, dataG] = useLazyQuery(LOGGIN_GOOGLE)
+
 
   const isDisable = () => {
     if (email == "" || password == "")
@@ -36,10 +46,21 @@ const LoginPage = () => {
         window.location.href = "/dashboard"
       }
     }
-  }, [data])
+    if (dataG && dataG.data && dataG.data.LoginUserWithGoogle) {
+      if (dataG.data.LoginUserWithGoogle.jwt_token !== "bad") {
+        console.log(dataG.data)
+        cookies.set('x-token', dataG.data.LoginUserWithGoogle.jwt_token, {path: '/'})
+        window.location.href = "/dashboard"
+      }
+    }
+  }, [data, dataG])
 
   const responseGoogle = (response) => {
-    console.log(response);
+    console.log(response)
+    try {
+      loginGoogle({variables: {email: response["profileObj"]["email"], token: response["tokenId"]}})
+    } catch(e) { return}
+
   }
 
   return (
