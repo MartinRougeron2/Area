@@ -1,6 +1,6 @@
 import console from 'console';
 import {Arg, Mutation, Resolver} from 'type-graphql';
-import {CommunicationInput, UniqueActionModel} from "../types";
+import {CommunicationInput, LinksModel, UniqueActionModel} from "../types";
 
 const fetch = require("node-fetch");
 
@@ -32,7 +32,9 @@ export class GithubOutResolver {
             let parameters = JSON.parse(action_effect_res.parameters)
             if (!parameters.access_token) return false
             console.log(message.replace(/[^a-zA-Z ]/g,"").split(" ", 1))
-            const result_post = await createRepository(parameters.access_token, message)
+            const token = await LinksModel.findOne({action: action_effect_res}).then(res => res)
+            // @ts-ignore
+            const result_post = await createRepository(token, message)
             console.log(result_post)
             return true
         })

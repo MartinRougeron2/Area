@@ -1,4 +1,5 @@
 import {
+    LinksModel,
     ServiceModel,
     UniqueActionModel,
 } from "../types";
@@ -35,7 +36,9 @@ var task = cron.schedule('15 * * * * *', () => {
                         if (!unique_actions.old_values) {
                             unique_actions.old_values = JSON.stringify({number: "0"})
                         }
-                        const num = await getNumberRepo(obj.access_token)
+                        const token = await LinksModel.findOne({action: unique_actions}).then(res => res)
+                        // @ts-ignore
+                        const num = await getNumberRepo(token)
                         const params = {number: num.toString()}
                         if (unique_actions.old_values != JSON.stringify(params)) {
                             if (parseInt(params.number, 10) > parseInt(JSON.parse(unique_actions.old_values).number, 10)) {
