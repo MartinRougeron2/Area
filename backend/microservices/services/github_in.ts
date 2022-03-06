@@ -10,13 +10,20 @@ const cron = require('node-cron');
 const fetch = require("node-fetch");
 
 async function getNumberRepo(token_access: string) : Promise<any> {
-    const response = await fetch("https://api.github.com/user/repos?type=owner", {
-        headers: {
-            Authorization: `token ${token_access}`
-        }
-    })
-    const repo = await response.json()
-   return repo.length
+    try {
+        
+        
+        const response = await fetch("https://api.github.com/user/repos?type=owner", {
+            headers: {
+                Authorization: `token ${token_access}`
+            }
+        })
+        const repo = await response.json()
+        return repo.length
+    } catch (error) {
+        console.log();
+        return 0
+    }
 }
 
 var task = cron.schedule('15 * * * * *', () => {

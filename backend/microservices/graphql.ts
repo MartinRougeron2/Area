@@ -11,7 +11,7 @@ import {
     BayActionResolver,
     ServiceResolver,
     UserResolver,
-    LinksResolver
+    LinksResolver,
 } from "./resolvers";
 import {SlackOutResolver} from "./services/slack_out";
 import {GmailOutResolver} from "./services/gmail_out";
@@ -19,6 +19,7 @@ import {GCalendarOutResolver} from "./services/gcalendar_out";
 import { UserModel, ServiceModel } from "./types";
 import {DiscordOutResolver} from "./services/discord_out"
 import {GithubOutResolver} from "./services/github_out"
+import {GDriveOutResolver} from "./services/gdrive_out"
 
 const jwt = require('jsonwebtoken');
 
@@ -38,7 +39,8 @@ module.exports = async function (app: Application) {
             GmailOutResolver,
             GCalendarOutResolver,
             DiscordOutResolver,
-            GithubOutResolver
+            GithubOutResolver,
+            GDriveOutResolver
 
         ],
         emitSchemaFile: true,
