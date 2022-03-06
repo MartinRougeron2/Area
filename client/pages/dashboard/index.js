@@ -18,6 +18,7 @@ const GET_SERVICES = gql`
     GetAllServices {
       id
       name
+      icon
       actions {
         id
         name

@@ -8,7 +8,7 @@ const DashServiceBox = ({ id, icon, action, selected }) => {
       } drop-shadow-md rounded-lg ml-2 mt-3 cursor-pointer p-2 max-w-[40%]`}
       onClick={() => action(id)}
     >
-      <img className="w-full" src={"/assets/Images/youtube.svg"} />
+      <img className="w-full" src={icon} />
     </div>
   );
 };
