@@ -27,6 +27,7 @@ cron.schedule('0 0 0 * * *', () => {
         res.forEach(async link => {
             const refresh_token = link.token.split("|")[1]
             const url = link.refresh_token_url
+            if (!refresh_token || !url) return
 
             if (!url) return
 

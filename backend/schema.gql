@@ -84,6 +84,7 @@ type Mutation {
   CreateBaseAction(data: InputBaseAction!): BaseAction
   CreateBayAction(data: InputBayAction!): BayAction
   CreateEvent(data: CommunicationInput!): Boolean!
+  CreateGithubRepo(data: CommunicationInput!): Boolean!
   CreateLinksWithActionId(data: InputLink!): Links
   CreateOrModifyOptionsBaseAction(data: OptionsInputType!): BaseAction
   CreateService(data: InputService!): Service

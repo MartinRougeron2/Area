@@ -23,7 +23,7 @@ async function publishMessage(id: string, text: string, token: string): Promise<
 export class SlackOutResolver {
     @Mutation(() => Boolean)
     async SendSlackMessage(@Arg('data') {action_effect_id, message}: CommunicationInput) {
-        return await UniqueActionModel.findOne({id: action_effect_id}).then(async (action_effect_res) => {
+        return await UniqueActionModel.findById(action_effect_id).then(async (action_effect_res) => {
             if (!action_effect_res) return false
             if (!action_effect_res.parameters) return false
 
