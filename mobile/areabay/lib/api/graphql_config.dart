@@ -12,7 +12,6 @@ class GraphQLConfig {
   static Future<Map> postRequest(Map convertBody) async {
     String body = json.encode(convertBody).toString();
 
-    print(body);
     return json.decode((await http.post(
         Uri.parse(GraphQLConfig.urlGraphQL),
         headers: GraphQLConfig.header, body: body
