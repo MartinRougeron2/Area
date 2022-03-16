@@ -38,6 +38,9 @@ class _ActionWidgetState extends State<ActionWidget> {
       case "Discord":
         logo = "assets\\discord.png";
         break;
+      case "GCalendar":
+        logo = "assets\\gcalendar.png";
+        break;
       default:
         logo = "assets\\instagram.png";
     }
@@ -70,13 +73,13 @@ class _ActionWidgetState extends State<ActionWidget> {
           children: [
             DescBay(
               logo: getLogo(widget.actionService),
-              name: widget.reactionService,
+              name: widget.actionService,
               desc: widget.actionDesc,
             ),
             const Icon(Icons.arrow_forward_rounded,
                 size: 40, color: Colors.white),
             DescBay(logo: getLogo(widget.reactionService),
-                name: widget.actionService,
+                name: widget.reactionService,
             desc: widget.reactionDesc,)
           ],
         ));

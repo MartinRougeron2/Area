@@ -6,9 +6,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: [
-    'email',
-  ],
+  scopes: ['email', 'openid'],
 );
 
 class LoginPage extends StatefulWidget {
@@ -23,21 +21,27 @@ class _LoginPageState extends State<LoginPage> {
 
   String _email = "";
   String _password = "";
-  GoogleSignInAccount? _currentUser;
 
   Future<Map> _handleSignIn() async {
     try {
       await _googleSignIn.signIn();
-      _currentUser = _googleSignIn.currentUser;
+      GoogleSignInAccount? _currentUser = _googleSignIn.currentUser;
+      GoogleSignInAuthentication? auth = await _currentUser?.authentication;
 
       Map data = {
         "query": userGoogle,
-        "variables": {"email": _currentUser?.email, "token": _currentUser?.id}
+        "variables": {
+          "email": _currentUser?.email,
+          "token": auth?.idToken
+        }
       };
-      return await GraphQLConfig.postRequest(data);
+
+      Map res = await GraphQLConfig.postRequest(data);
+      print("res: ${res.toString()}");
+      return res;
     } catch (error) {
       // ignore: avoid_print
-      print(error);
+      print("error: $error");
     }
     return {};
   }
@@ -182,6 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {
                     Map response = await _handleSignIn();
 
+                    print("\n\nrepsonse: $response\n\n");
                     if (response["data"]?["LoginUser"]?["jwt_token"] != "bad") {
                       global.idUser =
                           response["data"]?["LoginUser"]?["user"]?["id"];
