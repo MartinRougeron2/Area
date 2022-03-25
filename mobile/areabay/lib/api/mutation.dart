@@ -13,6 +13,7 @@ mutation createUniqueAction(\$action_id: String!, \$parameters: String!, \$old_v
     id
     action {
       auth_url
+      options
     }
   }
 }

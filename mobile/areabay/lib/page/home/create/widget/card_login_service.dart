@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:areabay/api/oauth.dart';
 import 'package:areabay/api/graphql_config.dart';
-import 'package:areabay/api/mutation.dart';
+import 'package:areabay/api/query.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../args/web_app_args.dart';
 
 typedef SetDataCallBack = void Function(String key, String value);
 
@@ -12,7 +13,9 @@ class LoginServiceCard extends StatefulWidget {
   final SetDataCallBack setId;
   final String idKey;
 
-  const LoginServiceCard(
+  final ChromeSafariBrowser browser = ChromeSafariBrowser();
+
+  LoginServiceCard(
       {Key? key, required this.serviceName, required this.actionId, required this.actionName, required this.setId, required this.idKey})
       : super(key: key);
 
@@ -24,16 +27,27 @@ class _LoginServiceCardState extends State<LoginServiceCard> {
 
   getData(BuildContext context) async {
     Map data = {
-      "query": createUniqueActionMutation,
+      "query": getBaseActionById,
       "variables": {
-        "action_id": widget.actionId,
-        "parameters": "",
-        "old_values": "",
+        "id": widget.actionId,
       }
     };
     Map result = await GraphQLConfig.postRequest(data);
-    widget.setId(widget.idKey, result["data"]?["CreateUniqueActionByBaseActionId"]?["id"]);
-    loginToService(result["data"]?["CreateUniqueActionByBaseActionId"]?["action"]?["auth_url"], context);
+    // widget.setId(widget.idKey, result["data"]?["CreateUniqueActionByBaseActionId"]?["id"]);
+
+    const baseLink = "https://10.0.2.2:5001";
+
+
+    print("VALUE $result");
+    print( baseLink + result["data"]?["GetBaseActionById"]?["auth_url"] + "?id=" + widget.actionId);
+    WebAppArgs args = WebAppArgs(
+        baseLink + result["data"]?["GetBaseActionById"]?["auth_url"] + "?id=" + widget.actionId,
+        widget.idKey,
+        widget.setId
+    );
+
+    Uri url = Uri.parse(baseLink + result["data"]?["GetBaseActionById"]?["auth_url"] + "?id=" + widget.actionId);
+    Navigator.pushNamed(context, "/homePage/create/webView", arguments: args);
   }
 
   @override
@@ -77,7 +91,7 @@ class _LoginServiceCardState extends State<LoginServiceCard> {
               },
               style: ElevatedButton.styleFrom(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15)),
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 15)),
               child: const Text("Connect", style: TextStyle(fontSize: 30)))
         ],
       ),

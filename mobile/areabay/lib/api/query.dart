@@ -65,3 +65,12 @@ String fetchBay = """
     }
   }
 """;
+
+
+String getBaseActionById = """
+query GetBaseActionById(\$id: String!) {
+  GetBaseActionById(id: \$id) {
+    auth_url
+  }
+}
+""";

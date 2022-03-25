@@ -33,16 +33,16 @@ class _ActionWidgetState extends State<ActionWidget> {
 
     switch (serviceName) {
       case "Gmail":
-        logo = "assets\\gmail.png";
+        logo = "assets/gmail.png";
         break;
       case "Discord":
-        logo = "assets\\discord.png";
+        logo = "assets/discord.png";
         break;
       case "GCalendar":
-        logo = "assets\\gcalendar.png";
+        logo = "assets/gcalendar.png";
         break;
       default:
-        logo = "assets\\instagram.png";
+        logo = "assets/instagram.png";
     }
     return logo;
   }

@@ -136,6 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             Map response = await _handleLogIn();
+                            print("RESPONSE AA: $response");
                             if (response["data"]?["LoginUser"]?["jwt_token"] !=
                                 "account not registered") {
                               global.idUser = response["data"]?["LoginUser"]

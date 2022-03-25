@@ -41,6 +41,7 @@ dependencies:
   google_sign_in: ^5.2.4
   graphql_flutter: ^5.0.1
   url_launcher: ^6.0.20
+  flutter_inappwebview: ^5.3.2
 
 dev_dependencies:
   flutter_test:
@@ -66,12 +67,12 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets\instagram.png
-    - assets\gmail.png
-    - assets\discord.png
-    - assets\gcalendar.png
-    - assets\slack.png
-    - assets\twitter.png
+    - assets/instagram.png
+    - assets/gmail.png
+    - assets/discord.png
+    - assets/gcalendar.png
+    - assets/slack.png
+    - assets/twitter.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

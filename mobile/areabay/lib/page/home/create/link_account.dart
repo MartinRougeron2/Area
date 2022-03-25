@@ -48,6 +48,7 @@ class _LinkAccountState extends State<LinkAccount> {
   };
 
   callBack(String key, String value) {
+    print("KEY: $key | ID: $value");
     idBay[key] = value;
   }
 
@@ -61,6 +62,7 @@ class _LinkAccountState extends State<LinkAccount> {
         "active": true,
       }
     };
+    print("data: $data");
     Map result = await GraphQLConfig.postRequest(data);
     if (result["data"]?["CreateBayAction"]?["name"] != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

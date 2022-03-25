@@ -1,9 +1,11 @@
+import 'package:areabay/page/home/create/web_app.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'home/create/create.dart';
 import 'home/create/link_account.dart';
 import 'home/list/list.dart';
 import 'package:areabay/globals.dart' as global;
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -14,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   static const List<Widget> _widgetOptions = <Widget>[
     ShowAllAction(),
@@ -37,8 +39,10 @@ class _HomePageState extends State<HomePage> {
       client: global.client,
       child: MaterialApp(
           routes: <String, WidgetBuilder>{
-            "/homePage/create/linkAccount": (
-                BuildContext context) => const LinkAccount(),
+            "/homePage/create/linkAccount": (BuildContext context) =>
+                const LinkAccount(),
+            "/homePage/create/webView": (BuildContext context) =>
+                WebApp(),
           },
           home: Scaffold(
             bottomNavigationBar: BottomNavigationBar(
